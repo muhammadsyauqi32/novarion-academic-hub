@@ -1,0 +1,13 @@
+{
+  "version": "6",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792040517534,
+      "tag": "0000_nostalgic_dragon_man",
+      "breakpoints": true
+    }
+  ]
+}

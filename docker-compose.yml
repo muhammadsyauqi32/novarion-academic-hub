@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Baileys WhatsApp Gateway & Reminder Worker Service
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    container_name: novarion-baileys-worker
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - WA_PROVIDER=${WA_PROVIDER:-mock}
+      - WA_SESSION_ENCRYPTION_KEY=${WA_SESSION_ENCRYPTION_KEY}
+      - WORKER_ID=${WORKER_ID:-worker-docker-01}
+      - POLL_INTERVAL_MS=${POLL_INTERVAL_MS:-30000}
+    # Worker is strictly outbound only; no inbound ports opened to public network
+    networks:
+      - novarion-network
+
+networks:
+  novarion-network:
+    driver: bridge
