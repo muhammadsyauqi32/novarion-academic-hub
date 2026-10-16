@@ -1,9 +1,9 @@
-import crypto from 'crypto';
-import postgres from 'postgres';
-import { getDb } from './client';
-import { studentWhitelist, profiles } from './schema/index';
-import { eq } from 'drizzle-orm';
-import { UserRole } from '@novarion/shared';
+import crypto from "crypto";
+import postgres from "postgres";
+import { getDb } from "./client";
+import { studentWhitelist, profiles } from "./schema/index";
+import { eq } from "drizzle-orm";
+import { UserRole } from "@novarion/shared";
 
 export interface ProvisionUserOptions {
   nim: string;
@@ -30,15 +30,26 @@ export interface ProvisionUserResult {
  * Format: Nvrn-<8 karakter hex acak>
  */
 export function generateSecureTempPassword(): string {
-  const randomHex = crypto.randomBytes(4).toString('hex').toUpperCase();
-  const special = ['!', '@', '#', '$'][crypto.randomInt(0, 4)];
+  const randomHex = crypto.randomBytes(4).toString("hex").toUpperCase();
+  const special = ["!", "@", "#", "$"][crypto.randomInt(0, 4)];
   return `Nvrn-${randomHex}${special}`;
+}
+
+// Testing Password
+export function getDefaultStudentPassword(): string {
+  const password = process.env.DEFAULT_STUDENT_PASSWORD;
+
+  if (!password || password.length < 12) {
+    throw new Error("DEFAULT_STUDENT_PASSWORD wajib diisi minimal 12 karakter");
+  }
+
+  return password;
 }
 
 function getRawSql() {
   const connStr = process.env.DATABASE_URL;
   if (!connStr) {
-    throw new Error('DATABASE_URL is not set.');
+    throw new Error("DATABASE_URL is not set.");
   }
   return postgres(connStr);
 }
@@ -53,7 +64,7 @@ export async function provisionUser(options: ProvisionUserOptions): Promise<Prov
   const nim = options.nim.trim();
   const email = options.email.trim().toLowerCase();
   const fullName = options.fullName.trim();
-  const role: UserRole = options.role || 'student';
+  const role: UserRole = options.role || "student";
   const isActive = options.isActive ?? true;
 
   const isGeneratedPassword = !options.password;
@@ -69,7 +80,7 @@ export async function provisionUser(options: ProvisionUserOptions): Promise<Prov
     let userId: string;
 
     const userMetadata = { full_name: fullName, nim, role };
-    const appMetadata = { provider: 'email', providers: ['email'] };
+    const appMetadata = { provider: "email", providers: ["email"] };
 
     if (existingUsers.length > 0) {
       userId = existingUsers[0].id;
@@ -174,11 +185,7 @@ export async function provisionUser(options: ProvisionUserOptions): Promise<Prov
     }
 
     // 2. Sinkronkan ke student_whitelist
-    const existingWl = await db
-      .select()
-      .from(studentWhitelist)
-      .where(eq(studentWhitelist.nim, nim))
-      .limit(1);
+    const existingWl = await db.select().from(studentWhitelist).where(eq(studentWhitelist.nim, nim)).limit(1);
 
     if (existingWl.length === 0) {
       await db.insert(studentWhitelist).values({
@@ -202,11 +209,7 @@ export async function provisionUser(options: ProvisionUserOptions): Promise<Prov
     }
 
     // 3. Sinkronkan ke public.profiles
-    const existingProf = await db
-      .select()
-      .from(profiles)
-      .where(eq(profiles.id, userId))
-      .limit(1);
+    const existingProf = await db.select().from(profiles).where(eq(profiles.id, userId)).limit(1);
 
     if (existingProf.length === 0) {
       await db.insert(profiles).values({

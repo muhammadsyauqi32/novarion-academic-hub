@@ -36,3 +36,5 @@ Thumbs.db
 # Baileys temporary auth if used in development
 *auth_info_baileys*
 *.session*
+
+next.md
