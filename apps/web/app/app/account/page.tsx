@@ -49,7 +49,7 @@ export default async function AccountPage() {
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface-soft border border-border">
             <div className="flex items-center gap-3">
               <Mail className="w-4 h-4 text-teal-deep" />
-              <span className="text-xs font-medium text-text-muted">Email Terverifikasi (Google)</span>
+              <span className="text-xs font-medium text-text-muted">Email Terdaftar Kampus</span>
             </div>
             <span className="text-xs font-bold text-text-primary">{user.email}</span>
           </div>
@@ -63,7 +63,13 @@ export default async function AccountPage() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-border flex justify-end">
+        <div className="pt-4 border-t border-border flex items-center justify-between gap-3 flex-wrap">
+          <a href="/auth/change-password">
+            <Button variant="secondary" size="sm" type="button">
+              <span>Ubah Kata Sandi</span>
+            </Button>
+          </a>
+
           <form action="/auth/signout" method="post">
             <Button variant="danger" size="sm" type="submit">
               <LogOut className="w-4 h-4 mr-1.5" />

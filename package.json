@@ -18,7 +18,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "db:generate": "npm run generate --workspace=packages/db",
     "db:migrate": "npm run migrate --workspace=packages/db",
-    "db:seed": "npm run seed --workspace=packages/db"
+    "db:seed": "npm run seed --workspace=packages/db",
+    "bootstrap:admin": "npm run bootstrap:admin --workspace=packages/db"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",

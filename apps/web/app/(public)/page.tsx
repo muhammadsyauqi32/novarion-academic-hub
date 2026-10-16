@@ -133,7 +133,7 @@ export default function LandingPage() {
           </span>
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-deep" />
-            Google Login + Whitelist Terverifikasi
+            Autentikasi NIM + Whitelist Terverifikasi
           </span>
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-deep" />
@@ -237,9 +237,9 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-full bg-brand-primary text-text-primary font-heading font-extrabold text-base flex items-center justify-center shadow-sm">
                 1
               </div>
-              <h4 className="font-heading font-bold text-base text-text-primary">Masuk Akun Google</h4>
+              <h4 className="font-heading font-bold text-base text-text-primary">Masuk dengan NIM</h4>
               <p className="text-xs text-text-muted max-w-xs">
-                Gunakan email kampus yang telah terdaftar dalam whitelist angkatan.
+                Gunakan NIM dan kata sandi yang telah terdaftar dalam whitelist angkatan.
               </p>
             </div>
 

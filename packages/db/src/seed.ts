@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { getDb } from './client';
-import { studentWhitelist, academicTerms, reminderRules } from './schema/index';
+import { academicTerms, reminderRules } from './schema/index';
+import { provisionUser, generateSecureTempPassword } from './auth-provisioning';
 import { eq } from 'drizzle-orm';
 
 dotenv.config({ path: '../../.env' });
@@ -13,26 +14,23 @@ async function runSeed() {
   const adminEmail = process.env.INITIAL_ADMIN_EMAIL || 'admin.angkatan@kampus.ac.id';
   const adminNim = process.env.INITIAL_ADMIN_NIM || '10241001';
   const adminName = process.env.INITIAL_ADMIN_NAME || 'Administrator Angkatan';
+  const envPassword = process.env.INITIAL_ADMIN_PASSWORD;
 
-  // 1. Seed Whitelist Admin Pertama
-  console.log(`Checking admin whitelist: ${adminEmail} (${adminNim})...`);
-  const existingAdmin = await db
-    .select()
-    .from(studentWhitelist)
-    .where(eq(studentWhitelist.email, adminEmail))
-    .limit(1);
-
-  if (existingAdmin.length === 0) {
-    await db.insert(studentWhitelist).values({
-      nim: adminNim,
-      email: adminEmail,
-      fullName: adminName,
-      role: 'admin',
-      isActive: true,
-    });
-    console.log(`✅ Admin pertama berhasil ditambahkan ke whitelist: ${adminEmail}`);
-  } else {
-    console.log(`ℹ️ Admin whitelist sudah ada: ${adminEmail}`);
+  // 1. Provision Admin Pertama (Auth + Whitelist + Profiles)
+  console.log(`Checking & provisioning admin: ${adminEmail} (${adminNim})...`);
+  const adminPassword = envPassword || generateSecureTempPassword();
+  const adminResult = await provisionUser({
+    nim: adminNim,
+    email: adminEmail,
+    fullName: adminName,
+    role: 'admin',
+    password: adminPassword,
+    mustChangePassword: !envPassword,
+    isActive: true,
+  });
+  console.log(`✅ Admin pertama siap: ${adminEmail} (NIM: ${adminNim})`);
+  if (!envPassword) {
+    console.log(`🔑 Password sementara admin: ${adminPassword}`);
   }
 
   // 2. Seed Default Reminder Rules (Empat Pemicu Wajib)

@@ -53,3 +53,13 @@ export interface CalculatedTrigger {
   scheduledFor: Date;
   label: string;
 }
+
+export interface AuthenticatedUser {
+  id: string;
+  email: string;
+  nim: string;
+  fullName: string;
+  role: UserRole;
+  avatarUrl?: string | null;
+  mustChangePassword?: boolean;
+}

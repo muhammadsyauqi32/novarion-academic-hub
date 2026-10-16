@@ -2,6 +2,38 @@ import { z } from 'zod';
 
 export const userRoleSchema = z.enum(['student', 'admin']);
 
+export const loginSchema = z.object({
+  nim: z
+    .string()
+    .trim()
+    .min(1, 'NIM wajib diisi')
+    .max(30, 'NIM maksimal 30 karakter'),
+  password: z
+    .string()
+    .min(1, 'Kata sandi wajib diisi'),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Kata sandi saat ini wajib diisi'),
+    newPassword: z
+      .string()
+      .min(8, 'Kata sandi baru minimal 8 karakter')
+      .max(100, 'Kata sandi terlalu panjang')
+      .regex(/[A-Z]/, 'Kata sandi harus mengandung minimal 1 huruf kapital')
+      .regex(/[a-z]/, 'Kata sandi harus mengandung minimal 1 huruf kecil')
+      .regex(/[0-9]/, 'Kata sandi harus mengandung minimal 1 angka'),
+    confirmPassword: z.string().min(1, 'Konfirmasi kata sandi wajib diisi'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Konfirmasi kata sandi tidak cocok',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini',
+    path: ['newPassword'],
+  });
+
 export const studentWhitelistSchema = z.object({
   nim: z
     .string()

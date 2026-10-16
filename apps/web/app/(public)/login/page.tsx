@@ -1,114 +1,134 @@
 'use client';
 
 import React, { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { BrandLogo } from '@/components/BrandLogo';
-import { ShieldCheck, Info, AlertCircle } from 'lucide-react';
+import { Input } from '@/components/Input';
+import { loginWithNimAction } from '@/actions/auth';
+import { ShieldCheck, Info, AlertCircle, LogIn, Eye, EyeOff, Hash } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleGoogleLogin = async () => {
+  const [nim, setNim] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     setErrorMessage(null);
 
+    const formData = new FormData(e.currentTarget);
     try {
-      const supabase = createClient();
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      const result = await loginWithNimAction(formData);
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      if (error) {
-        setErrorMessage(error.message);
+      if (!result.success) {
+        setErrorMessage(result.error || 'NIM atau kata sandi tidak valid.');
         setIsLoading(false);
+        return;
+      }
+
+      if (result.redirectTo) {
+        router.push(result.redirectTo);
+        router.refresh();
       }
     } catch (err) {
-      setErrorMessage(String(err));
+      setErrorMessage(err instanceof Error ? err.message : String(err));
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <Card className="shadow-lg border-border/80 p-8 flex flex-col gap-6">
+        <Card className="shadow-xl border-border/80 p-8 flex flex-col gap-6">
           <div className="flex flex-col items-center text-center gap-2">
             <BrandLogo size="lg" />
             <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight mt-3">
-              Selamat Datang Kembali
+              Selamat Datang
             </h1>
             <p className="text-xs text-text-muted max-w-xs">
-              Masuk menggunakan akun Google kampusmu untuk mengakses kalender akademik dan materi kuliah.
+              Masuk menggunakan NIM dan kata sandi Anda untuk mengakses kalender akademik dan materi kuliah.
             </p>
           </div>
 
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text">
+            <div className="p-3.5 rounded-xl bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          <div className="flex flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <Input
+                name="nim"
+                label="Nomor Induk Mahasiswa (NIM)"
+                placeholder="Contoh: M0401251083"
+                value={nim}
+                onChange={(e) => setNim(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                label="Kata Sandi"
+                placeholder="Masukkan kata sandi akun"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-[29px] text-text-muted hover:text-text-primary transition-colors"
+                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
             <Button
-              variant="dark"
+              variant="primary"
               size="lg"
-              className="w-full font-semibold gap-3"
+              type="submit"
+              className="w-full font-bold gap-2 mt-2"
               isLoading={isLoading}
-              onClick={handleGoogleLogin}
+              disabled={!nim.trim() || !password}
             >
-              {/* Google G Logo SVG */}
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#EA4335"
-                  d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                />
-                <path
-                  fill="#4285F4"
-                  d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"
-                />
-              </svg>
-              <span>Masuk dengan Google</span>
+              <LogIn className="w-4 h-4" />
+              <span>Masuk Sekarang</span>
             </Button>
-          </div>
+          </form>
 
           <div className="p-3.5 rounded-xl bg-surface-soft border border-border flex items-start gap-2.5 text-xs text-text-muted">
             <Info className="w-4 h-4 text-teal-deep shrink-0 mt-0.5" />
             <div className="flex flex-col gap-1">
               <span className="font-semibold text-text-primary">Akses Terbatas Whitelist</span>
               <span>
-                Hanya mahasiswa dan pengurus yang alamat emailnya telah didaftarkan dalam whitelist angkatan yang dapat masuk.
+                Hanya mahasiswa dan pengurus yang NIM-nya telah didaftarkan dalam whitelist angkatan yang dapat masuk.
               </span>
             </div>
           </div>
 
           <div className="text-center pt-2 border-t border-border/60">
             <p className="text-[11px] text-text-muted">
-              Emailmu belum terdaftar? Hubungi{' '}
+              Belum memiliki kata sandi atau lupa akses? Hubungi{' '}
               <span className="text-teal-deep font-semibold underline cursor-pointer">
                 Admin Angkatan
               </span>{' '}
-              untuk verifikasi NIM.
+              untuk verifikasi NIM dan penerbitan akses baru.
             </p>
           </div>
         </Card>

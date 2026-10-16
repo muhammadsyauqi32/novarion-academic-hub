@@ -20,6 +20,7 @@ export const profiles = pgTable('profiles', {
   email: varchar('email', { length: 150 }).notNull().unique(),
   fullName: varchar('full_name', { length: 150 }).notNull(),
   role: varchar('role', { length: 20 }).notNull().default('student'),
+  mustChangePassword: boolean('must_change_password').notNull().default(true),
   avatarUrl: text('avatar_url'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

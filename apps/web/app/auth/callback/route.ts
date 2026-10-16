@@ -6,10 +6,9 @@ import { eq } from 'drizzle-orm';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_code`);
+    return NextResponse.redirect(`${origin}/login`);
   }
 
   const supabase = createClient();
@@ -32,7 +31,6 @@ export async function GET(request: Request) {
 
   if (whitelistRows.length === 0 || !whitelistRows[0].isActive) {
     console.warn(`[AuthCallback] Akses ditolak: Email '${verifiedEmail}' tidak ada di whitelist atau nonaktif.`);
-    // Invalidate session segera
     await supabase.auth.signOut();
     return NextResponse.redirect(`${origin}/auth/invalid-account`);
   }
@@ -47,6 +45,8 @@ export async function GET(request: Request) {
     .where(eq(profiles.id, user.id))
     .limit(1);
 
+  let mustChangePassword = true;
+
   if (existingProfile.length === 0) {
     await db.insert(profiles).values({
       id: user.id,
@@ -54,11 +54,11 @@ export async function GET(request: Request) {
       email: wl.email,
       fullName: wl.fullName,
       role: wl.role,
+      mustChangePassword: true,
       avatarUrl,
     });
-    console.log(`[AuthCallback] Profil baru dibuat untuk ${wl.fullName} (${wl.nim}) - Role: ${wl.role}`);
   } else {
-    // Sinkronkan update role / nama jika berubah di whitelist
+    mustChangePassword = existingProfile[0].mustChangePassword;
     await db
       .update(profiles)
       .set({
@@ -70,7 +70,10 @@ export async function GET(request: Request) {
       .where(eq(profiles.id, user.id));
   }
 
-  // 3. Arahkan pengguna sesuai peran (Role-based redirection)
+  if (mustChangePassword) {
+    return NextResponse.redirect(`${origin}/auth/change-password`);
+  }
+
   if (wl.role === 'admin') {
     return NextResponse.redirect(`${origin}/admin`);
   }

@@ -1,7 +1,7 @@
 'use server';
 
 import { requireAdmin } from '@/lib/auth/guards';
-import { getDb, studentWhitelist, auditLogs, profiles } from '@novarion/db';
+import { getDb, studentWhitelist, auditLogs, provisionUser, resetUserPassword } from '@novarion/db';
 import { studentWhitelistSchema } from '@novarion/shared';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -39,28 +39,55 @@ export async function addWhitelistStudentAction(formData: FormData) {
       return { success: false, error: `Mahasiswa dengan NIM ${nim} sudah terdaftar.` };
     }
 
-    const inserted = await db.insert(studentWhitelist).values({
+    // Provision akun secara aman di auth.users, student_whitelist, dan profiles
+    const provisionResult = await provisionUser({
       nim,
       email,
       fullName: full_name,
       role,
       isActive: is_active,
-    }).returning();
+      mustChangePassword: true,
+    });
 
     // Audit log
     await db.insert(auditLogs).values({
       actorId: admin.id,
       action: 'WHITELIST_STUDENT_ADDED',
       entityType: 'student_whitelist',
-      entityId: inserted[0].id,
+      entityId: provisionResult.id,
       newValues: { nim, email, full_name, role },
     });
 
     revalidatePath('/admin/students');
-    return { success: true };
+    return {
+      success: true,
+      temporaryPassword: provisionResult.temporaryPassword,
+    };
   } catch (err) {
     console.error('[addWhitelistStudentAction] Error:', err);
-    return { success: false, error: String(err) };
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+export async function resetStudentPasswordAction(nim: string) {
+  const admin = await requireAdmin();
+  const db = getDb();
+
+  try {
+    const { temporaryPassword } = await resetUserPassword(nim);
+
+    await db.insert(auditLogs).values({
+      actorId: admin.id,
+      action: 'STUDENT_PASSWORD_RESET',
+      entityType: 'student_whitelist',
+      newValues: { nim },
+    });
+
+    revalidatePath('/admin/students');
+    return { success: true, temporaryPassword };
+  } catch (err) {
+    console.error('[resetStudentPasswordAction] Error:', err);
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 }
 
@@ -89,6 +116,6 @@ export async function toggleWhitelistStatusAction(id: string, currentStatus: boo
     return { success: true };
   } catch (err) {
     console.error('[toggleWhitelistStatusAction] Error:', err);
-    return { success: false, error: String(err) };
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 }

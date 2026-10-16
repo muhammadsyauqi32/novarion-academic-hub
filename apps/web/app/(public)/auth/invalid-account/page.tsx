@@ -18,7 +18,7 @@ export default function InvalidAccountPage() {
               Akses Dibatasi
             </h1>
             <p className="text-sm text-text-muted">
-              Akun Google yang kamu gunakan berhasil diautentikasi, namun <span className="font-semibold text-text-primary">belum terdaftar</span> di dalam whitelist mahasiswa angkatan.
+              Akun yang kamu gunakan <span className="font-semibold text-text-primary">belum terdaftar</span> atau dinonaktifkan di dalam whitelist mahasiswa angkatan.
             </p>
           </div>
 

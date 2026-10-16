@@ -25,7 +25,7 @@ export default function PrivacyPage() {
           <h2 className="font-heading font-bold text-lg text-text-primary">2. Data yang Dikumpulkan</h2>
           <ul className="list-disc list-inside text-text-muted space-y-1">
             <li><span className="font-semibold text-text-primary">Identitas Akademik:</span> Nomor Induk Mahasiswa (NIM), Nama Lengkap, dan Kelas Paralel yang diimpor pengurus angkatan.</li>
-            <li><span className="font-semibold text-text-primary">Autentikasi Google:</span> Alamat email terverifikasi untuk mencocokkan identitas pada whitelist.</li>
+            <li><span className="font-semibold text-text-primary">Autentikasi Akun:</span> Alamat email kampus dan NIM terdaftar untuk mencocokkan identitas pada whitelist.</li>
             <li><span className="font-semibold text-text-primary">Aktivitas Personal:</span> Catatan tugas pribadi (`todo`/`done`) yang hanya dapat diakses oleh pemilik akun sendiri.</li>
           </ul>
         </section>

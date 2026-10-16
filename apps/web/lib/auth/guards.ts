@@ -2,19 +2,17 @@ import { createClient } from '../supabase/server';
 import { getDb, profiles, studentWhitelist } from '@novarion/db';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
-import { UserRole } from '@novarion/shared';
+import { UserRole, AuthenticatedUser } from '@novarion/shared';
 
-export interface AuthenticatedUser {
-  id: string;
-  email: string;
-  nim: string;
-  fullName: string;
-  role: UserRole;
-  avatarUrl?: string | null;
+export type { AuthenticatedUser };
+
+export interface RequireAuthOptions {
+  allowPasswordChange?: boolean;
 }
 
 /**
- * Mengambil session dan profil pengguna terautentikasi yang terverifikasi whitelist
+ * Mengambil session dan profil pengguna terautentikasi yang terverifikasi whitelist.
+ * Memastikan bahwa pengguna yang dinonaktifkan langsung kehilangan akses seketika.
  */
 export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
   try {
@@ -28,15 +26,27 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     const db = getDb();
     const email = user.email.toLowerCase();
 
-    // 1. Cek apakah profil sudah terbentuk di tabel profiles
+    // 1. Cek profil dan lakukan join dengan student_whitelist untuk verifikasi status aktif
     const profileRows = await db
-      .select()
+      .select({
+        profile: profiles,
+        whitelist: studentWhitelist,
+      })
       .from(profiles)
+      .innerJoin(studentWhitelist, eq(profiles.nim, studentWhitelist.nim))
       .where(eq(profiles.id, user.id))
       .limit(1);
 
     if (profileRows.length > 0) {
-      const p = profileRows[0];
+      const { profile: p, whitelist: w } = profileRows[0];
+
+      // Jika akun di whitelist dinonaktifkan, langsung putuskan sesi
+      if (!w.isActive) {
+        console.warn(`[getCurrentUser] Akses ditolak: Mahasiswa ${w.nim} dinonaktifkan.`);
+        await supabase.auth.signOut();
+        return null;
+      }
+
       return {
         id: p.id,
         email: p.email,
@@ -44,10 +54,11 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
         fullName: p.fullName,
         role: p.role as UserRole,
         avatarUrl: p.avatarUrl,
+        mustChangePassword: p.mustChangePassword,
       };
     }
 
-    // 2. Jika profil belum ada, cek apakah email ada dalam student_whitelist
+    // 2. Jika profil belum ada, cek apakah email ada dalam student_whitelist yang aktif
     const whitelistRows = await db
       .select()
       .from(studentWhitelist)
@@ -55,7 +66,7 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       .limit(1);
 
     if (whitelistRows.length === 0 || !whitelistRows[0].isActive) {
-      // Email belum ada di whitelist atau dinonaktifkan
+      await supabase.auth.signOut();
       return null;
     }
 
@@ -63,14 +74,18 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     const avatarUrl = user.user_metadata?.avatar_url || null;
 
     // 3. Auto-provision profile dari data whitelist yang valid
-    await db.insert(profiles).values({
-      id: user.id,
-      nim: w.nim,
-      email: w.email,
-      fullName: w.fullName,
-      role: w.role,
-      avatarUrl,
-    });
+    const inserted = await db
+      .insert(profiles)
+      .values({
+        id: user.id,
+        nim: w.nim,
+        email: w.email,
+        fullName: w.fullName,
+        role: w.role,
+        avatarUrl,
+        mustChangePassword: true,
+      })
+      .returning();
 
     return {
       id: user.id,
@@ -79,6 +94,7 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       fullName: w.fullName,
       role: w.role as UserRole,
       avatarUrl,
+      mustChangePassword: inserted[0].mustChangePassword,
     };
   } catch (err) {
     console.error('[getCurrentUser] Error fetching current user:', err);
@@ -88,13 +104,19 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
 
 /**
  * Guard untuk halaman internal (Student / Admin).
- * Otomatis redirect ke /login atau /auth/invalid-account jika tidak berhak.
+ * Otomatis redirect ke /login jika tidak login.
+ * Jika mustChangePassword = true dan tidak allowPasswordChange, otomatis redirect ke /auth/change-password.
  */
-export async function requireAuth(): Promise<AuthenticatedUser> {
+export async function requireAuth(options?: RequireAuthOptions): Promise<AuthenticatedUser> {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect('/login');
+  }
+
+  // Wajib ganti password pada login pertama / setelah reset oleh admin
+  if (user.mustChangePassword && !options?.allowPasswordChange) {
+    redirect('/auth/change-password');
   }
 
   return user;
