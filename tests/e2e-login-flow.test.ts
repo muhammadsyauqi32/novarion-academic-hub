@@ -135,23 +135,13 @@ describe('STEP 6 — E2E Login Scenarios Verification', () => {
     if (student) {
       // Ensure profile has mustChangePassword: true
       await db
-        .insert(profiles)
-        .values({
-          id: '476ec69e-07ca-44e3-9ba5-9e8e348946d5',
-          nim: student.nim,
-          email: student.email,
-          fullName: student.fullName,
-          role: 'student',
-          mustChangePassword: true,
-        })
-        .onConflictDoUpdate({
-          target: profiles.id,
-          set: { mustChangePassword: true },
-        });
+        .update(profiles)
+        .set({ mustChangePassword: true })
+        .where(eq(profiles.nim, student.nim));
 
       // Verify the profile state in DB
       const [p] = await db.select().from(profiles).where(eq(profiles.nim, student.nim));
-      expect(p.mustChangePassword).toBe(true);
+      expect(p?.mustChangePassword).toBe(true);
     }
   });
 
