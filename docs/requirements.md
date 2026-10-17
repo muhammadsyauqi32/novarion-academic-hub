@@ -51,7 +51,7 @@ Novarion Academic Hub V3 adalah rumah digital dan pusat operasional akademik ang
 ## 2. Batas Biaya Rp0 Langganan
 
 1. **Next.js + TypeScript + Tailwind CSS**: Deployable ke Vercel Hobby (personal/non-komersial) atau Self-host via Docker.
-2. **Supabase Free Tier**: PostgreSQL, Auth (Google OAuth), Storage (<1GB). Penggunaan file besar dialihkan ke Google Drive link.
+2. **Supabase Free Tier**: PostgreSQL, Auth (NIM + Kata Sandi), Storage (<1GB). Penggunaan file besar dialihkan ke Google Drive link.
 3. **Baileys Worker**: Dijalankan di homelab / VPS pribadi / server yang selalu aktif menggunakan Docker Compose tanpa biaya langganan API berbayar.
 4. **Domain**: Subdomain gratis Vercel / Cloudflare Tunnel / DuckDNS.
 
@@ -60,7 +60,7 @@ Novarion Academic Hub V3 adalah rumah digital dan pusat operasional akademik ang
 ## 3. Matriks Kriteria Penerimaan MVP
 | Modul | Kriteria Lolos (Acceptance Criteria) |
 |---|---|
-| **Auth & Whitelist** | User hanya bisa mengakses aplikasi jika email Google terverifikasi ada dalam `student_whitelist`. Non-whitelist diarahkan ke `/auth/invalid-account` tanpa kebocoran data. |
+| **Auth & Whitelist** | User hanya bisa mengakses aplikasi jika NIM terdaftar aktif dalam `student_whitelist`. Menggunakan sandi sementara dengan kewajiban ganti sandi pada login pertama. |
 | **Data Akademik** | Relasi semester -> matkul -> kelas -> kelompok terhubung utuh. Mahasiswa hanya melihat agenda sesuai enrollment mereka. |
 | **Impor CSV** | File CSV yang diunggah ulang tidak menimbulkan duplikasi (idempoten) dan memberikan preview kesalahan per baris. |
 | **Reminder** | 4 pemicu (H-7, H-3, H-1, T-3 Jam) dihitung tepat sesuai WIB. Trigger lampau saat publish dilewati. Cancel agenda membatalkan job tersisa. |

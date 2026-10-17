@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { UserRole, AuthenticatedUser } from '@novarion/shared';
 
 export type { AuthenticatedUser };
+export type UserProfile = AuthenticatedUser;
 
 export interface RequireAuthOptions {
   allowPasswordChange?: boolean;

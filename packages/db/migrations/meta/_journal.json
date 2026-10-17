@@ -8,6 +8,27 @@
       "when": 1792040517534,
       "tag": "0000_nostalgic_dragon_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792040517535,
+      "tag": "0001_add_must_change_password",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792040517536,
+      "tag": "0002_security_rls_and_storage",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792040517537,
+      "tag": "0003_overhaul_cms_permissions_agenda_color",
+      "breakpoints": true
     }
   ]
 }

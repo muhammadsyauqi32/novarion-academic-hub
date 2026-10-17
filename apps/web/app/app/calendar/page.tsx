@@ -3,12 +3,16 @@ import { requireAuth } from '@/lib/auth/guards';
 import { getDb, agendas, personalTasks, courses, agendaTargets } from '@novarion/db';
 import { eq, desc, and } from 'drizzle-orm';
 import { InteractiveCalendar, CalendarEvent } from './InteractiveCalendar';
+import { getStudentAcademicScope } from '@/lib/academics/scoping';
+import { hasPermission } from '@/lib/auth/permissions';
 
 export default async function CalendarPage() {
   const user = await requireAuth();
   const db = getDb();
 
-  const [allAgendas, userPersonalTasks, proposals, allCourses] = await Promise.all([
+  const [studentScope, canCreateOfficial, allAgendas, userPersonalTasks, proposals, allCourses] = await Promise.all([
+    getStudentAcademicScope(user.id),
+    hasPermission(user, 'agenda.create'),
     db
       .select({
         id: agendas.id,
@@ -18,11 +22,14 @@ export default async function CalendarPage() {
         scope: agendas.scope,
         startTime: agendas.startTime,
         deadline: agendas.deadline,
+        color: agendas.color,
         locationOrLink: agendas.locationOrLink,
         sourceReference: agendas.sourceReference,
         status: agendas.status,
         createdBy: agendas.createdBy,
         courseId: agendaTargets.courseId,
+        classSectionId: agendaTargets.classSectionId,
+        studyGroupId: agendaTargets.studyGroupId,
       })
       .from(agendas)
       .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
@@ -34,7 +41,9 @@ export default async function CalendarPage() {
         id: personalTasks.id,
         title: personalTasks.title,
         description: personalTasks.description,
+        startTime: personalTasks.startTime,
         deadline: personalTasks.deadline,
+        color: personalTasks.color,
         status: personalTasks.status,
       })
       .from(personalTasks)
@@ -51,11 +60,14 @@ export default async function CalendarPage() {
             scope: agendas.scope,
             startTime: agendas.startTime,
             deadline: agendas.deadline,
+            color: agendas.color,
             locationOrLink: agendas.locationOrLink,
             sourceReference: agendas.sourceReference,
             status: agendas.status,
             createdBy: agendas.createdBy,
             courseId: agendaTargets.courseId,
+            classSectionId: agendaTargets.classSectionId,
+            studyGroupId: agendaTargets.studyGroupId,
           })
           .from(agendas)
           .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
@@ -70,11 +82,14 @@ export default async function CalendarPage() {
             scope: agendas.scope,
             startTime: agendas.startTime,
             deadline: agendas.deadline,
+            color: agendas.color,
             locationOrLink: agendas.locationOrLink,
             sourceReference: agendas.sourceReference,
             status: agendas.status,
             createdBy: agendas.createdBy,
             courseId: agendaTargets.courseId,
+            classSectionId: agendaTargets.classSectionId,
+            studyGroupId: agendaTargets.studyGroupId,
           })
           .from(agendas)
           .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
@@ -90,8 +105,26 @@ export default async function CalendarPage() {
       .from(courses),
   ]);
 
+  // Filter agendas strictly based on student enrollment targeting
+  const filteredAgendas = allAgendas.filter((agenda) => {
+    if (user.role === 'admin') return true;
+    if (agenda.createdBy === user.id) return true;
+    if (agenda.scope === 'angkatan') return true;
+    if (agenda.scope === 'mata_kuliah' && agenda.courseId) {
+      return studentScope.courseIds.includes(agenda.courseId);
+    }
+    if (agenda.scope === 'kelas' && agenda.classSectionId) {
+      return studentScope.classSectionIds.includes(agenda.classSectionId);
+    }
+    if (agenda.scope === 'kelompok' && agenda.studyGroupId) {
+      return studentScope.studyGroupIds.includes(agenda.studyGroupId);
+    }
+    // Jika tidak ada target spesifik terpasang, anggap berlaku umum
+    return !agenda.courseId && !agenda.classSectionId && !agenda.studyGroupId;
+  });
+
   const serializedEvents: CalendarEvent[] = [
-    ...allAgendas.map((item) => ({
+    ...filteredAgendas.map((item) => ({
       id: item.id,
       title: item.title,
       description: item.description,
@@ -99,6 +132,7 @@ export default async function CalendarPage() {
       scope: item.scope,
       startTime: item.startTime ? item.startTime.toISOString() : null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      color: item.color || '#41C2A1',
       courseId: item.courseId || null,
       locationOrLink: item.locationOrLink,
       sourceReference: item.sourceReference,
@@ -112,8 +146,9 @@ export default async function CalendarPage() {
       description: item.description,
       category: 'pribadi',
       scope: 'pribadi',
-      startTime: null,
+      startTime: item.startTime ? item.startTime.toISOString() : null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      color: item.color || '#3B82F6',
       courseId: null,
       locationOrLink: null,
       sourceReference: null,
@@ -129,6 +164,7 @@ export default async function CalendarPage() {
       scope: item.scope,
       startTime: item.startTime ? item.startTime.toISOString() : null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      color: item.color || '#FFAE5D',
       courseId: item.courseId || null,
       locationOrLink: item.locationOrLink,
       sourceReference: item.sourceReference,
@@ -143,8 +179,8 @@ export default async function CalendarPage() {
       initialEvents={serializedEvents}
       userRole={user.role}
       userId={user.id}
+      canCreateOfficialAgenda={canCreateOfficial || user.role === 'admin'}
       courses={allCourses}
     />
   );
 }
-

@@ -13,9 +13,16 @@ export async function addPersonalTaskAction(formData: FormData) {
   const description = String(formData.get('description') || '').trim() || null;
   const deadlineRaw = formData.get('deadline');
   const deadline = deadlineRaw ? new Date(String(deadlineRaw)) : null;
+  const startTimeRaw = formData.get('start_time');
+  const startTime = startTimeRaw ? new Date(String(startTimeRaw)) : null;
+  const color = String(formData.get('color') || '#41C2A1').trim();
 
   if (!title) {
     return { success: false, error: 'Judul tugas wajib diisi.' };
+  }
+
+  if (startTime && deadline && deadline.getTime() < startTime.getTime()) {
+    return { success: false, error: 'Waktu tenggat tidak boleh lebih awal dari waktu mulai.' };
   }
 
   try {
@@ -23,7 +30,9 @@ export async function addPersonalTaskAction(formData: FormData) {
       profileId: user.id,
       title,
       description,
+      startTime,
       deadline,
+      color,
       status: 'todo',
     }).returning();
 
@@ -97,9 +106,16 @@ export async function updatePersonalTaskAction(formData: FormData) {
   const description = String(formData.get('description') || '').trim() || null;
   const deadlineRaw = formData.get('deadline');
   const deadline = deadlineRaw ? new Date(String(deadlineRaw)) : null;
+  const startTimeRaw = formData.get('start_time');
+  const startTime = startTimeRaw ? new Date(String(startTimeRaw)) : null;
+  const color = String(formData.get('color') || '#41C2A1').trim();
 
   if (!taskId || !title) {
     return { success: false, error: 'ID tugas dan judul wajib diisi.' };
+  }
+
+  if (startTime && deadline && deadline.getTime() < startTime.getTime()) {
+    return { success: false, error: 'Waktu tenggat tidak boleh lebih awal dari waktu mulai.' };
   }
 
   try {
@@ -108,7 +124,9 @@ export async function updatePersonalTaskAction(formData: FormData) {
       .set({
         title,
         description,
+        startTime,
         deadline,
+        color,
         updatedAt: new Date(),
       })
       .where(

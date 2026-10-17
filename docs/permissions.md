@@ -1,63 +1,68 @@
 # Permission Matrix & Authorization Protocol
 
-> **Status:** Approved Baseline Permissions  
-> **Source of Truth:** MASTER_PROMPT.md V3.2 (Section 4 & 11)
+> **Status:** Overhauled & Approved Permissions  
+> **Source of Truth:** Novarion Academic Hub V3 Overhaul
 
 ---
 
-## 1. Alur Autentikasi & Validasi Whitelist
+## 1. Alur Autentikasi NIM & Validasi Whitelist
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as Mahasiswa / Admin
     participant Client as Browser (Next.js)
-    participant Auth as Supabase Auth (Google OAuth)
-    participant Server as Next.js Server (Auth Guard)
+    participant Server as Next.js Server (Auth Action)
+    participant Auth as Supabase Auth (Email + Password)
     participant DB as Supabase PostgreSQL
 
-    User->>Client: Klik "Masuk dengan Google"
-    Client->>Auth: Inisiasi OAuth Google
-    Auth-->>User: Dialog Login Google & Verifikasi Akun
-    User->>Auth: Masukkan Akun Google Kampus / Pribadi
-    Auth-->>Server: Callback Auth Code (Verified Email)
-    
-    Server->>DB: Query student_whitelist WHERE email = verified_email AND is_active = true
-    alt Email TIDAK ada di whitelist
-        DB-->>Server: Record Null / Empty
-        Server->>Auth: Revoke / Sign Out Session
-        Server-->>Client: Redirect ke /auth/invalid-account (403 Forbidden)
-    else Email TERDAFTAR di whitelist
-        DB-->>Server: Record Whitelist (NIM, Full Name, Role)
-        Server->>DB: Upsert profiles (id = auth.user.id, nim, email, full_name, role)
-        Server-->>Client: Redirect ke /app (Student) atau /admin (Admin)
+    User->>Client: Masukkan NIM + Kata Sandi
+    Client->>Server: loginWithNimAction(nim, password)
+    Server->>DB: Query student_whitelist WHERE nim = input_nim AND is_active = true
+    alt NIM TIDAK ada / Tidak Aktif
+        DB-->>Server: Record Null / Inactive
+        Server-->>Client: Error "NIM tidak terdaftar atau nonaktif" (401/403)
+    else NIM Terdaftar Aktif
+        DB-->>Server: Record Whitelist (Email, Nama, Role)
+        Server->>Auth: signInWithPassword(email, password)
+        alt Password Salah
+            Auth-->>Server: Auth Error
+            Server-->>Client: Error "NIM atau kata sandi tidak valid"
+        else Kredensial Valid
+            Auth-->>Server: Session Token (Access + Refresh)
+            Server->>DB: Query profiles WHERE nim = input_nim
+            alt mustChangePassword == true
+                Server-->>Client: Redirect ke /auth/change-password
+            else Password Sudah Diganti
+                Server-->>Client: Redirect ke /admin (jika admin) atau /app (student/delegated)
+            end
+        end
     end
 ```
 
 ---
 
-## 2. Matriks Otorisasi Berdasarkan Peran
+## 2. Matriks Otorisasi Berdasarkan Peran & Izin Granular
 
-| Domain Entitas | Tindakan / Endpoint | Student (Mahasiswa) | Admin Angkatan | Keterangan Aturan Server |
-|---|---|:---:|:---:|---|
-| **Autentikasi** | Login Google | ✅ (Jika di Whitelist) | ✅ (Jika di Whitelist) | Email diverifikasi server terhadap `student_whitelist`. |
-| | Elevasi Peran (Self-Promotion) | ❌ DILARANG | ❌ DILARANG | Admin pertama di-bootstrap via seed script di server. |
-| **Whitelist & Roster** | Baca daftar mahasiswa & NIM | ❌ | ✅ | Student tidak boleh melihat dump seluruh data angkatan. |
-| | CRUD Whitelist & Impor CSV | ❌ | ✅ | Hanya admin berhak melakukan mutasi data akademik. |
-| **Struktur Akademik** | Baca matkul/kelas terdaftar | ✅ | ✅ | Student hanya melihat entitas tempat dirinya enroll. |
-| | Kelola semester, matkul, kelas | ❌ | ✅ | Seluruh modifikasi struktur diaudit. |
-| **Agenda Akademik** | Baca agenda terpublikasi | ✅ (Sesuai Scope) | ✅ (Semua Scope) | Student hanya membaca agenda angkatan + kelas terdaftar. |
-| | Ajukan agenda baru (`pending`) | ✅ | ✅ (Langsung Published) | Pengajuan student wajib melalui review admin. |
-| | Review / Approve / Reject agenda | ❌ | ✅ | Penolakan wajib menyertakan alasan (`notes`). |
-| | Ubah / Batalkan agenda publik | ❌ (Hanya Ajukan Revisi) | ✅ | Edit langsung oleh admin mencatat versi dan audit log. |
-| **Tugas & Checklist** | CRUD tugas pribadi (`personal_tasks`) | ✅ (Milik Sendiri) | ✅ (Milik Sendiri) | Isolasi ketat: Student A dilarang membaca milik Student B. |
-| | Checklist agenda bersama (`shared_task`) | ✅ (Status Pribadi) | ✅ (Status Pribadi) | Status selesai pribadi TIDAK memengaruhi grup WhatsApp. |
-| **Materi & Knowledge** | Baca & unduh materi terpublikasi | ✅ (Sesuai Scope) | ✅ | URL download file privat dibuat berbatas waktu (signed URL). |
-| | CRUD materi & artikel FAQ | ❌ | ✅ | Mahasiswa tidak dapat mengunggah file materi resmi. |
-| **WhatsApp Gateway** | Tampilkan QR Code & Status | ❌ DILARANG | ✅ | QR code ber-TTL pendek dan hanya tampil di dashboard admin. |
-| | Mapping JID Grup & Kirim Test | ❌ DILARANG | ✅ | Admin memetakan grup dan mengirim uji coba ber-rate limit. |
-| | Emergency Kill Switch (Pause) | ❌ DILARANG | ✅ | Admin dapat mematikan seluruh alur pengiriman seketika. |
-| | Pantau Log Antrean & Error | ❌ DILARANG | ✅ | Student tidak boleh melihat histori pesan WhatsApp bot. |
+| Domain Entitas | Tindakan / Endpoint | Student (Biasa) | Agenda Manager | Super Admin | Keterangan Aturan Server |
+|---|---|:---:|:---:|:---:|---|
+| **Autentikasi** | Login NIM + Password | ✅ | ✅ | ✅ | NIM divalidasi ke `student_whitelist`. Password pertama wajib diganti. |
+| | Kelola Izin (`permissions.manage`) | ❌ DILARANG | ❌ DILARANG | ✅ | Super Admin dapat mendelegasikan izin granular dan scope. |
+| **Data Mahasiswa** | Baca daftar mahasiswa & NIM | ❌ | ❌ | ✅ | Mahasiswa tidak dapat mengakses dump seluruh data angkatan. |
+| | Impor CSV Data Mahasiswa | ❌ | ❌ | ✅ | Terletak di `/admin/students`, idempoten, tanpa reset password. |
+| **Struktur Akademik** | Baca matkul/kelas terdaftar | ✅ | ✅ | ✅ | Filter data berbasis `getStudentAcademicScope`. |
+| | Impor CSV Mapping Akademik | ❌ | ❌ | ✅ | Terletak di `/admin/academics`, mendukung repeated NIM multi-baris. |
+| **Agenda Akademik** | Baca agenda terpublikasi | ✅ (Sesuai Scope) | ✅ (Sesuai Scope) | ✅ (Semua) | Memfilter agenda berdasarkan matkul, kelas, kelompok terdaftar. |
+| | Ajukan agenda (`pending`) | ✅ | ✅ | ✅ | Menghasilkan status `pending` untuk direview. |
+| | Publikasi agenda resmi | ❌ | ✅ (Sesuai Scope) | ✅ (Semua) | **Agenda Manager langsung mempublikasikan (`published`)** tanpa approval. |
+| | Impor CSV Agenda | ❌ | ✅ (Sesuai Scope) | ✅ (Semua) | Terletak di `/admin/agendas`, idempoten via `external_id`. |
+| | Edit/Cancel agenda resmi | ❌ | ✅ (Agenda Milik Sendiri) | ✅ (Semua) | Edit/cancel membatalkan atau menjadwalkan ulang antrean reminder. |
+| **Tugas Pribadi** | CRUD tugas pribadi (`personal_tasks`)| ✅ (Milik Sendiri) | ✅ (Milik Sendiri) | ✅ (Milik Sendiri)| Isolasi ketat: tugas pribadi tidak memicu reminder grup WhatsApp. |
+| **Knowledge Hub & FAQ** | Baca artikel FAQ & Panduan | ✅ | ✅ | ✅ | Progressive disclosure accordion dengan filter kategori dan pencarian. |
+| | Kelola artikel (Create/Edit/Publish) | ❌ | ❌ (Kecuali ada izin) | ✅ | Status draft, published, archived di `/admin/knowledge`. |
+| **Kelola Website CMS** | Hero, Warta, Galeri, Prestasi | ❌ DILARANG | ❌ DILARANG | ✅ | Terletak di `/admin/website`, strictly Super Admin only. |
+| **WhatsApp Gateway** | Pairing & Status Baileys | ❌ DILARANG | ❌ DILARANG | ✅ | Menjaga sesi pairing aktif, non-negotiable H-7, H-3, H-1, T-3h. |
+| | Emergency Kill Switch (Pause) | ❌ DILARANG | ❌ DILARANG | ✅ | Saklar darurat mematikan proses pengiriman reminder seketika. |
 | **Audit Logs** | Baca Audit Trail | ❌ | ✅ | Riwayat perubahan sistem hanya untuk admin. |
 
 ---

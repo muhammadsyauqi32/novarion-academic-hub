@@ -17,20 +17,29 @@ export function PublicFooter() {
           <Link href="/privacy" className="hover:text-text-primary transition-colors">
             Kebijakan Privasi
           </Link>
-          <a href="#fitur" className="hover:text-text-primary transition-colors">
-            Fitur
+          <a href="#tentang" className="hover:text-text-primary transition-colors">
+            Tentang Kita
           </a>
-          <a href="#identitas" className="hover:text-text-primary transition-colors">
-            Identitas Angkatan
+          <a href="#pengurus" className="hover:text-text-primary transition-colors">
+            Pengurus
+          </a>
+          <a href="#berita" className="hover:text-text-primary transition-colors">
+            Warta
+          </a>
+          <a href="#galeri" className="hover:text-text-primary transition-colors">
+            Galeri
+          </a>
+          <a href="#prestasi" className="hover:text-text-primary transition-colors">
+            Prestasi
           </a>
           <Link href="/login" className="hover:text-text-primary transition-colors">
-            Akses Masuk
+            Academic Hub
           </Link>
         </div>
 
         <div className="text-xs text-text-muted text-center md:text-right">
-          <p>© {new Date().getFullYear()} Novarion Academic Hub.</p>
-          <p className="text-[11px] text-text-muted/70 mt-0.5">One batch, one space.</p>
+          <p>© {new Date().getFullYear()} NOVARION 62 · IPB University.</p>
+          <p className="text-[11px] text-teal-deep font-semibold mt-0.5">&ldquo;Kita Satu, Kita Bisa!&rdquo;</p>
         </div>
       </div>
     </footer>

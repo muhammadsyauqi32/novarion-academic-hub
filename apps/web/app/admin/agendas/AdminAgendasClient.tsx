@@ -15,10 +15,13 @@ import {
   AlertCircle, 
   CheckCircle2, 
   Clock, 
-  ExternalLink 
+  ExternalLink,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { createAdminAgendaAction, deleteAgendaAction } from '@/actions/agendas';
-import { formatWIBShort } from '@novarion/shared';
+import { formatWIBShort, formatWIB } from '@novarion/shared';
+import { CsvImportModal } from '@/components/csv/CsvImportModal';
+import { previewAgendaCsvAction, executeAgendaCsvAction } from '@/actions/csv-imports';
 
 interface AgendaItem {
   id: string;
@@ -45,6 +48,7 @@ export function AdminAgendasClient({ initialAgendas }: AdminAgendasClientProps) 
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -113,17 +117,29 @@ export function AdminAgendasClient({ initialAgendas }: AdminAgendasClientProps) 
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => {
-            setFormError(null);
-            setIsModalOpen(true);
-          }}
-        >
-          <Plus className="w-3.5 h-3.5 mr-1" />
-          <span>Buat Agenda Baru</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsCsvModalOpen(true)}
+            className="gap-1.5"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-teal-deep" />
+            <span>Impor CSV Agenda</span>
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setFormError(null);
+              setIsModalOpen(true);
+            }}
+          >
+            <Plus className="w-3.5 h-3.5 mr-1" />
+            <span>Buat Agenda Baru</span>
+          </Button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -369,6 +385,72 @@ export function AdminAgendasClient({ initialAgendas }: AdminAgendasClientProps) 
           </div>
         </div>
       )}
+
+      {/* CSV IMPORT MODAL (MODULE C: ACADEMIC AGENDAS) */}
+      <CsvImportModal
+        isOpen={isCsvModalOpen}
+        onClose={() => setIsCsvModalOpen(false)}
+        title="Impor Agenda Perkuliahan Massal"
+        description="Unggah berkas CSV untuk mempublikasikan agenda akademik secara massal dengan ID stabil, penanda warna, dan penjadwalan otomatis pengingat WhatsApp."
+        templateFileName="template_agenda_akademik_novarion.csv"
+        templateHeaders={['external_id', 'judul', 'kategori', 'waktu_mulai', 'deadline', 'kode_mata_kuliah', 'kelas', 'kelompok', 'deskripsi', 'warna']}
+        templateSampleRows={[
+          ['TUGAS-STK211-01', 'Tugas 1 Regresi Linear Sederhana', 'tugas', '2026-10-20 08:00:00', '2026-10-27 23:59:00', 'STK211', 'A', '', 'Kumpulkan via Google Classroom', '#41C2A1'],
+          ['KUIS-STK222-01', 'Kuis 1 Teori Peluang', 'kuis', '2026-10-25 10:00:00', '2026-10-25 11:40:00', 'STK222', '', '', 'Materi Distribusi Diskrit', '#FFAE5D'],
+        ]}
+        onPreview={async (content, name) => {
+          const res = await previewAgendaCsvAction(content, name);
+          return res;
+        }}
+        onExecute={async (content, name) => {
+          const res = await executeAgendaCsvAction(content, name);
+          return res;
+        }}
+        onSuccessComplete={() => {
+          router.refresh();
+        }}
+        renderPreviewTable={(preview) => (
+          <table className="w-full text-left text-xs">
+            <thead className="bg-surface-soft border-b border-border text-[10px] uppercase font-bold text-text-muted">
+              <tr>
+                <th className="py-2.5 px-3">External ID</th>
+                <th className="py-2.5 px-3">Judul Agenda</th>
+                <th className="py-2.5 px-3">Kategori</th>
+                <th className="py-2.5 px-3">Cakupan</th>
+                <th className="py-2.5 px-3">Batas Waktu (WIB)</th>
+                <th className="py-2.5 px-3">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {preview.validRows.map((r: any, idx: number) => (
+                <tr key={idx} className="hover:bg-surface-soft/40">
+                  <td className="py-2 px-3 font-mono text-[11px] font-bold">{r.externalId}</td>
+                  <td className="py-2 px-3 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
+                      <span className="truncate">{r.title}</span>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3">
+                    <Badge variant="primary" size="sm">{r.category}</Badge>
+                  </td>
+                  <td className="py-2 px-3 text-[11px] text-text-muted capitalize">
+                    {r.scope} {r.courseCode ? `(${r.courseCode})` : ''}
+                  </td>
+                  <td className="py-2 px-3 font-mono text-[11px] text-[#9E5507]">
+                    {formatWIB(new Date(r.deadline))}
+                  </td>
+                  <td className="py-2 px-3">
+                    <Badge variant={r.action === 'insert' ? 'success' : 'orange'} size="sm">
+                      {r.action === 'insert' ? 'Baru' : 'Perbarui'}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      />
     </div>
   );
 }

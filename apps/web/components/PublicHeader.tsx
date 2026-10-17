@@ -16,25 +16,28 @@ export function PublicHeader() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-text-muted uppercase tracking-wider">
-          <Link href="#fitur" className="hover:text-teal-deep transition-colors">
-            Fitur Utama
-          </Link>
-          <Link href="#cara-kerja" className="hover:text-teal-deep transition-colors">
-            Cara Kerja
-          </Link>
-          <Link href="#identitas" className="hover:text-teal-deep transition-colors">
-            Tentang Angkatan
-          </Link>
-          <Link href="/privacy" className="hover:text-teal-deep transition-colors">
-            Privasi
-          </Link>
+          <a href="#tentang" className="hover:text-teal-deep transition-colors">
+            Tentang Kita
+          </a>
+          <a href="#pengurus" className="hover:text-teal-deep transition-colors">
+            Pengurus
+          </a>
+          <a href="#berita" className="hover:text-teal-deep transition-colors">
+            Warta & Kegiatan
+          </a>
+          <a href="#galeri" className="hover:text-teal-deep transition-colors">
+            Galeri Momen
+          </a>
+          <a href="#prestasi" className="hover:text-teal-deep transition-colors">
+            Prestasi
+          </a>
         </nav>
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Link href="/login">
             <Button variant="primary" size="sm" className="font-semibold text-xs py-2 px-4 shadow-xs">
-              <span>Masuk Portal</span>
+              <span>Masuk Academic Hub</span>
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Button>
           </Link>
@@ -62,34 +65,41 @@ export function PublicHeader() {
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-border bg-surface px-4 py-4 flex flex-col gap-3 animate-in slide-in-from-top-2">
-          <Link
-            href="#fitur"
+          <a
+            href="#tentang"
             onClick={() => setMobileMenuOpen(false)}
             className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
           >
-            Fitur Utama
-          </Link>
-          <Link
-            href="#cara-kerja"
+            Tentang Kita
+          </a>
+          <a
+            href="#pengurus"
             onClick={() => setMobileMenuOpen(false)}
             className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
           >
-            Cara Kerja
-          </Link>
-          <Link
-            href="#identitas"
+            Struktur Pengurus
+          </a>
+          <a
+            href="#berita"
             onClick={() => setMobileMenuOpen(false)}
             className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
           >
-            Tentang Angkatan
-          </Link>
-          <Link
-            href="/privacy"
+            Warta & Kegiatan
+          </a>
+          <a
+            href="#galeri"
             onClick={() => setMobileMenuOpen(false)}
             className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
           >
-            Kebijakan Privasi
-          </Link>
+            Galeri Momen
+          </a>
+          <a
+            href="#prestasi"
+            onClick={() => setMobileMenuOpen(false)}
+            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+          >
+            Prestasi Angkatan
+          </a>
           <div className="pt-2 border-t border-border">
             <Link
               href="/login"
@@ -97,7 +107,7 @@ export function PublicHeader() {
               className="w-full"
             >
               <Button variant="primary" size="sm" className="w-full justify-center font-bold">
-                Masuk ke Novarion Hub
+                Masuk ke Academic Hub
               </Button>
             </Link>
           </div>
