@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { requireAuth } from '@/lib/auth/guards';
 import { StudentSidebar } from '@/components/StudentSidebar';
 import { StudentBottomNav } from '@/components/StudentBottomNav';
@@ -6,6 +7,15 @@ import { ShieldAlert, ArrowRight, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Workspace Mahasiswa | Novarion Academic Hub',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 export default async function StudentLayout({
   children,

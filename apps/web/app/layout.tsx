@@ -50,9 +50,6 @@ export const metadata: Metadata = {
     description:
       'Platform terpadu agenda perkuliahan, kalender akademik, dan bot pengingat deadline WhatsApp otomatis angkatan.',
   },
-  alternates: {
-    canonical: 'https://novarion.web.id',
-  },
 };
 
 export const viewport: Viewport = {

@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
@@ -18,6 +19,15 @@ import {
   Database,
   FileCheck2
 } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Novarion — Academic Hub Angkatan Statistika',
+  description:
+    'Pusat informasi dan koordinasi akademik terpadu angkatan statistika: kalender perkuliahan interaktif, pengingat deadline WhatsApp terjadwal, dan repositori materi resmi.',
+  alternates: {
+    canonical: 'https://novarion.web.id',
+  },
+};
 
 export default function LandingPage() {
   const jsonLd = {

@@ -1,5 +1,15 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { Card } from '@/components/Card';
+
+export const metadata: Metadata = {
+  title: 'Kebijakan Privasi & Transparansi Data',
+  description:
+    'Kebijakan privasi dan transparansi data Novarion Academic Hub: perlindungan data NIM, enkripsi sesi, dan isolasi catatan pribadi.',
+  alternates: {
+    canonical: 'https://novarion.web.id/privacy',
+  },
+};
 
 export default function PrivacyPage() {
   return (

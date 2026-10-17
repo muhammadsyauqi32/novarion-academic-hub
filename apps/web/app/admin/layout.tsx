@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth/guards';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminMobileNav } from '@/components/AdminMobileNav';
@@ -6,6 +7,15 @@ import Link from 'next/link';
 import { Eye } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Admin Workspace | Novarion Academic Hub',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 export default async function AdminLayout({
   children,
