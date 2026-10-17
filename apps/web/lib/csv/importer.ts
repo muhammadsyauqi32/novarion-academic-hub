@@ -1,7 +1,22 @@
 import Papa from 'papaparse';
 import { csvStudentRowSchema } from '@novarion/shared';
-import { getDb, studentWhitelist, importRuns, auditLogs } from '@novarion/db';
-import { eq, or } from 'drizzle-orm';
+import {
+  getDb,
+  studentWhitelist,
+  profiles,
+  courses,
+  academicTerms,
+  courseOfferings,
+  classSections,
+  studyGroups,
+  enrollments,
+  studyGroupMembers,
+  importRuns,
+  auditLogs,
+  eq,
+  or,
+  and,
+} from '@novarion/db';
 
 export interface CSVRowError {
   row: number;
@@ -34,21 +49,23 @@ export interface CSVImportResult {
   errorRows: number;
   insertedCount: number;
   updatedCount: number;
+  enrollmentsMapped: number;
+  groupsMapped: number;
   errors: CSVRowError[];
 }
 
 /**
- * Normalisasi nama header agar toleran terhadap variasi ekspor Excel/Sheets
+ * Normalisasi nama header agar toleran terhadap variasi ekspor Excel/Sheets/Google Drive
  */
 function normalizeHeader(header: string): string {
   const cleaned = header.trim().toLowerCase().replace(/[\s_-]+/g, '_');
-  if (['nim', 'nomor_induk', 'nomor_induk_mahasiswa'].includes(cleaned)) return 'nim';
-  if (['email', 'surel', 'email_kampus', 'google_email'].includes(cleaned)) return 'email';
+  if (['nim', 'nomor_induk', 'nomor_induk_mahasiswa', 'nrp'].includes(cleaned)) return 'nim';
+  if (['email', 'surel', 'email_kampus', 'google_email', 'mail'].includes(cleaned)) return 'email';
   if (['nama', 'nama_lengkap', 'full_name', 'nama_mahasiswa'].includes(cleaned)) return 'nama';
   if (['role', 'peran', 'status_role'].includes(cleaned)) return 'role';
-  if (['kelas', 'kelas_paralel', 'section'].includes(cleaned)) return 'kelas';
-  if (['mata_kuliah', 'matkul', 'course'].includes(cleaned)) return 'mata_kuliah';
-  if (['kelompok', 'kelompok_praktikum', 'group'].includes(cleaned)) return 'kelompok';
+  if (['kelas', 'kelas_paralel', 'section', 'class'].includes(cleaned)) return 'kelas';
+  if (['mata_kuliah', 'matkul', 'course', 'subject'].includes(cleaned)) return 'mata_kuliah';
+  if (['kelompok', 'kelompok_praktikum', 'group', 'study_group'].includes(cleaned)) return 'kelompok';
   return cleaned;
 }
 
@@ -75,7 +92,7 @@ export async function parseAndValidateCSV(
 
   // Ambil data whitelist existing untuk menentukan aksi insert vs update
   const existingRecords = await db.select().from(studentWhitelist);
-  const existingNimMap = new Map(existingRecords.map((r) => [r.nim, r]));
+  const existingNimMap = new Map(existingRecords.map((r) => [r.nim.toUpperCase(), r]));
   const existingEmailMap = new Map(existingRecords.map((r) => [r.email.toLowerCase(), r]));
 
   parsed.data.forEach((row, index) => {
@@ -95,33 +112,35 @@ export async function parseAndValidateCSV(
     }
 
     const { nim, email, nama, role, kelas, mata_kuliah, kelompok } = validation.data;
+    const normalizedNim = nim.trim().toUpperCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
     // Cek duplikasi di dalam file itu sendiri
-    if (seenNims.has(nim) || seenEmails.has(email)) {
+    if (seenNims.has(normalizedNim) || seenEmails.has(normalizedEmail)) {
       duplicateCount++;
       errors.push({
         row: rowNumber,
-        nim,
-        email,
-        message: `Duplikat ditemukan di dalam file CSV (NIM: ${nim} atau Email: ${email})`,
+        nim: normalizedNim,
+        email: normalizedEmail,
+        message: `Duplikat ditemukan di dalam file CSV (NIM: ${normalizedNim} atau Email: ${normalizedEmail})`,
       });
       return;
     }
 
-    seenNims.add(nim);
-    seenEmails.add(email);
+    seenNims.add(normalizedNim);
+    seenEmails.add(normalizedEmail);
 
     // Tentukan aksi: insert jika baru, update jika sudah terdaftar
-    const isExisting = existingNimMap.has(nim) || existingEmailMap.has(email);
+    const isExisting = existingNimMap.has(normalizedNim) || existingEmailMap.has(normalizedEmail);
 
     validRows.push({
-      nim,
-      email,
-      nama,
+      nim: normalizedNim,
+      email: normalizedEmail,
+      nama: nama.trim(),
       role,
-      kelas,
-      mataKuliah: mata_kuliah,
-      kelompok,
+      kelas: kelas?.trim(),
+      mataKuliah: mata_kuliah?.trim(),
+      kelompok: kelompok?.trim(),
       action: isExisting ? 'update' : 'insert',
     });
   });
@@ -136,7 +155,10 @@ export async function parseAndValidateCSV(
 }
 
 /**
- * Eksekusi impor CSV secara idempoten ke database PostgreSQL
+ * Eksekusi impor CSV secara idempoten ke database PostgreSQL.
+ * Memetakan NIM, email, nama, peran ke student_whitelist (dan profiles jika ada),
+ * serta menghubungkan mata kuliah, kelas paralel, dan kelompok praktikum.
+ * KRITIS: Impor CSV tidak pernah mereset kata sandi akun yang sudah ada.
  */
 export async function executeCSVImport(
   preview: CSVImportPreview,
@@ -145,11 +167,13 @@ export async function executeCSVImport(
   const db = getDb();
   let insertedCount = 0;
   let updatedCount = 0;
+  let enrollmentsMapped = 0;
+  let groupsMapped = 0;
   const executionErrors: CSVRowError[] = [...preview.errors];
 
   for (const item of preview.validRows) {
     try {
-      // Cek apakah NIM atau email sudah terdaftar
+      // 1. Sinkronisasi Data Whitelist (Idempoten, tanpa mereset password)
       const existing = await db
         .select()
         .from(studentWhitelist)
@@ -162,7 +186,7 @@ export async function executeCSVImport(
         .limit(1);
 
       if (existing.length > 0) {
-        // Idempotent Update
+        // Idempotent Update pada studentWhitelist
         await db
           .update(studentWhitelist)
           .set({
@@ -174,7 +198,7 @@ export async function executeCSVImport(
           .where(eq(studentWhitelist.id, existing[0].id));
         updatedCount++;
       } else {
-        // Insert Baru
+        // Insert Baru ke studentWhitelist
         await db.insert(studentWhitelist).values({
           nim: item.nim,
           email: item.email,
@@ -184,13 +208,165 @@ export async function executeCSVImport(
         });
         insertedCount++;
       }
+
+      // 2. Pemetaan Relasi Akademik: Mata Kuliah, Kelas, Kelompok & Enrollment
+      if (item.mataKuliah) {
+        const courseNameOrCode = item.mataKuliah.trim();
+
+        // Cari atau buat Course
+        let courseId: string;
+        const existingCourse = await db
+          .select()
+          .from(courses)
+          .where(or(eq(courses.code, courseNameOrCode.toUpperCase()), eq(courses.name, courseNameOrCode)))
+          .limit(1);
+
+        if (existingCourse.length > 0) {
+          courseId = existingCourse[0].id;
+        } else {
+          const [newCourse] = await db
+            .insert(courses)
+            .values({
+              code: courseNameOrCode.slice(0, 20).toUpperCase(),
+              name: courseNameOrCode,
+              credits: 3,
+            })
+            .returning();
+          courseId = newCourse.id;
+        }
+
+        // Pastikan ada academicTerm aktif
+        let termId: string;
+        const existingTerm = await db
+          .select()
+          .from(academicTerms)
+          .where(eq(academicTerms.isActive, true))
+          .limit(1);
+
+        if (existingTerm.length > 0) {
+          termId = existingTerm[0].id;
+        } else {
+          const [newTerm] = await db
+            .insert(academicTerms)
+            .values({
+              code: '2026-GANJIL',
+              name: 'Semester Ganjil 2026/2027',
+              isActive: true,
+            })
+            .returning();
+          termId = newTerm.id;
+        }
+
+        // Cari atau buat CourseOffering
+        let offeringId: string;
+        const existingOffering = await db
+          .select()
+          .from(courseOfferings)
+          .where(and(eq(courseOfferings.termId, termId), eq(courseOfferings.courseId, courseId)))
+          .limit(1);
+
+        if (existingOffering.length > 0) {
+          offeringId = existingOffering[0].id;
+        } else {
+          const [newOffering] = await db
+            .insert(courseOfferings)
+            .values({ termId, courseId })
+            .returning();
+          offeringId = newOffering.id;
+        }
+
+        // Jika terdapat spesifikasi kelas paralel
+        if (item.kelas) {
+          const className = item.kelas.trim();
+          let sectionId: string;
+          const existingSection = await db
+            .select()
+            .from(classSections)
+            .where(and(eq(classSections.offeringId, offeringId), eq(classSections.name, className)))
+            .limit(1);
+
+          if (existingSection.length > 0) {
+            sectionId = existingSection[0].id;
+          } else {
+            const [newSection] = await db
+              .insert(classSections)
+              .values({ offeringId, name: className })
+              .returning();
+            sectionId = newSection.id;
+          }
+
+          // Cari profile mahasiswa (jika sudah terdaftar akunnya)
+          const userProfiles = await db
+            .select()
+            .from(profiles)
+            .where(or(eq(profiles.nim, item.nim), eq(profiles.email, item.email)))
+            .limit(1);
+
+          if (userProfiles.length > 0) {
+            const profileId = userProfiles[0].id;
+
+            // Hubungkan enrollment secara idempoten
+            const existingEnrollment = await db
+              .select()
+              .from(enrollments)
+              .where(and(eq(enrollments.profileId, profileId), eq(enrollments.classSectionId, sectionId)))
+              .limit(1);
+
+            if (existingEnrollment.length === 0) {
+              await db.insert(enrollments).values({
+                profileId,
+                classSectionId: sectionId,
+              });
+              enrollmentsMapped++;
+            }
+          }
+
+          // Jika terdapat spesifikasi kelompok praktikum
+          if (item.kelompok) {
+            const groupName = item.kelompok.trim();
+            let groupId: string;
+            const existingGroup = await db
+              .select()
+              .from(studyGroups)
+              .where(and(eq(studyGroups.classSectionId, sectionId), eq(studyGroups.name, groupName)))
+              .limit(1);
+
+            if (existingGroup.length > 0) {
+              groupId = existingGroup[0].id;
+            } else {
+              const [newGroup] = await db
+                .insert(studyGroups)
+                .values({ classSectionId: sectionId, name: groupName })
+                .returning();
+              groupId = newGroup.id;
+            }
+
+            if (userProfiles.length > 0) {
+              const profileId = userProfiles[0].id;
+              const existingMember = await db
+                .select()
+                .from(studyGroupMembers)
+                .where(and(eq(studyGroupMembers.profileId, profileId), eq(studyGroupMembers.studyGroupId, groupId)))
+                .limit(1);
+
+              if (existingMember.length === 0) {
+                await db.insert(studyGroupMembers).values({
+                  profileId,
+                  studyGroupId: groupId,
+                });
+                groupsMapped++;
+              }
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error(`[executeCSVImport] Gagal import baris ${item.nim}:`, err);
       executionErrors.push({
         row: 0,
         nim: item.nim,
         email: item.email,
-        message: String(err),
+        message: err instanceof Error ? err.message : String(err),
       });
     }
   }
@@ -206,7 +382,7 @@ export async function executeCSVImport(
       totalRows: preview.totalRows,
       successRows,
       errorRows,
-      errorSummary: executionErrors.slice(0, 50), // simpan 50 error pertama
+      errorSummary: executionErrors.slice(0, 50),
     });
 
     if (executedByProfileId) {
@@ -218,6 +394,8 @@ export async function executeCSVImport(
           fileName: preview.fileName,
           insertedCount,
           updatedCount,
+          enrollmentsMapped,
+          groupsMapped,
           errorRows,
         },
       });
@@ -233,6 +411,8 @@ export async function executeCSVImport(
     errorRows,
     insertedCount,
     updatedCount,
+    enrollmentsMapped,
+    groupsMapped,
     errors: executionErrors,
   };
 }
