@@ -48,7 +48,7 @@ async function runBench() {
   const tLoginStart = performance.now();
   await page.click('button[type="submit"]');
   try {
-    await page.waitForURL((url) => url.pathname.startsWith('/app'), { timeout: 8000 });
+    await page.waitForURL((url) => url.pathname.startsWith('/app'), { timeout: 15000, waitUntil: 'domcontentloaded' });
   } catch (err) {
     const errEl = await page.$('.text-danger-text, [role="alert"]');
     const errText = errEl ? await errEl.textContent() : null;

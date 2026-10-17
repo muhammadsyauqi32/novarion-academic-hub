@@ -21,8 +21,8 @@ async function captureAfterScreenshots() {
       viewport: { width: vp.width, height: vp.height },
     });
 
-    console.log(`Navigating to http://localhost:3001 at ${vp.name}...`);
-    await page.goto('http://localhost:3001', { waitUntil: 'networkidle' });
+    console.log(`Navigating to https://novarion.web.id at ${vp.name}...`);
+    await page.goto('https://novarion.web.id', { waitUntil: 'networkidle' });
 
     const shotPath = path.join(ARTIFACT_DIR, `after-${vp.name}.png`);
     await page.screenshot({ path: shotPath, fullPage: false });
