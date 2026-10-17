@@ -78,11 +78,11 @@ export async function loginWithNimAction(formData: FormData): Promise<LoginActio
 
   const db = getDb();
 
-  // 3. Cari NIM pada student_whitelist (Case-insensitive)
+  // 3. Cari NIM pada student_whitelist menggunakan index B-tree
   const studentRows = await db
     .select()
     .from(studentWhitelist)
-    .where(sql`UPPER(${studentWhitelist.nim}) = ${normalizedNim}`)
+    .where(eq(studentWhitelist.nim, normalizedNim))
     .limit(1);
 
   if (studentRows.length === 0 || !studentRows[0].isActive) {
@@ -144,15 +144,20 @@ export async function loginWithNimAction(formData: FormData): Promise<LoginActio
     mustChangePassword = inserted[0].mustChangePassword;
   } else {
     mustChangePassword = profileRows[0].mustChangePassword;
-    // Perbarui data jika ada perubahan di whitelist
-    await db
-      .update(profiles)
-      .set({
-        fullName: student.fullName,
-        role: student.role,
-        updatedAt: new Date(),
-      })
-      .where(eq(profiles.id, data.user.id));
+    // Perbarui data HANYA jika ada perbedaan nama/role di whitelist
+    if (
+      profileRows[0].fullName !== student.fullName ||
+      profileRows[0].role !== student.role
+    ) {
+      await db
+        .update(profiles)
+        .set({
+          fullName: student.fullName,
+          role: student.role,
+          updatedAt: new Date(),
+        })
+        .where(eq(profiles.id, data.user.id));
+    }
   }
 
   // 7. Pengalihan: Jika wajib ganti password, arahkan ke /auth/change-password

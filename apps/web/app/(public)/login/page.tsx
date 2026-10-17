@@ -34,8 +34,7 @@ export default function LoginPage() {
       }
 
       if (result.redirectTo) {
-        router.push(result.redirectTo);
-        router.refresh();
+        window.location.href = result.redirectTo;
       }
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : String(err));

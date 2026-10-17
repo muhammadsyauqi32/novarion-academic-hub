@@ -21,36 +21,34 @@ export default async function StudentDashboardPage() {
   const user = await requireAuth();
   const db = getDb();
 
-  // 1. Ambil Semester Aktif
-  const activeTerms = await db
-    .select()
-    .from(academicTerms)
-    .where(eq(academicTerms.isActive, true))
-    .limit(1);
-  const activeTerm = activeTerms[0] || null;
-
-  // 2. Ambil Agenda Mendatang (Published)
+  // 1. Ambil Semester Aktif, Agenda Mendatang, dan Tugas Pribadi secara paralel
   const now = new Date();
-  const upcomingAgendas = await db
-    .select()
-    .from(agendas)
-    .where(
-      and(
-        eq(agendas.status, 'published'),
-        gte(agendas.deadline, now)
+  const [activeTerms, upcomingAgendas, userTasks] = await Promise.all([
+    db
+      .select()
+      .from(academicTerms)
+      .where(eq(academicTerms.isActive, true))
+      .limit(1),
+    db
+      .select()
+      .from(agendas)
+      .where(
+        and(
+          eq(agendas.status, 'published'),
+          gte(agendas.deadline, now)
+        )
       )
-    )
-    .orderBy(agendas.deadline)
-    .limit(5);
+      .orderBy(agendas.deadline)
+      .limit(5),
+    db
+      .select()
+      .from(personalTasks)
+      .where(eq(personalTasks.profileId, user.id))
+      .orderBy(desc(personalTasks.createdAt))
+      .limit(5),
+  ]);
 
-  // 3. Ambil Tugas Pribadi (Todo & Done)
-  const userTasks = await db
-    .select()
-    .from(personalTasks)
-    .where(eq(personalTasks.profileId, user.id))
-    .orderBy(desc(personalTasks.createdAt))
-    .limit(5);
-
+  const activeTerm = activeTerms[0] || null;
   const completedTasksCount = userTasks.filter((t) => t.status === 'done').length;
 
   return (
