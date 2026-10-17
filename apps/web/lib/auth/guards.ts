@@ -1,4 +1,4 @@
-import { cache } from 'react';
+import * as React from 'react';
 import { createClient } from '../supabase/server';
 import { getDb, profiles, studentWhitelist } from '@novarion/db';
 import { eq } from 'drizzle-orm';
@@ -11,12 +11,16 @@ export interface RequireAuthOptions {
   allowPasswordChange?: boolean;
 }
 
+// Aman di runtime Next.js RSC maupun di Node/vitest
+const reactCache = typeof React.cache === 'function' ? React.cache : <T extends (...args: any[]) => any>(fn: T): T => fn;
+
 /**
  * Mengambil session dan profil pengguna terautentikasi yang terverifikasi whitelist.
  * Memastikan bahwa pengguna yang dinonaktifkan langsung kehilangan akses seketika.
  * Menggunakan React cache() agar hanya dievaluasi sekali per siklus request.
  */
-export const getCurrentUser = cache(async (): Promise<AuthenticatedUser | null> => {
+export const getCurrentUser = reactCache(async (): Promise<AuthenticatedUser | null> => {
+
   try {
     const supabase = createClient();
     const { data: { user }, error } = await supabase.auth.getUser();

@@ -1,11 +1,18 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema/index';
+import dns from 'node:dns';
+
+// Fix dual-stack IPv6 DNS resolution latency/timeout on Windows & cloud environments
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 const globalForDb = globalThis as unknown as {
   _postgresClient?: ReturnType<typeof postgres>;
   _drizzleDb?: ReturnType<typeof drizzle<typeof schema>>;
 };
+
 
 export function getDb(connectionString?: string) {
   if (globalForDb._drizzleDb) return globalForDb._drizzleDb;

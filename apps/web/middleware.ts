@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+  const t0 = performance.now();
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -10,6 +11,10 @@ export async function middleware(request: NextRequest) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+  const hostname = request.headers.get('host') || '';
+  const isProdNovarion = hostname.includes('novarion.web.id');
+  const sharedDomain = isProdNovarion ? '.novarion.web.id' : undefined;
 
   const allCookies = request.cookies.getAll();
   const hasAuthCookie = allCookies.some((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
@@ -23,23 +28,23 @@ export async function middleware(request: NextRequest) {
             return request.cookies.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            request.cookies.set({ name, value, ...options });
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            });
-            response.cookies.set({ name, value, ...options });
+            const cookieOptions: CookieOptions = {
+              ...options,
+              ...(sharedDomain ? { domain: sharedDomain } : {}),
+            };
+            request.cookies.set({ name, value, ...cookieOptions });
+            response.cookies.set({ name, value, ...cookieOptions });
           },
           remove(name: string, options: CookieOptions) {
-            request.cookies.set({ name, value: '', ...options });
-            response = NextResponse.next({
-              request: {
-                headers: request.headers,
-              },
-            });
-            response.cookies.set({ name, value: '', ...options });
+            const cookieOptions: CookieOptions = {
+              ...options,
+              maxAge: 0,
+              ...(sharedDomain ? { domain: sharedDomain } : {}),
+            };
+            request.cookies.set({ name, value: '', ...cookieOptions });
+            response.cookies.set({ name, value: '', ...cookieOptions });
           },
+
         },
       });
 
@@ -51,7 +56,15 @@ export async function middleware(request: NextRequest) {
   }
 
   const url = request.nextUrl.clone();
-  const hostname = request.headers.get('host') || '';
+
+  // Helper untuk redirect dengan mempertahankan seluruh cookie yang baru diset
+  const createRedirectWithCookies = (targetUrl: URL | string) => {
+    const redirectRes = NextResponse.redirect(targetUrl);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectRes.cookies.set(cookie);
+    });
+    return redirectRes;
+  };
 
   // Deteksi domain dan subdomain
   const isHubSubdomain = hostname.startsWith('hub.');
@@ -63,15 +76,20 @@ export async function middleware(request: NextRequest) {
     // Root '/' dialihkan langsung ke dashboard mahasiswa / login
     if (url.pathname === '/') {
       url.pathname = hasAuthCookie ? '/app' : '/login';
-      return NextResponse.redirect(url);
+      return createRedirectWithCookies(url);
     }
   } else if (isMainDomain) {
     // Pada domain utama novarion.web.id:
-    // Menampilkan halaman publik/landing page. Jika akses route internal, arahkan ke hub
-    if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/app')) {
+    // Menampilkan halaman publik/landing page. Jika akses route internal atau login, arahkan ke hub
+    if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/app') || url.pathname === '/login') {
       const hubUrl = new URL(url.pathname, `https://hub.novarion.web.id`);
-      return NextResponse.redirect(hubUrl);
+      return createRedirectWithCookies(hubUrl);
     }
+  }
+
+  const elapsed = performance.now() - t0;
+  if (process.env.NODE_ENV !== 'production' || elapsed > 100) {
+    console.log(`[Middleware] ${request.method} ${request.nextUrl.pathname} took ${elapsed.toFixed(1)}ms`);
   }
 
   return response;

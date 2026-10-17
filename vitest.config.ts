@@ -10,6 +10,8 @@ export default defineConfig({
     alias: {
       '@novarion/shared': path.resolve(__dirname, './packages/shared/src/index.ts'),
       '@novarion/db': path.resolve(__dirname, './packages/db/src/index.ts'),
+      '@': path.resolve(__dirname, './apps/web'),
     },
+
   },
 });

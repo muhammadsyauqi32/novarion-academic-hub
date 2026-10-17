@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { getDb, studentWhitelist, profiles, updateUserPassword, verifyUserPassword } from '@novarion/db';
 import { loginSchema, changePasswordSchema } from '@novarion/shared';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { authRateLimiter } from '@/lib/auth/rate-limiter';
 import { headers } from 'next/headers';
 import { requireAuth } from '@/lib/auth/guards';
@@ -13,12 +13,16 @@ import { revalidatePath } from 'next/cache';
  * Mendapatkan IP klien untuk keperluan rate-limiting yang aman
  */
 function getClientIp(): string {
-  const headersList = headers();
-  const forwardedFor = headersList.get('x-forwarded-for');
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
+  try {
+    const headersList = headers();
+    const forwardedFor = headersList.get('x-forwarded-for');
+    if (forwardedFor) {
+      return forwardedFor.split(',')[0].trim();
+    }
+    return headersList.get('x-real-ip') || '127.0.0.1';
+  } catch {
+    return '127.0.0.1';
   }
-  return headersList.get('x-real-ip') || '127.0.0.1';
 }
 
 /**
@@ -27,6 +31,18 @@ function getClientIp(): string {
 async function timingDelay(minMs: number = 250, maxMs: number = 350) {
   const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
   await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Helper bounded timeout untuk mencegah request gantung permanen
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, operationName: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout: Operasi ${operationName} melampaui batas waktu ${timeoutMs}ms.`)), timeoutMs)
+    ),
+  ]);
 }
 
 export interface LoginActionResult {
@@ -40,6 +56,7 @@ export interface LoginActionResult {
  * Action Login Mahasiswa / Admin menggunakan NIM dan Password
  */
 export async function loginWithNimAction(formData: FormData): Promise<LoginActionResult> {
+  const tTotalStart = performance.now();
   const rawNim = formData.get('nim');
   const rawPassword = formData.get('password');
 
@@ -76,106 +93,143 @@ export async function loginWithNimAction(formData: FormData): Promise<LoginActio
     };
   }
 
-  const db = getDb();
+  try {
+    const db = getDb();
 
-  // 3. Cari NIM pada student_whitelist menggunakan index B-tree
-  const studentRows = await db
-    .select()
-    .from(studentWhitelist)
-    .where(eq(studentWhitelist.nim, normalizedNim))
-    .limit(1);
+    // 3. Cari NIM pada student_whitelist menggunakan index B-tree
+    const tWhitelistStart = performance.now();
+    const studentRows = await withTimeout(
+      db
+        .select()
+        .from(studentWhitelist)
+        .where(eq(studentWhitelist.nim, normalizedNim))
+        .limit(1),
+      8000,
+      'Lookup Whitelist'
+    );
+    const whitelistDuration = performance.now() - tWhitelistStart;
 
-  if (studentRows.length === 0 || !studentRows[0].isActive) {
-    // Timing mitigation agar waktu respon tidak membocorkan keberadaan NIM
-    await timingDelay();
-    authRateLimiter.recordFailure(ipRateKey);
-    authRateLimiter.recordFailure(nimRateKey);
-    return {
-      success: false,
-      error: 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.',
-    };
-  }
+    if (studentRows.length === 0 || !studentRows[0].isActive) {
+      await timingDelay();
+      authRateLimiter.recordFailure(ipRateKey);
+      authRateLimiter.recordFailure(nimRateKey);
+      console.warn(
+        `[AuthAction] Gagal login (NIM tidak aktif/terdaftar) - NIM: ${normalizedNim.slice(0, 3)}*** - Whitelist: ${whitelistDuration.toFixed(1)}ms`
+      );
+      return {
+        success: false,
+        error: 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.',
+      };
+    }
 
-  const student = studentRows[0];
-  const supabase = createClient();
+    const student = studentRows[0];
+    const supabase = createClient();
 
-  // 4. Autentikasi ke Supabase Auth menggunakan email terdaftar di backend
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: student.email,
-    password: password,
-  });
-
-  if (error || !data.user) {
-    await timingDelay();
-    authRateLimiter.recordFailure(ipRateKey);
-    authRateLimiter.recordFailure(nimRateKey);
-    return {
-      success: false,
-      error: 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.',
-    };
-  }
-
-  // 5. Autentikasi berhasil: Reset rate limiting counters
-  authRateLimiter.reset(ipRateKey);
-  authRateLimiter.reset(nimRateKey);
-
-  // 6. Sinkronkan profil pengguna di public.profiles
-  const profileRows = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.id, data.user.id))
-    .limit(1);
-
-  let mustChangePassword = false;
-
-  if (profileRows.length === 0) {
-    // Buat profil jika belum terbentuk
-    const inserted = await db
-      .insert(profiles)
-      .values({
-        id: data.user.id,
-        nim: student.nim,
+    // 4. Autentikasi ke Supabase Auth menggunakan email terdaftar di backend
+    const tAuthStart = performance.now();
+    const { data, error } = await withTimeout(
+      supabase.auth.signInWithPassword({
         email: student.email,
-        fullName: student.fullName,
-        role: student.role,
-        mustChangePassword: true,
-      })
-      .returning();
-    mustChangePassword = inserted[0].mustChangePassword;
-  } else {
-    mustChangePassword = profileRows[0].mustChangePassword;
-    // Perbarui data HANYA jika ada perbedaan nama/role di whitelist
-    if (
-      profileRows[0].fullName !== student.fullName ||
-      profileRows[0].role !== student.role
-    ) {
-      await db
-        .update(profiles)
-        .set({
+        password: password,
+      }),
+      10000,
+      'Supabase Auth'
+    );
+    const authDuration = performance.now() - tAuthStart;
+
+    if (error || !data.user) {
+      await timingDelay();
+      authRateLimiter.recordFailure(ipRateKey);
+      authRateLimiter.recordFailure(nimRateKey);
+      console.warn(
+        `[AuthAction] Gagal login (Kredensial salah) - NIM: ${normalizedNim.slice(0, 3)}*** - Whitelist: ${whitelistDuration.toFixed(1)}ms, Auth: ${authDuration.toFixed(1)}ms`
+      );
+      return {
+        success: false,
+        error: 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.',
+      };
+    }
+
+    // 5. Autentikasi berhasil: Reset rate limiting counters
+    authRateLimiter.reset(ipRateKey);
+    authRateLimiter.reset(nimRateKey);
+
+    // 6. Sinkronkan profil pengguna di public.profiles
+    const tProfileStart = performance.now();
+    const profileRows = await withTimeout(
+      db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.id, data.user.id))
+        .limit(1),
+      8000,
+      'Lookup Profile'
+    );
+
+    let mustChangePassword = false;
+
+    if (profileRows.length === 0) {
+      // Buat profil jika belum terbentuk
+      const inserted = await db
+        .insert(profiles)
+        .values({
+          id: data.user.id,
+          nim: student.nim,
+          email: student.email,
           fullName: student.fullName,
           role: student.role,
-          updatedAt: new Date(),
+          mustChangePassword: true,
         })
-        .where(eq(profiles.id, data.user.id));
+        .returning();
+      mustChangePassword = inserted[0]?.mustChangePassword ?? true;
+    } else {
+      mustChangePassword = profileRows[0].mustChangePassword;
+      // Perbarui data HANYA jika ada perbedaan nama/role di whitelist
+      if (
+        profileRows[0].fullName !== student.fullName ||
+        profileRows[0].role !== student.role
+      ) {
+        await db
+          .update(profiles)
+          .set({
+            fullName: student.fullName,
+            role: student.role,
+            updatedAt: new Date(),
+          })
+          .where(eq(profiles.id, data.user.id));
+      }
     }
-  }
+    const profileDuration = performance.now() - tProfileStart;
+    const totalDuration = performance.now() - tTotalStart;
 
-  // 7. Pengalihan: Jika wajib ganti password, arahkan ke /auth/change-password
-  if (mustChangePassword) {
+    console.log(
+      `[AuthAction] Login berhasil - NIM: ${normalizedNim.slice(0, 3)}*** - Whitelist: ${whitelistDuration.toFixed(1)}ms, Auth: ${authDuration.toFixed(1)}ms, Profile: ${profileDuration.toFixed(1)}ms, Total: ${totalDuration.toFixed(1)}ms`
+    );
+
+    // 7. Pengalihan: Jika wajib ganti password, arahkan ke /auth/change-password
+    if (mustChangePassword) {
+      return {
+        success: true,
+        mustChangePassword: true,
+        redirectTo: '/auth/change-password',
+      };
+    }
+
+    // Redirect sesuai hak akses peran
+    const targetUrl = student.role === 'admin' ? '/admin' : '/app';
     return {
       success: true,
-      mustChangePassword: true,
-      redirectTo: '/auth/change-password',
+      mustChangePassword: false,
+      redirectTo: targetUrl,
+    };
+  } catch (err) {
+    const totalDuration = performance.now() - tTotalStart;
+    console.error(`[AuthAction] Sistem error setelah ${totalDuration.toFixed(1)}ms:`, err instanceof Error ? err.message : String(err));
+    return {
+      success: false,
+      error: 'Terjadi kendala koneksi ke server autentikasi. Silakan coba kembali dalam beberapa saat.',
     };
   }
-
-  // Redirect sesuai hak akses peran
-  const targetUrl = student.role === 'admin' ? '/admin' : '/app';
-  return {
-    success: true,
-    mustChangePassword: false,
-    redirectTo: targetUrl,
-  };
 }
 
 export interface ChangePasswordActionResult {

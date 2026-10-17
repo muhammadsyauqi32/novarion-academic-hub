@@ -1,16 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { BrandLogo } from '@/components/BrandLogo';
 import { Input } from '@/components/Input';
 import { loginWithNimAction } from '@/actions/auth';
-import { ShieldCheck, Info, AlertCircle, LogIn, Eye, EyeOff, Hash } from 'lucide-react';
+import { Info, AlertCircle, LogIn, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -18,27 +16,69 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Safety timer ref to ensure loading state cannot get stuck indefinitely
+  const navigationTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (navigationTimerRef.current) {
+        clearTimeout(navigationTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent duplicate submissions
+
+    const trimmedNim = nim.trim();
+    if (!trimmedNim || !password) {
+      setErrorMessage('NIM dan kata sandi wajib diisi.');
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
+
+    // Fallback safety: If navigation fails or browser hangs, reset button after 8s
+    if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
+    navigationTimerRef.current = setTimeout(() => {
+      setIsLoading(false);
+      setErrorMessage('Proses masuk membutuhkan waktu lebih lama dari biasanya. Silakan coba lagi.');
+    }, 8000);
 
     const formData = new FormData(e.currentTarget);
     try {
       const result = await loginWithNimAction(formData);
 
+      if (!result || typeof result !== 'object') {
+        throw new Error('Respon server tidak valid. Silakan coba beberapa saat lagi.');
+      }
+
       if (!result.success) {
-        setErrorMessage(result.error || 'NIM atau kata sandi tidak valid.');
+        if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
+        setErrorMessage(result.error || 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.');
         setIsLoading(false);
         return;
       }
 
       if (result.redirectTo) {
-        window.location.href = result.redirectTo;
+        // Gunakan window.location.assign untuk navigasi penuh yang menjamin
+        // seluruh cookie sesi HTTP dikirimkan langsung ke Server Component & Middleware
+        window.location.assign(result.redirectTo);
+      } else {
+        if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
+        setIsLoading(false);
+        setErrorMessage('Tujuan pengalihan tidak ditemukan setelah berhasil masuk.');
       }
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : String(err));
+      if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
       setIsLoading(false);
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : 'Terjadi kendala sistem saat mencoba masuk. Silakan coba lagi.'
+      );
     }
   };
 
@@ -57,7 +97,7 @@ export default function LoginPage() {
           </div>
 
           {errorMessage && (
-            <div className="p-3.5 rounded-xl bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text">
+            <div className="p-3.5 rounded-xl bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text animate-fadeIn">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
@@ -73,6 +113,7 @@ export default function LoginPage() {
                 onChange={(e) => setNim(e.target.value)}
                 autoComplete="username"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -86,13 +127,15 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
                 tabIndex={-1}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-[29px] text-text-muted hover:text-text-primary transition-colors"
+                className="absolute right-3.5 top-[29px] text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
                 aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -104,10 +147,10 @@ export default function LoginPage() {
               type="submit"
               className="w-full font-bold gap-2 mt-2"
               isLoading={isLoading}
-              disabled={!nim.trim() || !password}
+              disabled={isLoading || !nim.trim() || !password}
             >
               <LogIn className="w-4 h-4" />
-              <span>Masuk Sekarang</span>
+              <span>{isLoading ? 'Memverifikasi...' : 'Masuk Sekarang'}</span>
             </Button>
           </form>
 
