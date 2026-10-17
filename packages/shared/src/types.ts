@@ -178,5 +178,6 @@ export interface AuthenticatedUser {
   role: UserRole;
   avatarUrl?: string | null;
   mustChangePassword?: boolean;
+  isActive?: boolean;
   permissions?: AppPermission[];
 }
