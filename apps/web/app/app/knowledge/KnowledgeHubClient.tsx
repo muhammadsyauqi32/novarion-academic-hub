@@ -163,7 +163,7 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
             <div>
               <p className="text-sm font-bold text-text-primary">Tidak Ada Artikel yang Cocok</p>
               <p className="text-xs text-text-muted mt-0.5">
-                Coba gunakan kata kunci lain atau pilih kategori "Semua".
+                Coba gunakan kata kunci lain atau pilih kategori &quot;Semua&quot;.
               </p>
             </div>
             {search && (

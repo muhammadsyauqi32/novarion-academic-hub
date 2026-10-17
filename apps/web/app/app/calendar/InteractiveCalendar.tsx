@@ -98,7 +98,7 @@ export function InteractiveCalendar({
   courses = [],
 }: InteractiveCalendarProps) {
   const router = useRouter();
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
 
   // Navigation & View state
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -455,7 +455,7 @@ export function InteractiveCalendar({
     }
 
     return cells;
-  }, [year, month, firstDayIndex, prevMonthLastDay, totalDaysInMonth]);
+  }, [year, month, firstDayIndex, prevMonthLastDay, totalDaysInMonth, today]);
 
   // Week View Days Calculation
   const weekDays = useMemo(() => {
@@ -481,7 +481,7 @@ export function InteractiveCalendar({
       });
     }
     return days;
-  }, [currentDate]);
+  }, [currentDate, today]);
 
   // Day View Events
   const currentDayKey = getDateKey(currentDate);

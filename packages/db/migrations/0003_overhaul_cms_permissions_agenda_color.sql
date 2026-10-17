@@ -94,13 +94,14 @@ CREATE TABLE IF NOT EXISTS "cms_achievements" (
   "level" varchar(50) DEFAULT 'Nasional' NOT NULL,
   "event_date" date,
   "description" text,
-  "imageUrl" text,
+  "image_url" text,
   "is_featured" boolean DEFAULT false NOT NULL,
   "status" varchar(20) DEFAULT 'published' NOT NULL,
   "created_by" uuid REFERENCES "profiles"("id") ON DELETE SET NULL,
   "created_at" timestamp with time zone DEFAULT now() NOT NULL,
   "updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
+ALTER TABLE "cms_achievements" ADD COLUMN IF NOT EXISTS "image_url" text;
 CREATE INDEX IF NOT EXISTS "idx_cms_achieve_status" ON "cms_achievements" ("status", "is_featured");
 
 -- 8. CMS: Media Library
@@ -129,6 +130,7 @@ ALTER TABLE "cms_media" ENABLE ROW LEVEL SECURITY;
 
 DO $$ 
 BEGIN
+  -- Public Read Policies
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read published cms_hero') THEN
     CREATE POLICY "Allow public read published cms_hero" ON "cms_hero" FOR SELECT USING (status = 'published');
   END IF;
@@ -138,8 +140,15 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read published cms_albums') THEN
     CREATE POLICY "Allow public read published cms_albums" ON "cms_albums" FOR SELECT USING (status = 'published');
   END IF;
+  -- Secure Album Photos policy: only photos belonging to published albums are publicly readable
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read published cms_album_photos') THEN
-    CREATE POLICY "Allow public read published cms_album_photos" ON "cms_album_photos" FOR SELECT USING (true);
+    CREATE POLICY "Allow public read published cms_album_photos" ON "cms_album_photos" FOR SELECT USING (
+      EXISTS (
+        SELECT 1 FROM "cms_albums"
+        WHERE "cms_albums"."id" = "cms_album_photos"."album_id"
+        AND "cms_albums"."status" = 'published'
+      )
+    );
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read published cms_achievements') THEN
     CREATE POLICY "Allow public read published cms_achievements" ON "cms_achievements" FOR SELECT USING (status = 'published');
@@ -147,4 +156,57 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public read cms_media') THEN
     CREATE POLICY "Allow public read cms_media" ON "cms_media" FOR SELECT USING (true);
   END IF;
+
+  -- Admin Full Access Policies
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_hero') THEN
+    CREATE POLICY "Admins have full access to cms_hero" ON "cms_hero" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_news') THEN
+    CREATE POLICY "Admins have full access to cms_news" ON "cms_news" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_albums') THEN
+    CREATE POLICY "Admins have full access to cms_albums" ON "cms_albums" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_album_photos') THEN
+    CREATE POLICY "Admins have full access to cms_album_photos" ON "cms_album_photos" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_achievements') THEN
+    CREATE POLICY "Admins have full access to cms_achievements" ON "cms_achievements" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to cms_media') THEN
+    CREATE POLICY "Admins have full access to cms_media" ON "cms_media" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Admins have full access to user_permissions') THEN
+    CREATE POLICY "Admins have full access to user_permissions" ON "user_permissions" FOR ALL USING (public.is_admin());
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can read own permissions') THEN
+    CREATE POLICY "Users can read own permissions" ON "user_permissions" FOR SELECT USING (profile_id = auth.uid());
+  END IF;
 END $$;
+
+-- 10. Storage Bucket Setup & Policies for Public CMS Media
+DO $$
+BEGIN
+  -- Ensure bucket exists in storage.buckets
+  INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  VALUES (
+    'materials',
+    'materials',
+    true,
+    10485760,
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf']
+  )
+  ON CONFLICT (id) DO UPDATE SET public = true;
+
+  -- Allow public read access to uploaded media
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Public read access to materials') THEN
+    CREATE POLICY "Public read access to materials" ON storage.objects FOR SELECT USING (bucket_id = 'materials');
+  END IF;
+
+  -- Allow Admin upload to materials
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Admin upload to materials') THEN
+    CREATE POLICY "Admin upload to materials" ON storage.objects FOR INSERT TO authenticated
+    WITH CHECK (bucket_id = 'materials' AND public.is_admin());
+  END IF;
+END $$;
+

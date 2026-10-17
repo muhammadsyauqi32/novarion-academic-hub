@@ -129,7 +129,7 @@ export default async function StudentDashboardPage() {
             Semangat Belajar, {user.fullName.split(' ')[0]}! 🌟
           </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
-            Novarion 62 Statistika & Sains Data IPB • <em className="text-teal-deep font-semibold">"Kita Satu, Kita Bisa!"</em>
+            Novarion 62 Statistika & Sains Data IPB • <em className="text-teal-deep font-semibold">&ldquo;Kita Satu, Kita Bisa!&rdquo;</em>
           </p>
         </div>
 

@@ -39,7 +39,7 @@ export function PublicFooter() {
 
         <div className="text-xs text-text-muted text-center md:text-right">
           <p>© {new Date().getFullYear()} NOVARION 62 · IPB University.</p>
-          <p className="text-[11px] text-teal-deep font-semibold mt-0.5">"Kita Satu, Kita Bisa!"</p>
+          <p className="text-[11px] text-teal-deep font-semibold mt-0.5">&ldquo;Kita Satu, Kita Bisa!&rdquo;</p>
         </div>
       </div>
     </footer>

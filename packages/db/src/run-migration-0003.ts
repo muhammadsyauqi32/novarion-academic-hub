@@ -38,6 +38,28 @@ async function run() {
 
   console.log('Running migration 0003_overhaul_cms_permissions_agenda_color.sql...');
   await sql.unsafe(migrationSql);
+  
+  // Sinkronkan tracking tabel Drizzle migrations
+  try {
+    await sql.unsafe(`
+      CREATE SCHEMA IF NOT EXISTS "drizzle";
+      CREATE TABLE IF NOT EXISTS "drizzle"."__drizzle_migrations" (
+        id SERIAL PRIMARY KEY,
+        hash text NOT NULL,
+        created_at bigint
+      );
+      INSERT INTO "drizzle"."__drizzle_migrations" (hash, created_at)
+      SELECT '0003_overhaul_cms_permissions_agenda_color', ${Date.now()}
+      WHERE NOT EXISTS (
+        SELECT 1 FROM "drizzle"."__drizzle_migrations" 
+        WHERE hash = '0003_overhaul_cms_permissions_agenda_color'
+      );
+    `);
+    console.log('✅ Drizzle migration tracking synchronized!');
+  } catch (trackingErr) {
+    console.warn('⚠️ Note: Could not record in drizzle.__drizzle_migrations, falling back smoothly:', trackingErr);
+  }
+
   console.log('✅ Migration 0003 executed successfully!');
   await sql.end();
   process.exit(0);
