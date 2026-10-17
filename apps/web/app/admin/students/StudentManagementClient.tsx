@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
@@ -40,14 +41,15 @@ export function StudentManagementClient({
   initialStudents,
   query,
 }: StudentManagementClientProps) {
+  const router = useRouter();
   const [students, setStudents] = useState<StudentItem[]>(initialStudents);
   const [searchQuery, setSearchQuery] = useState(query);
 
-  // Form tambah
+  // Form state
   const [isAdding, setIsAdding] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Modal / Toast Password Sementara
+  // Modal Password Sementara (One-Time Display)
   const [tempPasswordModal, setTempPasswordModal] = useState<{
     nim: string;
     fullName: string;
@@ -57,6 +59,12 @@ export function StudentManagementClient({
 
   const [copied, setCopied] = useState(false);
   const [isResetting, setIsResetting] = useState<string | null>(null);
+  const [isToggling, setIsToggling] = useState<string | null>(null);
+
+  // Sinkronkan state saat props data server diperbarui
+  useEffect(() => {
+    setStudents(initialStudents);
+  }, [initialStudents]);
 
   const handleCopyPassword = () => {
     if (!tempPasswordModal) return;
@@ -65,14 +73,22 @@ export function StudentManagementClient({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCloseModal = () => {
+    setTempPasswordModal(null);
+    router.refresh();
+  };
+
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isAdding) return;
+
     setIsAdding(true);
     setFormError(null);
 
-    const formData = new FormData(e.currentTarget);
-    const nim = formData.get('nim') as string;
-    const fullName = formData.get('full_name') as string;
+    const formElement = e.currentTarget;
+    const formData = new FormData(formElement);
+    const nim = (formData.get('nim') as string || '').trim().toUpperCase();
+    const fullName = (formData.get('full_name') as string || '').trim();
 
     try {
       const res = await addWhitelistStudentAction(formData);
@@ -91,15 +107,17 @@ export function StudentManagementClient({
         });
       }
 
-      (e.target as HTMLFormElement).reset();
-      window.location.reload();
+      formElement.reset();
+      router.refresh();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : String(err));
+    } finally {
       setIsAdding(false);
     }
   };
 
   const handleResetPassword = async (student: StudentItem) => {
+    if (isResetting) return;
     if (!confirm(`Reset kata sandi untuk ${student.fullName} (${student.nim})?`)) {
       return;
     }
@@ -109,7 +127,6 @@ export function StudentManagementClient({
       const res = await resetStudentPasswordAction(student.nim);
       if (!res.success) {
         alert(res.error || 'Gagal mereset kata sandi.');
-        setIsResetting(null);
         return;
       }
 
@@ -121,24 +138,33 @@ export function StudentManagementClient({
           isReset: true,
         });
       }
+      router.refresh();
     } catch (err) {
-      alert(String(err));
+      alert(err instanceof Error ? err.message : String(err));
     } finally {
       setIsResetting(null);
     }
   };
 
   const handleToggleStatus = async (student: StudentItem) => {
+    if (isToggling) return;
     const actionName = student.isActive ? 'nonaktifkan' : 'aktifkan';
     if (!confirm(`Yakin ingin ${actionName} akses ${student.fullName} (${student.nim})?`)) {
       return;
     }
 
+    setIsToggling(student.id);
     try {
-      await toggleWhitelistStatusAction(student.id, student.isActive);
-      window.location.reload();
+      const res = await toggleWhitelistStatusAction(student.id, student.isActive);
+      if (!res.success) {
+        alert(res.error || 'Gagal mengubah status akses.');
+        return;
+      }
+      router.refresh();
     } catch (err) {
-      alert(String(err));
+      alert(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsToggling(null);
     }
   };
 
@@ -152,7 +178,7 @@ export function StudentManagementClient({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Modal Password Sementara yang Aman */}
+      {/* Modal Password Sementara yang Aman (One-Time Display) */}
       {tempPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
           <Card className="w-full max-w-md p-6 bg-surface border-border shadow-2xl flex flex-col gap-5">
@@ -173,8 +199,9 @@ export function StudentManagementClient({
                 </div>
               </div>
               <button
-                onClick={() => setTempPasswordModal(null)}
-                className="p-1 rounded-lg text-text-muted hover:text-text-primary"
+                type="button"
+                onClick={handleCloseModal}
+                className="p-1 rounded-lg text-text-muted hover:text-text-primary transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -211,13 +238,13 @@ export function StudentManagementClient({
 
             <div className="text-[11px] text-text-muted leading-relaxed">
               ⚠️ Berikan kata sandi ini kepada mahasiswa bersangkutan. Mahasiswa akan diwajibkan
-              mengganti kata sandi ini pada saat pertama kali login.
+              mengganti kata sandi ini pada saat pertama kali login sebelum dapat mengakses sistem.
             </div>
 
             <Button
               variant="primary"
               size="sm"
-              onClick={() => setTempPasswordModal(null)}
+              onClick={handleCloseModal}
               className="w-full font-semibold"
             >
               Selesai & Tutup
@@ -248,13 +275,15 @@ export function StudentManagementClient({
             <Input
               name="nim"
               label="Nomor Induk Mahasiswa (NIM)"
-              placeholder="Contoh: M0401251083"
+              placeholder="Contoh: M0401251083 / TEST001"
+              disabled={isAdding}
               required
             />
             <Input
               name="full_name"
               label="Nama Lengkap"
               placeholder="Contoh: Budi Santoso"
+              disabled={isAdding}
               required
             />
             <Input
@@ -262,6 +291,7 @@ export function StudentManagementClient({
               type="email"
               label="Email Kampus Resmi"
               placeholder="Contoh: budi.s@apps.ipb.ac.id"
+              disabled={isAdding}
               required
             />
 
@@ -272,7 +302,8 @@ export function StudentManagementClient({
               <select
                 name="role"
                 defaultValue="student"
-                className="w-full px-3.5 py-2 text-sm bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                disabled={isAdding}
+                className="w-full px-3.5 py-2 text-sm bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none disabled:opacity-50"
               >
                 <option value="student">Mahasiswa (Student)</option>
                 <option value="admin">Administrator Angkatan</option>
@@ -280,7 +311,7 @@ export function StudentManagementClient({
             </div>
 
             <p className="text-[11px] text-text-muted mt-1">
-              * Password sementara acak akan otomatis dibuat dan wajib diubah saat login pertama.
+              * Akun akan dibuatkan kata sandi awal dan diwajibkan ganti password saat login pertama.
             </p>
 
             <Button
@@ -289,6 +320,7 @@ export function StudentManagementClient({
               type="submit"
               className="mt-2 w-full font-semibold"
               isLoading={isAdding}
+              disabled={isAdding}
             >
               Simpan & Buat Akun
             </Button>
@@ -358,7 +390,7 @@ export function StudentManagementClient({
                             onClick={() => handleResetPassword(s)}
                             disabled={isResetting === s.nim}
                             title="Reset Kata Sandi"
-                            className="p-1.5 rounded-md text-text-muted hover:text-teal-deep hover:bg-surface-soft transition-colors"
+                            className="p-1.5 rounded-md text-text-muted hover:text-teal-deep hover:bg-surface-soft transition-colors disabled:opacity-50"
                           >
                             <KeyRound className="w-3.5 h-3.5" />
                           </button>
@@ -367,8 +399,9 @@ export function StudentManagementClient({
                           <button
                             type="button"
                             onClick={() => handleToggleStatus(s)}
+                            disabled={isToggling === s.id}
                             title={s.isActive ? 'Nonaktifkan Akun' : 'Aktifkan Akun'}
-                            className={`p-1.5 rounded-md text-xs font-semibold transition-colors ${
+                            className={`p-1.5 rounded-md text-xs font-semibold transition-colors disabled:opacity-50 ${
                               s.isActive
                                 ? 'text-text-muted hover:text-danger-text hover:bg-danger-surface'
                                 : 'text-teal-deep hover:bg-success-surface'

@@ -1,9 +1,17 @@
 'use server';
 
 import { requireAdmin } from '@/lib/auth/guards';
-import { getDb, studentWhitelist, auditLogs, provisionUser, resetUserPassword } from '@novarion/db';
+import {
+  getDb,
+  studentWhitelist,
+  profiles,
+  auditLogs,
+  provisionUser,
+  resetUserPassword,
+  getDefaultStudentPassword,
+} from '@novarion/db';
 import { studentWhitelistSchema } from '@novarion/shared';
-import { eq } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 export async function addWhitelistStudentAction(formData: FormData) {
@@ -27,35 +35,73 @@ export async function addWhitelistStudentAction(formData: FormData) {
   }
 
   const { nim, email, full_name, role, is_active } = parsed.data;
+  const normalizedNim = nim.trim().toUpperCase();
 
   try {
-    const existing = await db
+    // 1. Tolak duplikasi NIM atau Email (Aturan A.3.8)
+    const existingWl = await db
       .select()
       .from(studentWhitelist)
-      .where(eq(studentWhitelist.nim, nim))
+      .where(or(sql`UPPER(${studentWhitelist.nim}) = ${normalizedNim}`, eq(studentWhitelist.email, email)))
       .limit(1);
 
-    if (existing.length > 0) {
-      return { success: false, error: `Mahasiswa dengan NIM ${nim} sudah terdaftar.` };
+    if (existingWl.length > 0) {
+      const isNimMatch = existingWl[0].nim.toUpperCase() === normalizedNim;
+      return {
+        success: false,
+        error: `Mahasiswa dengan ${isNimMatch ? 'NIM' : 'email'} '${isNimMatch ? normalizedNim : email}' sudah terdaftar di whitelist.`,
+      };
     }
 
-    // Provision akun secara aman di auth.users, student_whitelist, dan profiles
+    const existingProfile = await db
+      .select()
+      .from(profiles)
+      .where(or(sql`UPPER(${profiles.nim}) = ${normalizedNim}`, eq(profiles.email, email)))
+      .limit(1);
+
+    if (existingProfile.length > 0) {
+      const isNimMatch = existingProfile[0].nim.toUpperCase() === normalizedNim;
+      return {
+        success: false,
+        error: `Profil dengan ${isNimMatch ? 'NIM' : 'email'} '${isNimMatch ? normalizedNim : email}' sudah ada.`,
+      };
+    }
+
+    // 2. Controlled Testing Password Logic (Aturan A.3)
+    // Hanya berlaku untuk dummy student TEST001 dan TEST002 dengan role student.
+    // Tidak pernah diaplikasikan ke akun admin.
+    const isTestAccount = normalizedNim === 'TEST001' || normalizedNim === 'TEST002';
+    let initialPassword: string | undefined = undefined;
+
+    if (isTestAccount && role === 'student') {
+      try {
+        initialPassword = getDefaultStudentPassword();
+      } catch (pwdErr) {
+        return {
+          success: false,
+          error: `Gagal membaca konfigurasi kata sandi uji: ${pwdErr instanceof Error ? pwdErr.message : String(pwdErr)}`,
+        };
+      }
+    }
+
+    // 3. Provision akun via Supabase Auth Admin API & sinkronisasi DB
     const provisionResult = await provisionUser({
-      nim,
+      nim: normalizedNim,
       email,
       fullName: full_name,
       role,
+      password: initialPassword,
       isActive: is_active,
       mustChangePassword: true,
     });
 
-    // Audit log
+    // 4. Catat Audit Log
     await db.insert(auditLogs).values({
       actorId: admin.id,
       action: 'WHITELIST_STUDENT_ADDED',
       entityType: 'student_whitelist',
       entityId: provisionResult.id,
-      newValues: { nim, email, full_name, role },
+      newValues: { nim: normalizedNim, email, full_name, role, isTestAccount },
     });
 
     revalidatePath('/admin/students');

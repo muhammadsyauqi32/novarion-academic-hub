@@ -183,7 +183,7 @@ export interface ChangePasswordActionResult {
  * Action Mengganti Kata Sandi (Wajib pada login pertama atau sukarela dari profil)
  */
 export async function changePasswordAction(formData: FormData): Promise<ChangePasswordActionResult> {
-  const user = await requireAuth();
+  const user = await requireAuth({ allowPasswordChange: true });
 
   const rawCurrent = formData.get('currentPassword');
   const rawNew = formData.get('newPassword');
@@ -216,9 +216,18 @@ export async function changePasswordAction(formData: FormData): Promise<ChangePa
   // 2. Perbarui kata sandi dan set mustChangePassword = false
   await updateUserPassword(user.id, newPassword);
 
+  // Perbarui juga sesi pengguna saat ini jika memungkinkan
+  try {
+    const supabase = createClient();
+    await supabase.auth.updateUser({ password: newPassword });
+  } catch {
+    // Sesi tetap valid atau diperbarui via Supabase Admin API
+  }
+
   revalidatePath('/app/account');
   revalidatePath('/admin');
   revalidatePath('/app');
+  revalidatePath('/auth/change-password');
 
   const targetUrl = user.role === 'admin' ? '/admin' : '/app';
   return {
