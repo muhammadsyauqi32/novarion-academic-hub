@@ -101,6 +101,15 @@ CREATE TABLE IF NOT EXISTS "cms_achievements" (
   "created_at" timestamp with time zone DEFAULT now() NOT NULL,
   "updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
+DO $$ 
+BEGIN 
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'cms_achievements' AND column_name = 'imageUrl'
+  ) THEN 
+    ALTER TABLE "cms_achievements" RENAME COLUMN "imageUrl" TO "image_url"; 
+  END IF; 
+END $$;
 ALTER TABLE "cms_achievements" ADD COLUMN IF NOT EXISTS "image_url" text;
 CREATE INDEX IF NOT EXISTS "idx_cms_achieve_status" ON "cms_achievements" ("status", "is_featured");
 
