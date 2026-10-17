@@ -59,6 +59,10 @@ export async function submitAgendaAction(formData: FormData) {
     revalidatePath('/app/agendas');
     revalidatePath('/app/calendar');
     revalidatePath('/app');
+
+    if (formData.get('no_redirect') === 'true') {
+      return { success: true, agendaId: inserted[0].id };
+    }
   } catch (err) {
     return { success: false, error: String(err) };
   }
