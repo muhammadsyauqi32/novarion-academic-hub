@@ -17,7 +17,8 @@ export default async function SubmissionsPage() {
     .select()
     .from(agendas)
     .where(eq(agendas.createdBy, user.id))
-    .orderBy(desc(agendas.createdAt));
+    .orderBy(desc(agendas.createdAt))
+    .limit(50);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

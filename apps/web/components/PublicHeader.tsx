@@ -15,7 +15,7 @@ export function PublicHeader() {
         <BrandLogo size="md" showTagline={true} />
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-text-muted uppercase tracking-wider">
+        <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-text-muted uppercase tracking-wider">
           <a href="#tentang" className="hover:text-teal-deep transition-colors">
             Tentang Kita
           </a>
@@ -34,7 +34,7 @@ export function PublicHeader() {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
             <Button variant="primary" size="sm" className="font-semibold text-xs py-2 px-4 shadow-xs">
               <span>Masuk Academic Hub</span>
@@ -43,8 +43,8 @@ export function PublicHeader() {
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex md:hidden items-center gap-2">
+        {/* Mobile & Tablet Menu Button */}
+        <div className="flex lg:hidden items-center gap-2">
           <Link href="/login">
             <Button variant="primary" size="sm" className="text-xs py-1.5 px-3">
               Masuk
@@ -64,7 +64,7 @@ export function PublicHeader() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border bg-surface px-4 py-4 flex flex-col gap-3 animate-in slide-in-from-top-2">
+        <div className="lg:hidden border-b border-border bg-surface px-4 py-4 flex flex-col gap-3 animate-in slide-in-from-top-2">
           <a
             href="#tentang"
             onClick={() => setMobileMenuOpen(false)}

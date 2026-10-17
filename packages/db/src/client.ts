@@ -22,10 +22,12 @@ export function getDb(connectionString?: string) {
     throw new Error('DATABASE_URL is not set. Please provide connection string or set environment variable.');
   }
 
+  const maxConnections = process.env.DB_MAX_CONNECTIONS ? parseInt(process.env.DB_MAX_CONNECTIONS, 10) : 10;
   const client = globalForDb._postgresClient || postgres(connStr, {
-    max: process.env.NODE_ENV === 'production' ? 1 : 5,
+    max: maxConnections,
     idle_timeout: 20,
     connect_timeout: 10,
+    max_lifetime: 60 * 30, // 30 minutes
     prepare: false, // Wajib false untuk kompatibilitas Supabase PgBouncer Pooler (Port 6543)
   });
 

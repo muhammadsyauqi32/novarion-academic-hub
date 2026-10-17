@@ -1,7 +1,7 @@
 import React from 'react';
 import { requireAuth } from '@/lib/auth/guards';
 import { getDb, agendas, personalTasks, courses, agendaTargets } from '@novarion/db';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, or, gte, isNull } from 'drizzle-orm';
 import { InteractiveCalendar, CalendarEvent } from './InteractiveCalendar';
 import { getStudentAcademicScope } from '@/lib/academics/scoping';
 import { hasPermission } from '@/lib/auth/permissions';
@@ -9,6 +9,10 @@ import { hasPermission } from '@/lib/auth/permissions';
 export default async function CalendarPage() {
   const user = await requireAuth();
   const db = getDb();
+
+  // Bounding aktif kalender (60 hari ke belakang sampai 180 hari ke depan)
+  const now = new Date();
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
   const [studentScope, canCreateOfficial, allAgendas, userPersonalTasks, proposals, allCourses] = await Promise.all([
     getStudentAcademicScope(user.id),
@@ -33,8 +37,14 @@ export default async function CalendarPage() {
       })
       .from(agendas)
       .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
-      .where(eq(agendas.status, 'published'))
-      .orderBy(desc(agendas.deadline)),
+      .where(
+        and(
+          eq(agendas.status, 'published'),
+          or(gte(agendas.deadline, sixtyDaysAgo), isNull(agendas.deadline))
+        )
+      )
+      .orderBy(desc(agendas.deadline))
+      .limit(200),
 
     db
       .select({
@@ -48,7 +58,8 @@ export default async function CalendarPage() {
       })
       .from(personalTasks)
       .where(eq(personalTasks.profileId, user.id))
-      .orderBy(desc(personalTasks.deadline)),
+      .orderBy(desc(personalTasks.deadline))
+      .limit(150),
 
     user.role === 'admin'
       ? db

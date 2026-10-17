@@ -1,8 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/Button';
-import { ArrowRight, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { ArrowUpRight, Compass, Sparkles, MapPin } from 'lucide-react';
 import { CMSHero } from '@novarion/shared';
 import { COHORT_CONFIG } from '@/lib/config/cohort';
 
@@ -12,86 +10,177 @@ interface HeroSectionProps {
 
 export function HeroSection({ hero }: HeroSectionProps) {
   return (
-    <section id="hero" className="relative pt-8 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 max-w-6xl mx-auto w-full">
-      {/* Restrained identity atmosphere utilizing brand colors */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[640px] h-[340px] bg-gradient-to-b from-[#C9FBD4]/30 via-[#EAEAB7]/15 to-transparent rounded-full blur-3xl -z-10 pointer-events-none" />
+    <section id="hero" className="relative pt-6 pb-16 md:pt-10 md:pb-24 px-4 sm:px-6 max-w-7xl mx-auto w-full">
+      {/* Editorial subtle atmospheric wash using cohort palette */}
+      <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-gradient-to-br from-[#C9FBD4]/35 via-[#EAEAB7]/20 to-transparent rounded-full blur-3xl -z-10 pointer-events-none" />
 
-      <div className="flex flex-col items-center text-center max-w-4xl mx-auto gap-6">
-        {/* Cohort Identity Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-soft border border-border text-teal-deep text-xs font-semibold tracking-wider shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-[#41C2A1] animate-pulse" />
-          <span>{COHORT_CONFIG.program} · Angkatan {COHORT_CONFIG.cohortNumber} · {COHORT_CONFIG.institution}</span>
+      {/* Editorial Masthead Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/80 pb-3 mb-8 md:mb-12 text-[11px] font-mono uppercase tracking-wider text-text-muted">
+        <div className="flex items-center gap-3">
+          <span className="font-bold text-teal-deep tracking-widest">VOL. 62</span>
+          <span>•</span>
+          <span>{COHORT_CONFIG.program}</span>
         </div>
-
-        {/* Main Headline & Tagline */}
-        <div className="flex flex-col items-center gap-3">
-          <h1 className="font-heading font-black text-4xl sm:text-6xl md:text-7xl text-text-primary tracking-tight leading-[1.08]">
-            {COHORT_CONFIG.name}
-          </h1>
-          <p className="font-heading font-bold text-xl sm:text-2xl md:text-3xl text-teal-deep tracking-tight">
-            &ldquo;{COHORT_CONFIG.tagline}&rdquo;
-          </p>
+        <div className="hidden sm:flex items-center gap-3">
+          <span>{COHORT_CONFIG.institution}</span>
+          <span>•</span>
+          <span className="flex items-center gap-1 text-teal-deep">
+            <MapPin className="w-3 h-3" />
+            <span>Dramaga, Bogor</span>
+          </span>
         </div>
+      </div>
 
-        {/* Authentic Supporting Narrative */}
-        <p className="text-sm sm:text-base md:text-lg text-text-muted max-w-2xl leading-relaxed">
-          {COHORT_CONFIG.philosophy.synthesis}
-        </p>
+      {/* Asymmetrical Editorial Composition */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        {/* Left Column: Bold Editorial Typography & Cohort Manifesto */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
+            <div className="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-[#EAEAB7]/40 border border-[#EAEAB7] text-[#7A5B0B] text-xs font-semibold tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-[#FFAE5D]" />
+              <span>Angkatan {COHORT_CONFIG.cohortNumber} · Dokumen Identitas Kolektif</span>
+            </div>
 
-        {/* Primary and Secondary Action CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1">
-          <a href="#tentang">
-            <Button variant="primary" size="lg" className="shadow-xs text-xs sm:text-sm font-bold py-3 px-6">
-              <span>Tentang Kita</span>
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </a>
-          <a href="#galeri">
-            <Button variant="secondary" size="lg" className="text-xs sm:text-sm font-semibold py-3 px-6 border-border">
-              <span>Jelajahi Momen</span>
-            </Button>
-          </a>
-        </div>
+            <h1 className="font-heading font-black text-5xl sm:text-7xl lg:text-8xl text-text-primary tracking-tight leading-[0.95]">
+              NOVARION
+            </h1>
 
-        {/* Editorial Hero Photograph */}
-        <div className="w-full mt-6 md:mt-10">
-          <div className="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden border border-border/80 shadow-md bg-surface-soft">
-            {hero && hero.imageUrl ? (
-              <Image
-                src={hero.imageUrl}
-                alt={hero.title || 'Foto Angkatan Novarion 62 Statistika IPB'}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className="object-cover transition-transform duration-700 ease-out hover:scale-[1.01]"
-                style={{
-                  objectPosition: `${hero.focalPointX || '50%'} ${hero.focalPointY || '50%'}`,
-                }}
-              />
-            ) : (
-              /* Deliberate Neutral Editorial Placeholder (Authentic fallback until cohort photo is uploaded via CMS) */
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-surface to-surface-soft border border-dashed border-border/70">
-                <div className="w-14 h-14 rounded-2xl bg-[#41C2A1]/10 border border-[#41C2A1]/20 flex items-center justify-center mb-3 text-teal-deep">
-                  <ImageIcon className="w-7 h-7" />
-                </div>
-                <h3 className="font-heading font-bold text-base sm:text-lg text-text-primary">
-                  Dokumentasi Resmi Angkatan 62
-                </h3>
-                <p className="text-xs sm:text-sm text-text-muted max-w-md mt-1.5">
-                  Foto utama angkatan dapat dikonfigurasi langsung oleh Administrator melalui CMS Hero Manager tanpa perlu deploy ulang.
-                </p>
-                <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-teal-deep bg-surface px-3 py-1.5 rounded-lg border border-border">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Foto Asli Akan Ditampilkan di Sini</span>
-                </div>
-              </div>
-            )}
+            <div className="flex items-baseline gap-3 pt-1">
+              <span className="font-heading font-bold text-2xl sm:text-3xl text-teal-deep tracking-tight">
+                &ldquo;{COHORT_CONFIG.tagline}&rdquo;
+              </span>
+            </div>
           </div>
-          {hero && hero.title && (
-            <p className="text-xs text-text-muted mt-2.5 text-right font-medium italic">
-              {hero.title} {hero.subtitle ? `— ${hero.subtitle}` : ''}
+
+          {/* Documentary Narrative Paragraph */}
+          <div className="border-l-2 border-[#41C2A1] pl-4 py-1 flex flex-col gap-2">
+            <p className="text-sm sm:text-base text-text-secondary leading-relaxed font-sans">
+              Sebuah ikhtiar kolektif mahasiswa Statistika dan Sains Data Angkatan 62 IPB University. Menyatukan kilau energi analitis dengan kompas kepemimpinan berintegritas tinggi—melangkah bersama menaklukkan tantangan sains data untuk kemaslahatan almamater dan bangsa.
             </p>
-          )}
+          </div>
+
+          {/* Editorial Navigation Index */}
+          <div className="pt-2 flex flex-col gap-2.5">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-text-muted/80">
+              ARSIP DOKUMEN ANGKATAN
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <a
+                href="#tentang"
+                className="group flex items-center justify-between p-3 rounded-xl border border-border bg-surface hover:border-teal-deep/60 hover:bg-teal-deep/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-[11px] text-teal-deep font-bold">01</span>
+                  <span className="font-semibold text-text-primary group-hover:text-teal-deep transition-colors">
+                    Filosofi Nova & Orion
+                  </span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-teal-deep group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </a>
+
+              <a
+                href="#pengurus"
+                className="group flex items-center justify-between p-3 rounded-xl border border-border bg-surface hover:border-teal-deep/60 hover:bg-teal-deep/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-[11px] text-teal-deep font-bold">02</span>
+                  <span className="font-semibold text-text-primary group-hover:text-teal-deep transition-colors">
+                    Struktur Kepengurusan
+                  </span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-teal-deep group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </a>
+
+              <a
+                href="#berita"
+                className="group flex items-center justify-between p-3 rounded-xl border border-border bg-surface hover:border-teal-deep/60 hover:bg-teal-deep/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-[11px] text-teal-deep font-bold">03</span>
+                  <span className="font-semibold text-text-primary group-hover:text-teal-deep transition-colors">
+                    Warta & Catatan Kegiatan
+                  </span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-teal-deep group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </a>
+
+              <a
+                href="#galeri"
+                className="group flex items-center justify-between p-3 rounded-xl border border-border bg-surface hover:border-teal-deep/60 hover:bg-teal-deep/5 transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-[11px] text-teal-deep font-bold">04</span>
+                  <span className="font-semibold text-text-primary group-hover:text-teal-deep transition-colors">
+                    Arsip Foto & Jejak Langkah
+                  </span>
+                </div>
+                <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-teal-deep group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Dominant Editorial Photograph Frame */}
+        <div className="lg:col-span-5 flex flex-col gap-3">
+          <div className="relative rounded-2xl p-2 bg-surface border border-border shadow-md">
+            {/* Corner aesthetic registration marks */}
+            <span className="absolute -top-1.5 -left-1.5 text-xs text-text-muted font-mono leading-none select-none">+</span>
+            <span className="absolute -top-1.5 -right-1.5 text-xs text-text-muted font-mono leading-none select-none">+</span>
+            <span className="absolute -bottom-1.5 -left-1.5 text-xs text-text-muted font-mono leading-none select-none">+</span>
+            <span className="absolute -bottom-1.5 -right-1.5 text-xs text-text-muted font-mono leading-none select-none">+</span>
+
+            <div className="relative w-full aspect-[4/5] sm:aspect-[4/3] lg:aspect-[4/5] rounded-xl overflow-hidden bg-surface-soft border border-border/70">
+              {hero && hero.imageUrl ? (
+                <Image
+                  src={hero.imageUrl}
+                  alt={hero.title || 'Foto Angkatan Novarion 62'}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  className="object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
+                  style={{
+                    objectPosition: `${hero.focalPointX || '50%'} ${hero.focalPointY || '50%'}`,
+                  }}
+                />
+              ) : (
+                /* Dignified editorial yearbook placeholder without exposing CMS backend details */
+                <div className="absolute inset-0 flex flex-col justify-between p-6 bg-gradient-to-b from-[#C9FBD4]/20 via-surface-soft to-surface border border-border/50">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-teal-deep font-semibold uppercase tracking-wider">
+                    <span>ARCHIVE FRAME #01</span>
+                    <span>STAT-62-IPB</span>
+                  </div>
+
+                  <div className="flex flex-col items-center text-center my-auto gap-4 py-8">
+                    <div className="w-16 h-16 rounded-2xl bg-teal-deep/10 border border-teal-deep/20 flex items-center justify-center text-teal-deep">
+                      <Sparkles className="w-8 h-8" />
+                    </div>
+                    <div className="flex flex-col gap-1 max-w-xs">
+                      <h2 className="font-heading font-black text-xl text-text-primary tracking-tight">
+                        NOVARION 62
+                      </h2>
+                      <p className="text-xs text-teal-deep font-semibold">
+                        Statistika dan Sains Data
+                      </p>
+                      <p className="text-[11px] text-text-muted leading-relaxed mt-1">
+                        Institut Pertanian Bogor · Kampus Dramaga
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-border/60 text-[10px] font-mono text-text-muted">
+                    <span>LAT 6.5595° S</span>
+                    <span>LONG 106.7262° E</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Photo metadata strip */}
+            <div className="flex items-center justify-between px-2 pt-2 text-[10px] font-mono text-text-muted">
+              <span>{hero?.title || 'DOKUMENTASI ANGKATAN 62'}</span>
+              <span>{hero?.subtitle || 'FMIPA IPB'}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

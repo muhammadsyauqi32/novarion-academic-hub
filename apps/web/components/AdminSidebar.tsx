@@ -70,7 +70,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
     <aside className="w-64 bg-surface border-r border-border h-full flex flex-col justify-between py-5 px-3 select-none overflow-y-auto">
       <div className="flex flex-col gap-5">
         <div className="px-3 flex flex-col gap-2">
-          <BrandLogo size="md" />
+          <BrandLogo href="/admin" size="md" />
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-teal-deep/10 text-teal-deep text-[11px] font-bold tracking-wider uppercase">
             <span>Admin Workspace</span>
           </div>

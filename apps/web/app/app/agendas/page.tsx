@@ -38,7 +38,8 @@ export default async function AgendasListPage() {
       .from(agendas)
       .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
       .where(eq(agendas.status, 'published'))
-      .orderBy(desc(agendas.deadline)),
+      .orderBy(desc(agendas.deadline))
+      .limit(100),
   ]);
 
   // Filter agendas strictly by student academic scope

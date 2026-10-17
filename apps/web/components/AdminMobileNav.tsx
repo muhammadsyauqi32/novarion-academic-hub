@@ -55,7 +55,7 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
           >
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between pb-3 border-b border-border">
-                <BrandLogo size="sm" />
+                <BrandLogo href="/admin" size="sm" />
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}

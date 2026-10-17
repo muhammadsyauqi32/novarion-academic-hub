@@ -23,7 +23,8 @@ export default async function MaterialsPage() {
     .from(knowledgeAssets)
     .leftJoin(courses, eq(knowledgeAssets.courseId, courses.id))
     .where(eq(knowledgeAssets.status, 'published'))
-    .orderBy(desc(knowledgeAssets.createdAt));
+    .orderBy(desc(knowledgeAssets.createdAt))
+    .limit(150);
 
   return <MaterialsClient initialMaterials={materials} />;
 }

@@ -19,7 +19,8 @@ export default async function KnowledgeHubPage() {
     })
     .from(knowledgeItems)
     .where(eq(knowledgeItems.status, 'published'))
-    .orderBy(desc(knowledgeItems.createdAt));
+    .orderBy(desc(knowledgeItems.createdAt))
+    .limit(100);
 
   return <KnowledgeHubClient initialItems={items} />;
 }

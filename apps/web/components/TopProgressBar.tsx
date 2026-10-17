@@ -69,11 +69,30 @@ export function TopProgressBar() {
           if (targetUrl.origin === currentUrl.origin) {
             clearTimers();
             setLoading(true);
-            setProgress(30);
+            setProgress(25);
 
-            const t1 = setTimeout(() => setProgress(65), 180);
-            const t2 = setTimeout(() => setProgress(88), 450);
-            timersRef.current.push(t1, t2);
+            // Smooth dynamic easing that continually creeps forward instead of freezing at 88%
+            const interval = setInterval(() => {
+              setProgress((prev) => {
+                if (prev >= 95) return prev;
+                // Asymptotically approach 95%
+                const remaining = 95 - prev;
+                const increment = Math.max(0.5, remaining * 0.12);
+                return Math.min(95, prev + increment);
+              });
+            }, 120);
+
+            // Safety recovery timer: If navigation hangs or is cancelled by browser for >8s, reset bar
+            const safetyTimer = setTimeout(() => {
+              clearTimers();
+              setProgress(100);
+              setTimeout(() => {
+                setLoading(false);
+                setProgress(0);
+              }, 200);
+            }, 8000);
+
+            timersRef.current.push(interval as any, safetyTimer);
           }
         } catch {
           // Abaikan URL invalid
@@ -81,9 +100,19 @@ export function TopProgressBar() {
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        clearTimers();
+        setProgress(0);
+        setLoading(false);
+      }
+    };
+
     window.addEventListener('click', handleClick, { capture: true });
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('click', handleClick, { capture: true });
+      window.removeEventListener('keydown', handleKeyDown);
       clearTimers();
     };
   }, []);

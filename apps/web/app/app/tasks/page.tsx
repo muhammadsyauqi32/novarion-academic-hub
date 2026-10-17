@@ -18,7 +18,8 @@ export default async function TasksPage() {
     .select()
     .from(personalTasks)
     .where(eq(personalTasks.profileId, user.id))
-    .orderBy(desc(personalTasks.createdAt));
+    .orderBy(desc(personalTasks.createdAt))
+    .limit(100);
 
   const completedCount = tasks.filter((t) => t.status === 'done').length;
 

@@ -23,10 +23,45 @@ export async function middleware(request: NextRequest) {
   const allCookies = request.cookies.getAll();
   const hasAuthCookie = allCookies.some((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
 
-  // Jalankan sinkronisasi Supabase Auth HANYA pada route yang memerlukan sesi terotentikasi.
-  // Jangan bebani landing page publik atau aset statis dengan HTTP network roundtrip auth yang tidak perlu.
+  // Cek apakah access token masih valid dan belum mendekati masa kedaluwarsa (>90 detik tersisa)
+  // Ini menghindari network roundtrip ganda ke server Supabase Auth pada setiap klik / RSC prefetch
+  const isFreshToken = (() => {
+    try {
+      const authCookies = allCookies.filter((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+      if (authCookies.length === 0) return false;
+      let raw = authCookies
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((c) => c.value)
+        .join('');
+      if (raw.startsWith('base64-')) {
+        raw = Buffer.from(raw.slice(7), 'base64').toString('utf-8');
+      }
+      let parsed: any;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        return false;
+      }
+      const token = parsed.access_token || (Array.isArray(parsed) ? parsed[0] : null);
+      if (!token || typeof token !== 'string') return false;
+      const parts = token.split('.');
+      if (parts.length < 2) return false;
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+      if (!payload.exp) return false;
+      const nowSec = Math.floor(Date.now() / 1000);
+      return payload.exp - nowSec > 90;
+    } catch {
+      return false;
+    }
+  })();
+
+  const isRscRequest = request.nextUrl.searchParams.has('_rsc') || request.headers.get('rsc') === '1';
+
+  // Jalankan sinkronisasi Supabase Auth HANYA jika token perlu di-refresh atau pada dokumen navigasi penuh
+  // saat token mendekati masa kadaluwarsa (<=90s)
   const requiresAuthSync =
     hasAuthCookie &&
+    !isFreshToken &&
     (isHubSubdomain ||
       pathname.startsWith('/admin') ||
       pathname.startsWith('/app') ||
@@ -60,7 +95,7 @@ export async function middleware(request: NextRequest) {
         },
       });
 
-      // Panggil getUser() untuk memvalidasi token sesi secara aman
+      // Panggil getUser() untuk me-refresh token sesi secara aman jika mendekati expired
       await supabase.auth.getUser();
     } catch {
       // Abaikan jika inisialisasi sementara terkendala
