@@ -3,6 +3,8 @@ import { requireAdmin } from '@/lib/auth/guards';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {

@@ -11,8 +11,11 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-  // 1. Sinkronkan sesi Supabase Auth & refresh cookies pada setiap request
-  if (supabaseUrl && supabaseAnonKey) {
+  const allCookies = request.cookies.getAll();
+  const hasAuthCookie = allCookies.some((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
+
+  // 1. Sinkronkan sesi Supabase Auth & refresh cookies jika terdapat auth cookie
+  if (supabaseUrl && supabaseAnonKey && hasAuthCookie) {
     try {
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {
@@ -59,8 +62,7 @@ export async function middleware(request: NextRequest) {
     // Pada subdomain hub.novarion.web.id:
     // Root '/' dialihkan langsung ke dashboard mahasiswa / login
     if (url.pathname === '/') {
-      const sessionCookie = request.cookies.get('sb-access-token') || request.cookies.get('sb-refresh-token');
-      url.pathname = sessionCookie ? '/app' : '/login';
+      url.pathname = hasAuthCookie ? '/app' : '/login';
       return NextResponse.redirect(url);
     }
   } else if (isMainDomain) {

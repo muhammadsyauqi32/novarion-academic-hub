@@ -5,6 +5,8 @@ import { BrandLogo } from '@/components/BrandLogo';
 import { ShieldAlert, KeyRound } from 'lucide-react';
 import { ChangePasswordForm } from './ChangePasswordForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ChangePasswordPage() {
   const user = await requireAuth({ allowPasswordChange: true });
 

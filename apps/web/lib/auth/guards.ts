@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { createClient } from '../supabase/server';
 import { getDb, profiles, studentWhitelist } from '@novarion/db';
 import { eq } from 'drizzle-orm';
@@ -13,8 +14,9 @@ export interface RequireAuthOptions {
 /**
  * Mengambil session dan profil pengguna terautentikasi yang terverifikasi whitelist.
  * Memastikan bahwa pengguna yang dinonaktifkan langsung kehilangan akses seketika.
+ * Menggunakan React cache() agar hanya dievaluasi sekali per siklus request.
  */
-export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
+export const getCurrentUser = cache(async (): Promise<AuthenticatedUser | null> => {
   try {
     const supabase = createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
@@ -100,7 +102,7 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     console.error('[getCurrentUser] Error fetching current user:', err);
     return null;
   }
-}
+});
 
 /**
  * Guard untuk halaman internal (Student / Admin).
