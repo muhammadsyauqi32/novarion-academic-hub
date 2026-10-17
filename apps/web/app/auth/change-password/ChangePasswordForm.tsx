@@ -47,8 +47,11 @@ export function ChangePasswordForm({ mustChangePassword }: ChangePasswordFormPro
       }
 
       if (res.redirectTo) {
-        router.push(res.redirectTo);
-        router.refresh();
+        // Gunakan window.location.assign untuk navigasi penuh yang menjamin
+        // seluruh cookie sesi HTTP yang diperbarui dikirimkan ke Server Components
+        window.location.assign(res.redirectTo);
+      } else {
+        window.location.assign('/app');
       }
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : String(err));

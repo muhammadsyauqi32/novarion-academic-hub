@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { requireAuth } from '@/lib/auth/guards';
 import { Card } from '@/components/Card';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -6,6 +7,15 @@ import { ShieldAlert, KeyRound } from 'lucide-react';
 import { ChangePasswordForm } from './ChangePasswordForm';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Ubah Kata Sandi | Novarion Academic Hub',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 export default async function ChangePasswordPage() {
   const user = await requireAuth({ allowPasswordChange: true });
@@ -30,8 +40,8 @@ export default async function ChangePasswordPage() {
           </div>
 
           {user.mustChangePassword && (
-            <div className="p-3.5 rounded-xl bg-accent-orange/15 border border-accent-orange/30 flex items-start gap-2.5 text-xs text-text-primary">
-              <ShieldAlert className="w-4 h-4 text-accent-orange shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-warning-surface border border-warning-border flex items-start gap-2.5 text-xs text-text-primary">
+              <ShieldAlert className="w-4 h-4 text-warning-text shrink-0 mt-0.5" />
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-text-primary">Tindakan Wajib Diperlukan</span>
                 <span className="text-text-muted">

@@ -33,23 +33,25 @@ export const getCurrentUser = reactCache(async (): Promise<AuthenticatedUser | n
     const db = getDb();
     const email = user.email.toLowerCase();
 
-    // 1. Cek profil dan lakukan join dengan student_whitelist untuk verifikasi status aktif
+    // 1. Cek profil langsung berdasarkan user.id
     const profileRows = await db
-      .select({
-        profile: profiles,
-        whitelist: studentWhitelist,
-      })
+      .select()
       .from(profiles)
-      .innerJoin(studentWhitelist, eq(profiles.nim, studentWhitelist.nim))
       .where(eq(profiles.id, user.id))
       .limit(1);
 
     if (profileRows.length > 0) {
-      const { profile: p, whitelist: w } = profileRows[0];
+      const p = profileRows[0];
 
-      // Jika akun di whitelist dinonaktifkan, langsung putuskan sesi
-      if (!w.isActive) {
-        console.warn(`[getCurrentUser] Akses ditolak: Mahasiswa ${w.nim} dinonaktifkan.`);
+      // Verifikasi status keaktifan pada student_whitelist
+      const whitelistRows = await db
+        .select()
+        .from(studentWhitelist)
+        .where(eq(studentWhitelist.nim, p.nim))
+        .limit(1);
+
+      if (whitelistRows.length > 0 && !whitelistRows[0].isActive) {
+        console.warn(`[getCurrentUser] Akses ditolak: Mahasiswa ${p.nim} dinonaktifkan.`);
         await supabase.auth.signOut();
         return null;
       }
@@ -80,7 +82,7 @@ export const getCurrentUser = reactCache(async (): Promise<AuthenticatedUser | n
     const w = whitelistRows[0];
     const avatarUrl = user.user_metadata?.avatar_url || null;
 
-    // 3. Auto-provision profile dari data whitelist yang valid
+    // 3. Auto-provision profile dari data whitelist yang valid secara idempotent
     const inserted = await db
       .insert(profiles)
       .values({
@@ -91,6 +93,16 @@ export const getCurrentUser = reactCache(async (): Promise<AuthenticatedUser | n
         role: w.role,
         avatarUrl,
         mustChangePassword: true,
+      })
+      .onConflictDoUpdate({
+        target: profiles.id,
+        set: {
+          nim: w.nim,
+          email: w.email,
+          fullName: w.fullName,
+          role: w.role,
+          updatedAt: new Date(),
+        },
       })
       .returning();
 

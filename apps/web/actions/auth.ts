@@ -275,18 +275,25 @@ export async function changePasswordAction(formData: FormData): Promise<ChangePa
   // 2. Perbarui kata sandi dan set mustChangePassword = false
   await updateUserPassword(user.id, newPassword);
 
-  // Perbarui juga sesi pengguna saat ini jika memungkinkan
+  // 3. Perbarui session token Supabase Auth via createClient() agar session cookie di browser tetap aktif dan valid
   try {
     const supabase = createClient();
-    await supabase.auth.updateUser({ password: newPassword });
-  } catch {
-    // Sesi tetap valid atau diperbarui via Supabase Admin API
+    await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: newPassword,
+    });
+  } catch (refreshErr) {
+    console.warn('[changePasswordAction] Gagal memperbarui session cookie dengan password baru:', refreshErr);
   }
 
+  // 4. Revalidate cache yang relevan HANYA untuk role pengguna tersebut
+  // Menghindari revalidasi /admin bagi mahasiswa biasa yang memicu guard redirect exception
   revalidatePath('/app/account');
-  revalidatePath('/admin');
-  revalidatePath('/app');
-  revalidatePath('/auth/change-password');
+  if (user.role === 'admin') {
+    revalidatePath('/admin');
+  } else {
+    revalidatePath('/app');
+  }
 
   const targetUrl = user.role === 'admin' ? '/admin' : '/app';
   return {
