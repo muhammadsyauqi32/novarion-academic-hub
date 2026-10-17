@@ -8,10 +8,25 @@ import { Info, Send } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function NewAgendaPage() {
-  await requireAuth();
+  const user = await requireAuth();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-6">
+      {user.role === 'admin' && (
+        <div className="p-4 rounded-xl bg-teal-deep/10 border border-teal-deep/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 text-teal-deep">
+            <Info className="w-4 h-4 shrink-0" />
+            <span>
+              Anda login sebagai Admin. Untuk langsung mempublikasikan agenda resmi tanpa antrean review, gunakan form di workspace admin.
+            </span>
+          </div>
+          <Link href="/admin/agendas" className="shrink-0">
+            <Button variant="primary" size="sm" className="text-xs">
+              Buka Admin Agendas
+            </Button>
+          </Link>
+        </div>
+      )}
       <div>
         <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight">
           Ajukan Agenda Baru

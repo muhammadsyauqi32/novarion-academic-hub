@@ -14,6 +14,7 @@ const config: Config = {
           'mint-soft': '#C9FBD4',
           cream: '#EAEAB7',
           orange: '#FFAE5D',
+          navy: '#0D1B2A',
         },
         canvas: '#F8FBF9',
         surface: {

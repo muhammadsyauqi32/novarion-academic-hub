@@ -22,18 +22,17 @@ export function BrandLogo({ href = '/', size = 'md', showTagline = false }: Bran
 
   const content = (
     <div className="flex items-center gap-2.5 group">
-      {/* Temporary generic 'N' mark placeholder */}
       <div
-        className={`${markSizes[size]} bg-brand-primary text-text-primary font-heading font-black rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105`}
+        className={`${markSizes[size]} bg-gradient-to-br from-[#41C2A1] to-[#176C5B] text-white font-heading font-black rounded-xl flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 tracking-tighter`}
       >
-        N
+        NV
       </div>
       <div className="flex flex-col">
-        <span className={`font-heading font-extrabold tracking-tight text-text-primary ${sizeClasses[size]}`}>
+        <span className={`font-heading font-black tracking-tight text-text-primary ${sizeClasses[size]}`}>
           NOVARION
         </span>
         {showTagline && (
-          <span className="text-[11px] font-medium text-text-muted -mt-1 tracking-wide">
+          <span className="text-[10px] font-semibold text-text-muted -mt-1 tracking-wider uppercase">
             Academic Hub
           </span>
         )}
