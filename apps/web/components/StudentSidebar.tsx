@@ -14,6 +14,7 @@ import {
   Send, 
   User, 
   ShieldAlert,
+  ArrowRight,
   LogOut
 } from 'lucide-react';
 import { UserRole } from '@novarion/shared';
@@ -56,7 +57,7 @@ export function StudentSidebar({ userRole, userName, userNim }: StudentSidebarPr
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-brand-mint-soft text-text-primary font-semibold'
+                    ? 'bg-brand-mint-soft text-text-primary font-semibold shadow-xs'
                     : 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
                 }`}
               >
@@ -72,10 +73,13 @@ export function StudentSidebar({ userRole, userName, userNim }: StudentSidebarPr
         {userRole === 'admin' && (
           <Link
             href="/admin"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-teal-deep/10 text-teal-deep text-xs font-semibold hover:bg-teal-deep/15 transition-colors"
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-teal-deep text-white text-xs font-bold hover:bg-teal-700 transition-colors shadow-xs"
           >
-            <ShieldAlert className="w-4 h-4 text-teal-deep" />
-            <span>Workspace Admin</span>
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-white" />
+              <span>Workspace Admin</span>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}
 

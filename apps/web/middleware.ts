@@ -16,11 +16,24 @@ export async function middleware(request: NextRequest) {
   const isProdNovarion = hostname.includes('novarion.web.id');
   const sharedDomain = isProdNovarion ? '.novarion.web.id' : undefined;
 
+  const pathname = request.nextUrl.pathname;
+  const isHubSubdomain = hostname.startsWith('hub.');
+  const isMainDomain = !isHubSubdomain && (hostname === 'novarion.web.id' || hostname === 'www.novarion.web.id');
+
   const allCookies = request.cookies.getAll();
   const hasAuthCookie = allCookies.some((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
 
-  // 1. Sinkronkan sesi Supabase Auth & refresh cookies jika terdapat auth cookie
-  if (supabaseUrl && supabaseAnonKey && hasAuthCookie) {
+  // Jalankan sinkronisasi Supabase Auth HANYA pada route yang memerlukan sesi terotentikasi.
+  // Jangan bebani landing page publik atau aset statis dengan HTTP network roundtrip auth yang tidak perlu.
+  const requiresAuthSync =
+    hasAuthCookie &&
+    (isHubSubdomain ||
+      pathname.startsWith('/admin') ||
+      pathname.startsWith('/app') ||
+      pathname.startsWith('/auth') ||
+      pathname === '/login');
+
+  if (supabaseUrl && supabaseAnonKey && requiresAuthSync) {
     try {
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {
@@ -44,7 +57,6 @@ export async function middleware(request: NextRequest) {
             request.cookies.set({ name, value: '', ...cookieOptions });
             response.cookies.set({ name, value: '', ...cookieOptions });
           },
-
         },
       });
 
@@ -65,10 +77,6 @@ export async function middleware(request: NextRequest) {
     });
     return redirectRes;
   };
-
-  // Deteksi domain dan subdomain
-  const isHubSubdomain = hostname.startsWith('hub.');
-  const isMainDomain = !isHubSubdomain && (hostname === 'novarion.web.id' || hostname === 'www.novarion.web.id');
 
   // 2. Multi-Subdomain Routing Logic
   if (isHubSubdomain) {

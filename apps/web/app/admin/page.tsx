@@ -21,35 +21,36 @@ export default async function AdminDashboardPage() {
   await requireAdmin();
   const db = getDb();
 
-  // 1. Hitung total mahasiswa whitelist
-  const whitelistRows = await db.select().from(studentWhitelist);
+  // Eksekusi seluruh metrik operasional secara paralel tanpa waterfall
+  const [
+    whitelistRows,
+    courseRows,
+    pendingAgendas,
+    waConns,
+    queuedJobs,
+    failedJobs,
+  ] = await Promise.all([
+    db.select({ id: studentWhitelist.id, isActive: studentWhitelist.isActive }).from(studentWhitelist),
+    db.select({ id: courses.id }).from(courses),
+    db
+      .select({
+        id: agendas.id,
+        title: agendas.title,
+        category: agendas.category,
+        scope: agendas.scope,
+      })
+      .from(agendas)
+      .where(eq(agendas.status, 'pending')),
+    db.select().from(whatsappConnections).limit(1),
+    db.select({ id: reminderJobs.id }).from(reminderJobs).where(eq(reminderJobs.status, 'queued')),
+    db.select({ id: reminderJobs.id }).from(reminderJobs).where(eq(reminderJobs.status, 'failed')),
+  ]);
+
   const totalStudents = whitelistRows.length;
   const activeStudents = whitelistRows.filter((s) => s.isActive).length;
-
-  // 2. Hitung total mata kuliah
-  const courseRows = await db.select().from(courses);
   const totalCourses = courseRows.length;
-
-  // 3. Hitung status pengajuan agenda pending
-  const pendingAgendas = await db
-    .select()
-    .from(agendas)
-    .where(eq(agendas.status, 'pending'));
-
-  // 4. Ambil status Baileys Gateway nyata dari database
-  const waConns = await db.select().from(whatsappConnections).limit(1);
   const waConn = waConns[0] || null;
 
-  // 5. Hitung reminder jobs
-  const queuedJobs = await db
-    .select()
-    .from(reminderJobs)
-    .where(eq(reminderJobs.status, 'queued'));
-
-  const failedJobs = await db
-    .select()
-    .from(reminderJobs)
-    .where(eq(reminderJobs.status, 'failed'));
 
   return (
     <div className="flex flex-col gap-6">

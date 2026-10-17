@@ -3,14 +3,14 @@ import { requireAuth } from '@/lib/auth/guards';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
-import { Plus, Calendar, ListTodo } from 'lucide-react';
+import { Plus, ListTodo, ShieldAlert, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getDb, agendas } from '@novarion/db';
 import { eq, desc } from 'drizzle-orm';
 import { formatWIBShort } from '@novarion/shared';
 
 export default async function AgendasListPage() {
-  await requireAuth();
+  const user = await requireAuth();
   const db = getDb();
 
   const allAgendas = await db
@@ -21,6 +21,23 @@ export default async function AgendasListPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {user.role === 'admin' && (
+        <div className="p-4 rounded-xl bg-teal-deep/10 border border-teal-deep/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 text-teal-deep">
+            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <span>
+              Anda login sebagai Administrator. Untuk menambah, menyunting, atau menghapus agenda resmi secara langsung, buka workspace admin.
+            </span>
+          </div>
+          <Link href="/admin/agendas" className="shrink-0">
+            <Button variant="primary" size="sm" className="gap-1.5 text-xs">
+              <span>Buka Kelola Agenda Admin</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight">

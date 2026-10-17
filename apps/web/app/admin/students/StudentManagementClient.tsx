@@ -49,17 +49,51 @@ export function StudentManagementClient({
   const [isAdding, setIsAdding] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Modal Password Sementara (One-Time Display)
+  // Modal Password Sementara (One-Time Display dengan persistensi sessionStorage)
   const [tempPasswordModal, setTempPasswordModal] = useState<{
     nim: string;
     fullName: string;
+    email?: string;
     password: string;
     isReset?: boolean;
   } | null>(null);
 
-  const [copied, setCopied] = useState(false);
+  const [copiedType, setCopiedType] = useState<'password' | 'message' | null>(null);
   const [isResetting, setIsResetting] = useState<string | null>(null);
   const [isToggling, setIsToggling] = useState<string | null>(null);
+
+  // Muat modal yang belum ditutup dari sessionStorage saat mount (tahan refresh)
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem('novarion_pending_temp_password');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.password && parsed.nim) {
+          setTempPasswordModal(parsed);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Helper untuk menyimpan atau membersihkan sessionStorage
+  const updateTempPasswordModal = (
+    data: {
+      nim: string;
+      fullName: string;
+      email?: string;
+      password: string;
+      isReset?: boolean;
+    } | null
+  ) => {
+    setTempPasswordModal(data);
+    try {
+      if (data) {
+        sessionStorage.setItem('novarion_pending_temp_password', JSON.stringify(data));
+      } else {
+        sessionStorage.removeItem('novarion_pending_temp_password');
+      }
+    } catch {}
+  };
 
   // Sinkronkan state saat props data server diperbarui
   useEffect(() => {
@@ -69,12 +103,35 @@ export function StudentManagementClient({
   const handleCopyPassword = () => {
     if (!tempPasswordModal) return;
     navigator.clipboard.writeText(tempPasswordModal.password);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedType('password');
+    setTimeout(() => setCopiedType(null), 2500);
+  };
+
+  const handleCopyBroadcastMessage = () => {
+    if (!tempPasswordModal) return;
+    const loginUrl = 'https://hub.novarion.web.id/login';
+    const msg = `*AKUN NOVARION ACADEMIC HUB*
+Halo *${tempPasswordModal.fullName}*, akun Anda telah ${tempPasswordModal.isReset ? 'direset' : 'diaktifkan'}:
+
+• *NIM:* ${tempPasswordModal.nim}
+• *Kata Sandi Sementara:* ${tempPasswordModal.password}
+• *Tautan Masuk:* ${loginUrl}
+
+*Instruksi Login Pertama:*
+1. Buka ${loginUrl} lalu masuk dengan NIM & kata sandi sementara di atas.
+2. Anda akan otomatis dialihkan ke halaman pengaturan kata sandi baru.
+3. Buat kata sandi pribadi yang aman (minimal 8 karakter).
+4. Setelah berhasil disimpan, Anda langsung dapat mengakses seluruh agenda, tugas, dan materi kuliah.
+
+_Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
+
+    navigator.clipboard.writeText(msg);
+    setCopiedType('message');
+    setTimeout(() => setCopiedType(null), 2500);
   };
 
   const handleCloseModal = () => {
-    setTempPasswordModal(null);
+    updateTempPasswordModal(null);
     router.refresh();
   };
 
@@ -89,6 +146,7 @@ export function StudentManagementClient({
     const formData = new FormData(formElement);
     const nim = (formData.get('nim') as string || '').trim().toUpperCase();
     const fullName = (formData.get('full_name') as string || '').trim();
+    const email = (formData.get('email') as string || '').trim();
 
     try {
       const res = await addWhitelistStudentAction(formData);
@@ -99,9 +157,10 @@ export function StudentManagementClient({
       }
 
       if (res.temporaryPassword) {
-        setTempPasswordModal({
+        updateTempPasswordModal({
           nim,
           fullName,
+          email,
           password: res.temporaryPassword,
           isReset: false,
         });
@@ -131,9 +190,10 @@ export function StudentManagementClient({
       }
 
       if (res.temporaryPassword) {
-        setTempPasswordModal({
+        updateTempPasswordModal({
           nim: student.nim,
           fullName: student.fullName,
+          email: student.email,
           password: res.temporaryPassword,
           isReset: true,
         });
@@ -178,76 +238,154 @@ export function StudentManagementClient({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Modal Password Sementara yang Aman (One-Time Display) */}
+      {/* Modal Password Sementara (One-Time Display & Persistent across refresh) */}
       {tempPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <Card className="w-full max-w-md p-6 bg-surface border-border shadow-2xl flex flex-col gap-5">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-teal-deep/15 text-teal-deep flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <Card className="w-full max-w-lg p-6 bg-surface border-border shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-deep/15 text-teal-deep flex items-center justify-center shrink-0">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-base text-text-primary">
-                    {tempPasswordModal.isReset
-                      ? 'Kata Sandi Berhasil Direset'
-                      : 'Akun Mahasiswa Berhasil Dibuat'}
-                  </h3>
-                  <p className="text-xs text-text-muted">
-                    {tempPasswordModal.fullName} ({tempPasswordModal.nim})
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-heading font-bold text-base text-text-primary">
+                      {tempPasswordModal.isReset
+                        ? 'Kata Sandi Berhasil Direset'
+                        : 'Akun Mahasiswa Berhasil Dibuat'}
+                    </h3>
+                    <Badge variant={tempPasswordModal.isReset ? 'orange' : 'success'} size="sm">
+                      {tempPasswordModal.isReset ? 'Reset' : 'Baru'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    Data kredensial login awal mahasiswa
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="p-1 rounded-lg text-text-muted hover:text-text-primary transition-colors"
+                className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-soft transition-colors"
+                title="Tutup dialog"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-surface-soft border border-border flex flex-col gap-2">
-              <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
-                Kata Sandi Sementara (One-Time Display)
-              </span>
-              <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-surface border border-border">
-                <code className="font-mono text-sm font-bold text-teal-deep tracking-wider select-all">
+            {/* Identitas Mahasiswa Card */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-surface-soft border border-border text-xs">
+              <div>
+                <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block">
+                  Nomor Induk Mahasiswa
+                </span>
+                <span className="font-mono font-bold text-text-primary text-sm mt-0.5 block">
+                  {tempPasswordModal.nim}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block">
+                  Nama Mahasiswa
+                </span>
+                <span className="font-medium text-text-primary truncate block mt-0.5">
+                  {tempPasswordModal.fullName}
+                </span>
+              </div>
+              {tempPasswordModal.email && (
+                <div className="col-span-2 pt-2 border-t border-border/60">
+                  <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block">
+                    Email Resmi
+                  </span>
+                  <span className="font-mono text-text-muted text-[11px]">
+                    {tempPasswordModal.email}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Password Display Card */}
+            <div className="p-4 rounded-xl bg-surface-soft border border-border flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+                  Kata Sandi Sementara (One-Time Display)
+                </span>
+                <Badge variant="orange" size="sm">
+                  Wajib Ganti
+                </Badge>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-surface border border-border shadow-inner">
+                <code className="font-mono text-base font-bold text-teal-deep tracking-wider select-all">
                   {tempPasswordModal.password}
                 </code>
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={handleCopyPassword}
-                  className="gap-1.5 text-xs py-1 px-2.5"
+                  className="gap-1.5 text-xs py-1.5 px-3 shrink-0"
                 >
-                  {copied ? (
+                  {copiedType === 'password' ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-teal-deep" />
-                      <span>Tersalin</span>
+                      <span className="text-teal-deep font-semibold">Tersalin</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Salin</span>
+                      <span>Salin Password</span>
                     </>
                   )}
                 </Button>
               </div>
+
+              {/* Tombol Salin Format Lengkap untuk WhatsApp */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyBroadcastMessage}
+                className="w-full gap-2 text-xs py-2 mt-1 border-dashed justify-center text-text-primary hover:border-teal-deep"
+              >
+                {copiedType === 'message' ? (
+                  <>
+                    <Check className="w-4 h-4 text-teal-deep" />
+                    <span className="text-teal-deep font-semibold">Format Pesan WhatsApp Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-text-muted" />
+                    <span>Salin Format Pesan Lengkap (WhatsApp / Email)</span>
+                  </>
+                )}
+              </Button>
             </div>
 
-            <div className="text-[11px] text-text-muted leading-relaxed">
-              ⚠️ Berikan kata sandi ini kepada mahasiswa bersangkutan. Mahasiswa akan diwajibkan
-              mengganti kata sandi ini pada saat pertama kali login sebelum dapat mengakses sistem.
+            {/* Instruksi Alur Login Pertama */}
+            <div className="p-3.5 rounded-xl bg-surface-soft/60 border border-border flex flex-col gap-2 text-xs">
+              <span className="font-semibold text-text-primary flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 text-teal-deep" />
+                Alur Akses Login Pertama Mahasiswa:
+              </span>
+              <ol className="list-decimal list-inside space-y-1 text-text-muted text-[11px] leading-relaxed">
+                <li>Berikan NIM & kata sandi sementara kepada mahasiswa bersangkutan.</li>
+                <li>Mahasiswa mengakses portal <span className="font-mono text-text-primary">hub.novarion.web.id/login</span>.</li>
+                <li>Sistem secara otomatis mengarahkan ke formulir perubahan kata sandi pertama.</li>
+                <li>Setelah kata sandi baru disimpan, mahasiswa dapat langsung mengakses dashboard akademik.</li>
+              </ol>
+            </div>
+
+            {/* Warning Catatan */}
+            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+              <strong>Catatan Keamanan:</strong> Kata sandi sementara ini hanya ditampilkan satu kali demi melindungi privasi akun. Pastikan Anda telah menyalinnya sebelum menutup jendela ini.
             </div>
 
             <Button
               variant="primary"
               size="sm"
               onClick={handleCloseModal}
-              className="w-full font-semibold"
+              className="w-full font-semibold py-2.5"
             >
-              Selesai & Tutup
+              Saya Telah Menyalin Kredensial & Tutup
             </Button>
           </Card>
         </div>

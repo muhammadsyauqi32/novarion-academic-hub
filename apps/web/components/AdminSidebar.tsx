@@ -17,54 +17,59 @@ import {
   Network,
   Clock,
   History,
-  ArrowLeft
+  Eye,
+  LogOut
 } from 'lucide-react';
 
-export function AdminSidebar() {
+export const ADMIN_NAV_SECTIONS = [
+  {
+    title: 'Operasional',
+    items: [
+      { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
+      { label: 'Review Pengajuan', href: '/admin/submissions', icon: CheckCircle },
+      { label: 'Kelola Agenda', href: '/admin/agendas', icon: CalendarCheck },
+    ],
+  },
+  {
+    title: 'Data Angkatan',
+    items: [
+      { label: 'Struktur Akademik', href: '/admin/academics', icon: GraduationCap },
+      { label: 'Mahasiswa & Whitelist', href: '/admin/students', icon: Users },
+      { label: 'Impor Data CSV', href: '/admin/imports', icon: Upload },
+    ],
+  },
+  {
+    title: 'Konten',
+    items: [
+      { label: 'File Materi', href: '/admin/materials', icon: FolderOpen },
+      { label: 'Knowledge Hub', href: '/admin/knowledge', icon: HelpCircle },
+    ],
+  },
+  {
+    title: 'WhatsApp & Reminder',
+    items: [
+      { label: 'WhatsApp Gateway', href: '/admin/whatsapp', icon: MessageSquare },
+      { label: 'Mapping Grup', href: '/admin/whatsapp/groups', icon: Network },
+      { label: 'Log Reminder', href: '/admin/reminders', icon: Clock },
+    ],
+  },
+  {
+    title: 'Keamanan',
+    items: [
+      { label: 'Audit Trail', href: '/admin/audit', icon: History },
+    ],
+  },
+];
+
+interface AdminSidebarProps {
+  onNavigate?: () => void;
+}
+
+export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
 
-  const sections = [
-    {
-      title: 'Operasional',
-      items: [
-        { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
-        { label: 'Review Pengajuan', href: '/admin/submissions', icon: CheckCircle },
-        { label: 'Kelola Agenda', href: '/admin/agendas', icon: CalendarCheck },
-      ],
-    },
-    {
-      title: 'Data Angkatan',
-      items: [
-        { label: 'Struktur Akademik', href: '/admin/academics', icon: GraduationCap },
-        { label: 'Mahasiswa & Whitelist', href: '/admin/students', icon: Users },
-        { label: 'Impor Data CSV', href: '/admin/imports', icon: Upload },
-      ],
-    },
-    {
-      title: 'Konten',
-      items: [
-        { label: 'File Materi', href: '/admin/materials', icon: FolderOpen },
-        { label: 'Knowledge Hub', href: '/admin/knowledge', icon: HelpCircle },
-      ],
-    },
-    {
-      title: 'WhatsApp & Reminder',
-      items: [
-        { label: 'WhatsApp Gateway', href: '/admin/whatsapp', icon: MessageSquare },
-        { label: 'Mapping Grup', href: '/admin/whatsapp/groups', icon: Network },
-        { label: 'Log Reminder', href: '/admin/reminders', icon: Clock },
-      ],
-    },
-    {
-      title: 'Keamanan',
-      items: [
-        { label: 'Audit Trail', href: '/admin/audit', icon: History },
-      ],
-    },
-  ];
-
   return (
-    <aside className="w-64 bg-surface border-r border-border h-screen sticky top-0 flex flex-col justify-between py-5 px-3 select-none overflow-y-auto">
+    <aside className="w-64 bg-surface border-r border-border h-full flex flex-col justify-between py-5 px-3 select-none overflow-y-auto">
       <div className="flex flex-col gap-5">
         <div className="px-3 flex flex-col gap-2">
           <BrandLogo size="md" />
@@ -73,16 +78,8 @@ export function AdminSidebar() {
           </div>
         </div>
 
-        <Link
-          href="/app"
-          className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-text-muted hover:text-text-primary hover:bg-surface-soft rounded-lg transition-colors border border-border/60"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Kembali ke App Mahasiswa</span>
-        </Link>
-
         <nav className="flex flex-col gap-5">
-          {sections.map((sec) => (
+          {ADMIN_NAV_SECTIONS.map((sec) => (
             <div key={sec.title} className="flex flex-col gap-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-text-muted/70 px-3 mb-1">
                 {sec.title}
@@ -95,9 +92,10 @@ export function AdminSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={onNavigate}
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                       isActive
-                        ? 'bg-teal-deep text-white font-semibold shadow-sm'
+                        ? 'bg-teal-deep text-white font-semibold shadow-xs'
                         : 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
                     }`}
                   >
@@ -111,8 +109,40 @@ export function AdminSidebar() {
         </nav>
       </div>
 
-      <div className="pt-4 border-t border-border px-3 text-[11px] text-text-muted">
-        Novarion Hub v3.0 • Admin Panel
+      <div className="flex flex-col gap-3 pt-4 border-t border-border mt-6">
+        {/* Mode Mahasiswa Switcher */}
+        <div className="flex flex-col gap-1.5 px-1">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-text-muted/70">
+            Mode Tampilan
+          </span>
+          <Link
+            href="/app"
+            onClick={onNavigate}
+            className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-text-primary hover:bg-surface-soft rounded-lg transition-colors border border-border/70 group"
+          >
+            <div className="flex items-center gap-2">
+              <Eye className="w-3.5 h-3.5 text-teal-deep group-hover:scale-110 transition-transform" />
+              <span>Mode Mahasiswa</span>
+            </div>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold">
+              Pratinjau
+            </span>
+          </Link>
+        </div>
+
+        <div className="flex items-center justify-between px-2 pt-2 border-t border-border/50 text-[11px] text-text-muted">
+          <span>Novarion v3.0</span>
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              title="Keluar dari akun admin"
+              className="flex items-center gap-1 text-[11px] text-text-muted hover:text-danger-text transition-colors p-1 rounded"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Keluar</span>
+            </button>
+          </form>
+        </div>
       </div>
     </aside>
   );
