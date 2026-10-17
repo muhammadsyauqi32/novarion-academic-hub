@@ -1,6 +1,6 @@
 import React from 'react';
 import { requireAuth } from '@/lib/auth/guards';
-import { getDb, agendas, personalTasks, courses } from '@novarion/db';
+import { getDb, agendas, personalTasks, courses, agendaTargets } from '@novarion/db';
 import { eq, desc, and } from 'drizzle-orm';
 import { InteractiveCalendar, CalendarEvent } from './InteractiveCalendar';
 
@@ -16,13 +16,16 @@ export default async function CalendarPage() {
         description: agendas.description,
         category: agendas.category,
         scope: agendas.scope,
+        startTime: agendas.startTime,
         deadline: agendas.deadline,
         locationOrLink: agendas.locationOrLink,
         sourceReference: agendas.sourceReference,
         status: agendas.status,
         createdBy: agendas.createdBy,
+        courseId: agendaTargets.courseId,
       })
       .from(agendas)
+      .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
       .where(eq(agendas.status, 'published'))
       .orderBy(desc(agendas.deadline)),
 
@@ -46,13 +49,16 @@ export default async function CalendarPage() {
             description: agendas.description,
             category: agendas.category,
             scope: agendas.scope,
+            startTime: agendas.startTime,
             deadline: agendas.deadline,
             locationOrLink: agendas.locationOrLink,
             sourceReference: agendas.sourceReference,
             status: agendas.status,
             createdBy: agendas.createdBy,
+            courseId: agendaTargets.courseId,
           })
           .from(agendas)
+          .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
           .where(eq(agendas.status, 'pending'))
           .orderBy(desc(agendas.createdAt))
       : db
@@ -62,13 +68,16 @@ export default async function CalendarPage() {
             description: agendas.description,
             category: agendas.category,
             scope: agendas.scope,
+            startTime: agendas.startTime,
             deadline: agendas.deadline,
             locationOrLink: agendas.locationOrLink,
             sourceReference: agendas.sourceReference,
             status: agendas.status,
             createdBy: agendas.createdBy,
+            courseId: agendaTargets.courseId,
           })
           .from(agendas)
+          .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
           .where(and(eq(agendas.createdBy, user.id), eq(agendas.status, 'pending')))
           .orderBy(desc(agendas.createdAt)),
 
@@ -88,7 +97,9 @@ export default async function CalendarPage() {
       description: item.description,
       category: item.category,
       scope: item.scope,
+      startTime: item.startTime ? item.startTime.toISOString() : null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      courseId: item.courseId || null,
       locationOrLink: item.locationOrLink,
       sourceReference: item.sourceReference,
       status: item.status,
@@ -101,7 +112,9 @@ export default async function CalendarPage() {
       description: item.description,
       category: 'pribadi',
       scope: 'pribadi',
+      startTime: null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      courseId: null,
       locationOrLink: null,
       sourceReference: null,
       status: item.status,
@@ -114,7 +127,9 @@ export default async function CalendarPage() {
       description: item.description,
       category: item.category,
       scope: item.scope,
+      startTime: item.startTime ? item.startTime.toISOString() : null,
       deadline: item.deadline ? item.deadline.toISOString() : null,
+      courseId: item.courseId || null,
       locationOrLink: item.locationOrLink,
       sourceReference: item.sourceReference,
       status: 'pending',

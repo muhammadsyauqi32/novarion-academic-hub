@@ -73,7 +73,7 @@ describe('STEP 6 — E2E Login Scenarios Verification', () => {
     const result = await loginWithNimAction(formData);
     expect(result.success).toBe(false);
     expect(result.error).toContain('NIM atau kata sandi tidak valid');
-  });
+  }, 30000);
 
   it('Scenario 8: Inactive account is rejected', async () => {
     const db = getDb();

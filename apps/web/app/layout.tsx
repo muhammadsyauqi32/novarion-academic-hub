@@ -1,7 +1,20 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
+import { Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
 import { TopProgressBar } from '@/components/TopProgressBar';
 import './globals.css';
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://novarion.web.id'),
@@ -66,7 +79,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className="min-h-screen bg-canvas text-text-primary antialiased selection:bg-brand-mint-soft selection:text-text-primary">
+      <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} font-sans min-h-screen bg-canvas text-text-primary antialiased selection:bg-brand-mint-soft selection:text-text-primary`}>
         <Suspense fallback={null}>
           <TopProgressBar />
         </Suspense>

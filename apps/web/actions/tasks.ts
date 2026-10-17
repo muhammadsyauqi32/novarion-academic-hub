@@ -88,3 +88,43 @@ export async function toggleTaskStatusAction(taskId: string, currentStatus: stri
   }
 }
 
+export async function updatePersonalTaskAction(formData: FormData) {
+  const user = await requireAuth();
+  const db = getDb();
+
+  const taskId = String(formData.get('task_id') || '').trim();
+  const title = String(formData.get('title') || '').trim();
+  const description = String(formData.get('description') || '').trim() || null;
+  const deadlineRaw = formData.get('deadline');
+  const deadline = deadlineRaw ? new Date(String(deadlineRaw)) : null;
+
+  if (!taskId || !title) {
+    return { success: false, error: 'ID tugas dan judul wajib diisi.' };
+  }
+
+  try {
+    await db
+      .update(personalTasks)
+      .set({
+        title,
+        description,
+        deadline,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(personalTasks.id, taskId),
+          eq(personalTasks.profileId, user.id) // Security: Strict ownership check against IDOR
+        )
+      );
+
+    revalidatePath('/app/tasks');
+    revalidatePath('/app/calendar');
+    revalidatePath('/app');
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: String(err) };
+  }
+}
+
+

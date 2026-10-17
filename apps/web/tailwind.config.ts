@@ -42,8 +42,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-heading)', 'Space Grotesk', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         card: '14px',

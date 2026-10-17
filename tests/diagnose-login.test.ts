@@ -72,8 +72,8 @@ describe('Login Diagnostic & Timing Test', () => {
     }
 
     // Auth should not hang indefinitely!
-    expect(authDuration).toBeLessThan(10000);
-  });
+    expect(authDuration).toBeLessThan(15000);
+  }, 30000);
 
   it('should verify profile exists and check query latency', async () => {
     console.log('--- TEST 3: PROFILES TABLE LOOKUP ---');

@@ -25,9 +25,19 @@ import {
   ShieldCheck,
   Trash2,
   Search,
+  Pencil,
 } from 'lucide-react';
-import { submitAgendaAction, createAdminAgendaAction, deleteAgendaAction } from '@/actions/agendas';
-import { addPersonalTaskAction, deletePersonalTaskAction } from '@/actions/tasks';
+import {
+  submitAgendaAction,
+  createAdminAgendaAction,
+  deleteAgendaAction,
+  updateAdminAgendaAction,
+} from '@/actions/agendas';
+import {
+  addPersonalTaskAction,
+  deletePersonalTaskAction,
+  updatePersonalTaskAction,
+} from '@/actions/tasks';
 import { formatWIBShort, formatWIB } from '@novarion/shared';
 
 export interface CalendarEvent {
@@ -36,7 +46,9 @@ export interface CalendarEvent {
   description: string | null;
   category: string; // 'tugas' | 'kuis' | 'ujian' | 'praktikum' | 'kuliah' | 'kegiatan' | 'pribadi'
   scope: string; // 'angkatan' | 'mata_kuliah' | 'kelas' | 'kelompok' | 'pribadi'
+  startTime?: string | null;
   deadline: string | null; // ISO string
+  courseId?: string | null;
   locationOrLink: string | null;
   sourceReference: string | null;
   status: string; // 'published' | 'pending' | 'todo' | 'done'
@@ -81,6 +93,7 @@ export function InteractiveCalendar({
   // Filter state
   const [eventTypeFilter, setEventTypeFilter] = useState<'all' | 'official' | 'personal' | 'proposal'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCourse, setSelectedCourse] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modals state
@@ -90,9 +103,19 @@ export function InteractiveCalendar({
     userRole === 'admin' ? 'official' : 'personal'
   );
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [isEditingEvent, setIsEditingEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [editFormError, setEditFormError] = useState<string | null>(null);
+
+  // Quick lookup for courses
+  const courseMap = useMemo(() => {
+    const map = new Map<string, CourseItem>();
+    courses.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [courses]);
 
   // Month & Year calculations
   const year = currentDate.getFullYear();
@@ -113,6 +136,22 @@ export function InteractiveCalendar({
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   };
 
+  // Helper to format ISO to datetime-local value (YYYY-MM-DDTHH:mm)
+  const formatForDateTimeLocal = (isoString?: string | null) => {
+    if (!isoString) return '';
+    try {
+      const d = new Date(isoString);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${y}-${m}-${day}T${hours}:${mins}`;
+    } catch {
+      return '';
+    }
+  };
+
   // Filter events
   const filteredEvents = useMemo(() => {
     return initialEvents.filter((ev) => {
@@ -122,6 +161,10 @@ export function InteractiveCalendar({
       }
       // Category filter
       if (selectedCategory !== 'all' && ev.category !== selectedCategory) {
+        return false;
+      }
+      // Course filter
+      if (selectedCourse !== 'all' && ev.courseId !== selectedCourse) {
         return false;
       }
       // Search query
@@ -134,7 +177,7 @@ export function InteractiveCalendar({
       }
       return true;
     });
-  }, [initialEvents, eventTypeFilter, selectedCategory, searchQuery]);
+  }, [initialEvents, eventTypeFilter, selectedCategory, selectedCourse, searchQuery]);
 
   // Map events to date key YYYY-MM-DD
   const eventsByDate = useMemo(() => {
@@ -263,6 +306,45 @@ export function InteractiveCalendar({
       alert(err instanceof Error ? err.message : String(err));
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Event Edit Handler
+  const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isSubmittingEdit || !selectedEvent) return;
+
+    setIsSubmittingEdit(true);
+    setEditFormError(null);
+
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      if (selectedEvent.eventType === 'personal') {
+        formData.append('task_id', selectedEvent.id);
+        const res = await updatePersonalTaskAction(formData);
+        if (!res.success) {
+          setEditFormError(res.error || 'Gagal memperbarui catatan pribadi.');
+          setIsSubmittingEdit(false);
+          return;
+        }
+      } else {
+        formData.append('agenda_id', selectedEvent.id);
+        const res = await updateAdminAgendaAction(formData);
+        if (!res.success) {
+          setEditFormError(res.error || 'Gagal memperbarui agenda resmi.');
+          setIsSubmittingEdit(false);
+          return;
+        }
+      }
+
+      setIsEditingEvent(false);
+      setSelectedEvent(null);
+      setIsSubmittingEdit(false);
+      router.refresh();
+    } catch (err) {
+      setEditFormError(err instanceof Error ? err.message : String(err));
+      setIsSubmittingEdit(false);
     }
   };
 
@@ -512,8 +594,8 @@ export function InteractiveCalendar({
           </div>
         </div>
 
-        {/* Filter Strip: Event Types & Categories */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border">
+        {/* Filter Strip: Event Types, Categories & Courses */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-border">
           {/* Event Type Filter Tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] font-semibold text-text-muted mr-1">Tipe:</span>
@@ -537,22 +619,43 @@ export function InteractiveCalendar({
             ))}
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-text-muted mr-1">Kategori:</span>
-            {['all', 'tugas', 'praktikum', 'ujian', 'kuis', 'kuliah', 'kegiatan'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-2 py-0.5 rounded-md text-[11px] font-medium capitalize transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-surface text-teal-deep border border-teal-deep/50 font-bold'
-                    : 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
-                }`}
-              >
-                {cat === 'all' ? 'Semua' : cat}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Course Filter Dropdown */}
+            {courses.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-text-muted">Mata Kuliah:</span>
+                <select
+                  value={selectedCourse}
+                  onChange={(e) => setSelectedCourse(e.target.value)}
+                  className="px-2 py-1 text-xs bg-surface-soft border border-border rounded-lg text-text-primary focus:outline-none focus:border-teal-deep"
+                >
+                  <option value="all">Semua Mata Kuliah</option>
+                  {courses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.code} - {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Category Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-text-muted mr-1">Kategori:</span>
+              {['all', 'tugas', 'praktikum', 'ujian', 'kuis', 'kuliah', 'kegiatan'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-2 py-0.5 rounded-md text-[11px] font-medium capitalize transition-colors ${
+                    selectedCategory === cat
+                      ? 'bg-surface text-teal-deep border border-teal-deep/50 font-bold'
+                      : 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
+                  }`}
+                >
+                  {cat === 'all' ? 'Semua' : cat}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </Card>
@@ -687,14 +790,18 @@ export function InteractiveCalendar({
                         >
                           <div className="flex items-center justify-between gap-1 text-[10px] font-bold opacity-80 mb-1">
                             <span className="uppercase">{ev.category}</span>
-                            {ev.deadline && (
-                              <span>
+                            {ev.startTime && ev.deadline ? (
+                              <span className="font-mono">
+                                {new Date(ev.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - {new Date(ev.deadline).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            ) : ev.deadline ? (
+                              <span className="font-mono">
                                 {new Date(ev.deadline).toLocaleTimeString('id-ID', {
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}
                               </span>
-                            )}
+                            ) : null}
                           </div>
                           <h4 className="font-semibold text-xs leading-snug line-clamp-2">
                             {ev.title}
@@ -800,10 +907,18 @@ export function InteractiveCalendar({
                       <div className="text-left sm:text-right">
                         <span className="text-[10px] text-text-muted block">Waktu:</span>
                         <span className="text-xs font-bold font-mono">
-                          {new Date(ev.deadline).toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })} WIB
+                          {ev.startTime ? (
+                            <>
+                              {new Date(ev.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} – {new Date(ev.deadline).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                            </>
+                          ) : (
+                            <>
+                              {new Date(ev.deadline).toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })} WIB
+                            </>
+                          )}
                         </span>
                       </div>
                     )}
@@ -839,7 +954,7 @@ export function InteractiveCalendar({
                 className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-soft/50 cursor-pointer transition-colors"
               >
                 <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="primary" size="sm">{ev.category}</Badge>
                     {ev.eventType === 'personal' && (
                       <Badge variant="neutral" size="sm" className="bg-purple-500/10 text-purple-700 border-purple-500/30">
@@ -852,6 +967,11 @@ export function InteractiveCalendar({
                       </Badge>
                     )}
                     <span className="text-[11px] text-text-muted capitalize">• {ev.scope}</span>
+                    {ev.courseId && courseMap.has(ev.courseId) && (
+                      <span className="text-[11px] font-semibold text-teal-deep">
+                        • {courseMap.get(ev.courseId)?.code}
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="font-heading font-bold text-sm text-text-primary">
@@ -865,9 +985,13 @@ export function InteractiveCalendar({
 
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="text-left sm:text-right">
-                    <span className="text-[10px] text-text-muted block">Batas Waktu:</span>
+                    <span className="text-[10px] text-text-muted block">Batas Waktu / Jadwal:</span>
                     <span className="text-xs font-bold text-[#9E5507]">
-                      {ev.deadline ? formatWIBShort(ev.deadline) : 'Tidak ada deadline'}
+                      {ev.startTime && ev.deadline
+                        ? `${formatWIBShort(ev.startTime)} – ${formatWIBShort(ev.deadline)}`
+                        : ev.deadline
+                        ? formatWIBShort(ev.deadline)
+                        : 'Tidak ada deadline'}
                     </span>
                   </div>
                   <Button variant="outline" size="sm">
@@ -880,10 +1004,10 @@ export function InteractiveCalendar({
         </Card>
       )}
 
-      {/* MODAL 1: DETAIL AGENDA */}
+      {/* MODAL 1: DETAIL & EDIT AGENDA */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-surface rounded-modal border border-border shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+          <div className="bg-surface rounded-modal border border-border shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto">
             <div className="p-5 border-b border-border flex items-center justify-between bg-surface-soft">
               <div className="flex items-center gap-2">
                 <Badge variant="primary" size="sm">{selectedEvent.category}</Badge>
@@ -904,83 +1028,266 @@ export function InteractiveCalendar({
                 )}
               </div>
               <button
-                onClick={() => setSelectedEvent(null)}
+                onClick={() => {
+                  setSelectedEvent(null);
+                  setIsEditingEvent(false);
+                }}
                 className="p-1 rounded-lg text-text-muted hover:bg-border/40 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 flex flex-col gap-4">
-              <div>
-                <h3 className="font-heading font-extrabold text-lg text-text-primary">
-                  {selectedEvent.title}
-                </h3>
-                {selectedEvent.deadline && (
-                  <p className="text-xs font-bold text-[#9E5507] flex items-center gap-1.5 mt-2">
-                    <Clock className="w-4 h-4" />
-                    <span>Jadwal / Batas Waktu: {formatWIB(selectedEvent.deadline)}</span>
-                  </p>
+            {isEditingEvent ? (
+              /* EDIT MODE FORM */
+              <form onSubmit={handleEditSubmit} className="p-6 flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <h4 className="font-heading font-bold text-sm text-text-primary">
+                    Edit {selectedEvent.eventType === 'personal' ? 'Catatan Pribadi' : 'Agenda Resmi'}
+                  </h4>
+                  <span className="text-xs text-text-muted">ID: {selectedEvent.id.slice(0, 8)}...</span>
+                </div>
+
+                {editFormError && (
+                  <div className="p-3 rounded-lg bg-danger-surface border border-danger-border text-danger-text text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{editFormError}</span>
+                  </div>
                 )}
-              </div>
 
-              {selectedEvent.description && (
-                <div className="p-3.5 rounded-xl bg-surface-soft border border-border text-xs text-text-primary leading-relaxed whitespace-pre-wrap">
-                  {selectedEvent.description}
+                <Input
+                  name="title"
+                  label="Judul Agenda / Tugas"
+                  defaultValue={selectedEvent.title}
+                  required
+                />
+
+                {selectedEvent.eventType !== 'personal' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-semibold text-text-primary">Kategori</label>
+                      <select
+                        name="category"
+                        defaultValue={selectedEvent.category}
+                        className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                      >
+                        <option value="tugas">Tugas Kuliah</option>
+                        <option value="praktikum">Praktikum</option>
+                        <option value="kuis">Kuis</option>
+                        <option value="ujian">Ujian (UTS / UAS)</option>
+                        <option value="kuliah">Jadwal Kuliah</option>
+                        <option value="kegiatan">Kegiatan Angkatan</option>
+                        <option value="pengumuman">Pengumuman</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-semibold text-text-primary">Cakupan (Scope)</label>
+                      <select
+                        name="scope"
+                        defaultValue={selectedEvent.scope}
+                        className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                      >
+                        <option value="angkatan">Seluruh Angkatan</option>
+                        <option value="mata_kuliah">Mata Kuliah Tertentu</option>
+                        <option value="kelas">Kelas Paralel</option>
+                        <option value="kelompok">Kelompok Praktikum</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {selectedEvent.eventType !== 'personal' && courses.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-text-primary">Mata Kuliah (Opsional)</label>
+                    <select
+                      name="course_id"
+                      defaultValue={selectedEvent.courseId || ''}
+                      className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                    >
+                      <option value="">Pilih Mata Kuliah (Bila Terkait)...</option>
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.code} - {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {selectedEvent.eventType !== 'personal' && (
+                    <Input
+                      name="start_time"
+                      type="datetime-local"
+                      label="Waktu Mulai (Opsional)"
+                      defaultValue={formatForDateTimeLocal(selectedEvent.startTime)}
+                    />
+                  )}
+                  <Input
+                    name="deadline"
+                    type="datetime-local"
+                    label="Batas Waktu / Selesai (WIB)"
+                    defaultValue={formatForDateTimeLocal(selectedEvent.deadline)}
+                    required
+                  />
                 </div>
-              )}
 
-              {selectedEvent.locationOrLink && (
-                <a
-                  href={selectedEvent.locationOrLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-deep hover:underline"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>Buka Tautan Tugas / Google Classroom / Lab</span>
-                </a>
-              )}
-
-              {selectedEvent.sourceReference && (
-                <p className="text-[11px] text-text-muted">
-                  Sumber Referensi: <em>{selectedEvent.sourceReference}</em>
-                </p>
-              )}
-
-              {selectedEvent.eventType === 'personal' && (
-                <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs">
-                  🔒 Acara pribadi ini hanya dapat dilihat oleh Anda dan tidak mengirimkan pengingat WhatsApp ke angkatan.
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-primary">
+                    {selectedEvent.eventType === 'personal' ? 'Catatan Pribadi' : 'Deskripsi & Petunjuk'}
+                  </label>
+                  <textarea
+                    name="description"
+                    rows={3}
+                    defaultValue={selectedEvent.description || ''}
+                    className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                  />
                 </div>
-              )}
-            </div>
 
-            <div className="p-4 border-t border-border bg-surface-soft flex items-center justify-between">
-              <div>
-                {/* Delete button: Personal tasks (by owner) or official agendas (by admin) */}
-                {((selectedEvent.eventType === 'personal' && selectedEvent.isOwner) ||
-                  (selectedEvent.eventType === 'official' && userRole === 'admin')) && (
+                {selectedEvent.eventType !== 'personal' && (
+                  <>
+                    <Input
+                      name="location_or_link"
+                      label="Tautan Classroom / Lokasi (Opsional)"
+                      defaultValue={selectedEvent.locationOrLink || ''}
+                    />
+                    <Input
+                      name="source_reference"
+                      label="Sumber Referensi (Opsional)"
+                      defaultValue={selectedEvent.sourceReference || ''}
+                    />
+                  </>
+                )}
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-border mt-2">
                   <Button
-                    variant="danger"
+                    type="button"
+                    variant="outline"
                     size="sm"
-                    onClick={() => handleDeleteEvent(selectedEvent)}
-                    disabled={isDeleting}
-                    className="gap-1.5 text-xs"
+                    onClick={() => setIsEditingEvent(false)}
+                    disabled={isSubmittingEdit}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Hapus</span>
+                    Batal
                   </Button>
-                )}
-              </div>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    isLoading={isSubmittingEdit}
+                    disabled={isSubmittingEdit}
+                  >
+                    Simpan Perubahan
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              /* VIEW MODE DETAILS */
+              <>
+                <div className="p-6 flex flex-col gap-4">
+                  <div>
+                    <h3 className="font-heading font-extrabold text-lg text-text-primary">
+                      {selectedEvent.title}
+                    </h3>
 
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setSelectedEvent(null)}
-              >
-                Tutup
-              </Button>
-            </div>
+                    {selectedEvent.courseId && courseMap.has(selectedEvent.courseId) && (
+                      <p className="text-xs font-semibold text-teal-deep mt-1">
+                        Mata Kuliah: {courseMap.get(selectedEvent.courseId)?.code} - {courseMap.get(selectedEvent.courseId)?.name}
+                      </p>
+                    )}
+
+                    {selectedEvent.startTime && selectedEvent.deadline ? (
+                      <p className="text-xs font-bold text-[#9E5507] flex items-center gap-1.5 mt-2">
+                        <Clock className="w-4 h-4 shrink-0" />
+                        <span>Jadwal: {formatWIB(selectedEvent.startTime)} – {formatWIB(selectedEvent.deadline)}</span>
+                      </p>
+                    ) : selectedEvent.deadline ? (
+                      <p className="text-xs font-bold text-[#9E5507] flex items-center gap-1.5 mt-2">
+                        <Clock className="w-4 h-4 shrink-0" />
+                        <span>Batas Waktu: {formatWIB(selectedEvent.deadline)}</span>
+                      </p>
+                    ) : null}
+                  </div>
+
+                  {selectedEvent.description && (
+                    <div className="p-3.5 rounded-xl bg-surface-soft border border-border text-xs text-text-primary leading-relaxed whitespace-pre-wrap">
+                      {selectedEvent.description}
+                    </div>
+                  )}
+
+                  {selectedEvent.locationOrLink && (
+                    <a
+                      href={selectedEvent.locationOrLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-deep hover:underline"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Buka Tautan Tugas / Google Classroom / Lab</span>
+                    </a>
+                  )}
+
+                  {selectedEvent.sourceReference && (
+                    <p className="text-[11px] text-text-muted">
+                      Sumber Referensi: <em>{selectedEvent.sourceReference}</em>
+                    </p>
+                  )}
+
+                  {selectedEvent.eventType === 'personal' && (
+                    <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 text-xs">
+                      🔒 Acara pribadi ini hanya dapat dilihat oleh Anda dan tidak mengirimkan pengingat WhatsApp ke angkatan.
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 border-t border-border bg-surface-soft flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {/* Edit button: Personal tasks (by owner) or official agendas (by admin) */}
+                    {((selectedEvent.eventType === 'personal' && selectedEvent.isOwner) ||
+                      (selectedEvent.eventType === 'official' && userRole === 'admin')) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditFormError(null);
+                          setIsEditingEvent(true);
+                        }}
+                        className="gap-1.5 text-xs"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </Button>
+                    )}
+
+                    {/* Delete button: Personal tasks (by owner) or official agendas (by admin) */}
+                    {((selectedEvent.eventType === 'personal' && selectedEvent.isOwner) ||
+                      (selectedEvent.eventType === 'official' && userRole === 'admin')) && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteEvent(selectedEvent)}
+                        disabled={isDeleting}
+                        className="gap-1.5 text-xs"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Hapus</span>
+                      </Button>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedEvent(null);
+                      setIsEditingEvent(false);
+                    }}
+                  >
+                    Tutup
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -1140,13 +1447,39 @@ export function InteractiveCalendar({
                 </div>
               )}
 
-              <Input
-                name="deadline"
-                type="datetime-local"
-                label="Batas Waktu / Jadwal (WIB)"
-                defaultValue={selectedDateForAdd}
-                required
-              />
+              {creationType !== 'personal' && courses.length > 0 && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-primary">Mata Kuliah (Bila Terkait)</label>
+                  <select
+                    name="course_id"
+                    className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+                  >
+                    <option value="">Pilih Mata Kuliah (Opsional)...</option>
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.code} - {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {creationType !== 'personal' && (
+                  <Input
+                    name="start_time"
+                    type="datetime-local"
+                    label="Waktu Mulai (Opsional)"
+                  />
+                )}
+                <Input
+                  name="deadline"
+                  type="datetime-local"
+                  label={creationType === 'personal' ? 'Batas Waktu (WIB)' : 'Batas Waktu / Selesai (WIB)'}
+                  defaultValue={selectedDateForAdd}
+                  required
+                />
+              </div>
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-text-primary">
