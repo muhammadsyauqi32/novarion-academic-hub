@@ -14,9 +14,10 @@ export function getDb(connectionString?: string) {
   }
 
   client = postgres(connStr, {
-    max: 10,
+    max: process.env.NODE_ENV === 'production' ? 1 : 5,
     idle_timeout: 20,
     connect_timeout: 10,
+    prepare: false, // Wajib false untuk kompatibilitas Supabase PgBouncer Pooler (Port 6543)
   });
 
   dbInstance = drizzle(client, { schema });
