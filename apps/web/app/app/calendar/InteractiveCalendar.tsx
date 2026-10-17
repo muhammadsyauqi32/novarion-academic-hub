@@ -48,6 +48,7 @@ export interface CalendarEvent {
   scope: string; // 'angkatan' | 'mata_kuliah' | 'kelas' | 'kelompok' | 'pribadi'
   startTime?: string | null;
   deadline: string | null; // ISO string
+  color?: string | null; // Hex color e.g. '#41C2A1'
   courseId?: string | null;
   locationOrLink: string | null;
   sourceReference: string | null;
@@ -66,6 +67,7 @@ interface InteractiveCalendarProps {
   initialEvents: CalendarEvent[];
   userRole?: string;
   userId?: string;
+  canCreateOfficialAgenda?: boolean;
   courses?: CourseItem[];
 }
 
@@ -77,10 +79,22 @@ const INDONESIAN_MONTHS = [
 const INDONESIAN_DAYS_FULL = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 const INDONESIAN_DAYS_SHORT = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 
+export const CURATED_CALENDAR_COLORS = [
+  { label: 'Mint Novarion', hex: '#41C2A1' },
+  { label: 'Warm Orange', hex: '#FFAE5D' },
+  { label: 'Soft Green', hex: '#22C55E' },
+  { label: 'Sky Blue', hex: '#0EA5E9' },
+  { label: 'Indigo', hex: '#6366F1' },
+  { label: 'Purple', hex: '#8B5CF6' },
+  { label: 'Rose / Coral', hex: '#F43F5E' },
+  { label: 'Amber / Gold', hex: '#F59E0B' },
+];
+
 export function InteractiveCalendar({
   initialEvents,
   userRole = 'student',
   userId,
+  canCreateOfficialAgenda = false,
   courses = [],
 }: InteractiveCalendarProps) {
   const router = useRouter();
@@ -100,8 +114,10 @@ export function InteractiveCalendar({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDateForAdd, setSelectedDateForAdd] = useState<string>('');
   const [creationType, setCreationType] = useState<'personal' | 'official' | 'proposal'>(
-    userRole === 'admin' ? 'official' : 'personal'
+    userRole === 'admin' || canCreateOfficialAgenda ? 'official' : 'personal'
   );
+  const [selectedColor, setSelectedColor] = useState<string>('#41C2A1');
+  const [editColor, setEditColor] = useState<string>('#41C2A1');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEditingEvent, setIsEditingEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -370,6 +386,18 @@ export function InteractiveCalendar({
       default:
         return 'bg-brand-mint-soft text-teal-deep border-brand-primary/30';
     }
+  };
+
+  // Custom Color Styling Helper
+  const getEventStyle = (ev: CalendarEvent): React.CSSProperties | undefined => {
+    if (ev.color && ev.color.startsWith('#')) {
+      return {
+        backgroundColor: `${ev.color}15`,
+        borderColor: `${ev.color}70`,
+        color: ev.color,
+      };
+    }
+    return undefined;
   };
 
   // Build Month Calendar Cells
@@ -713,11 +741,14 @@ export function InteractiveCalendar({
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedEvent(ev);
+                          setEditColor(ev.color || '#41C2A1');
                         }}
-                        className={`text-left px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-medium truncate border transition-all hover:scale-[1.01] flex items-center gap-1 ${getCategoryStyles(
-                          ev.category,
-                          ev.eventType
-                        )}`}
+                        style={getEventStyle(ev)}
+                        className={`text-left px-1.5 py-0.5 rounded text-[10px] sm:text-[11px] font-medium truncate border transition-all hover:scale-[1.01] flex items-center gap-1 ${
+                          ev.color && ev.color.startsWith('#')
+                            ? ''
+                            : getCategoryStyles(ev.category, ev.eventType)
+                        }`}
                         title={ev.title}
                       >
                         {ev.eventType === 'personal' && <Lock className="w-2.5 h-2.5 shrink-0 opacity-80" />}
@@ -782,11 +813,16 @@ export function InteractiveCalendar({
                       dayEvents.map((ev) => (
                         <div
                           key={ev.id}
-                          onClick={() => setSelectedEvent(ev)}
-                          className={`p-2.5 rounded-lg border text-xs cursor-pointer transition-all hover:shadow-xs ${getCategoryStyles(
-                            ev.category,
-                            ev.eventType
-                          )}`}
+                          onClick={() => {
+                            setSelectedEvent(ev);
+                            setEditColor(ev.color || '#41C2A1');
+                          }}
+                          style={getEventStyle(ev)}
+                          className={`p-2.5 rounded-lg border text-xs cursor-pointer transition-all hover:shadow-xs ${
+                            ev.color && ev.color.startsWith('#')
+                              ? ''
+                              : getCategoryStyles(ev.category, ev.eventType)
+                          }`}
                         >
                           <div className="flex items-center justify-between gap-1 text-[10px] font-bold opacity-80 mb-1">
                             <span className="uppercase">{ev.category}</span>
@@ -866,11 +902,16 @@ export function InteractiveCalendar({
               {currentDayEvents.map((ev) => (
                 <div
                   key={ev.id}
-                  onClick={() => setSelectedEvent(ev)}
-                  className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-xs transition-all ${getCategoryStyles(
-                    ev.category,
-                    ev.eventType
-                  )}`}
+                  onClick={() => {
+                    setSelectedEvent(ev);
+                    setEditColor(ev.color || '#41C2A1');
+                  }}
+                  style={getEventStyle(ev)}
+                  className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-xs transition-all ${
+                    ev.color && ev.color.startsWith('#')
+                      ? ''
+                      : getCategoryStyles(ev.category, ev.eventType)
+                  }`}
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -950,7 +991,11 @@ export function InteractiveCalendar({
             filteredEvents.map((ev) => (
               <div
                 key={ev.id}
-                onClick={() => setSelectedEvent(ev)}
+                onClick={() => {
+                  setSelectedEvent(ev);
+                  setEditColor(ev.color || '#41C2A1');
+                }}
+                style={ev.color && ev.color.startsWith('#') ? { borderLeft: `4px solid ${ev.color}` } : undefined}
                 className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-soft/50 cursor-pointer transition-colors"
               >
                 <div className="flex flex-col gap-1 min-w-0">
@@ -1145,6 +1190,37 @@ export function InteractiveCalendar({
                   />
                 </div>
 
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-text-primary">Warna Penanda Kalender</label>
+                  <input type="hidden" name="color" value={editColor} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    {CURATED_CALENDAR_COLORS.map((c) => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        onClick={() => setEditColor(c.hex)}
+                        className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center ${
+                          editColor.toLowerCase() === c.hex.toLowerCase()
+                            ? 'border-text-primary ring-2 ring-teal-deep/50 scale-110'
+                            : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c.hex }}
+                        title={c.label}
+                      />
+                    ))}
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <input
+                        type="color"
+                        value={editColor}
+                        onChange={(e) => setEditColor(e.target.value)}
+                        className="w-7 h-7 rounded border border-border cursor-pointer bg-transparent"
+                        title="Pilih Warna Kustom"
+                      />
+                      <span className="text-[11px] font-mono text-text-muted">{editColor}</span>
+                    </div>
+                  </div>
+                </div>
+
                 {selectedEvent.eventType !== 'personal' && (
                   <>
                     <Input
@@ -1316,7 +1392,7 @@ export function InteractiveCalendar({
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-text-primary">Jenis Agenda</label>
                 <div className="grid grid-cols-2 gap-2 p-1 bg-surface-soft rounded-xl border border-border">
-                  {userRole === 'admin' ? (
+                  {userRole === 'admin' || canCreateOfficialAgenda ? (
                     <>
                       <button
                         type="button"
@@ -1495,6 +1571,37 @@ export function InteractiveCalendar({
                   }
                   className="w-full px-3 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
                 />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-text-primary">Warna Penanda Kalender</label>
+                <input type="hidden" name="color" value={selectedColor} />
+                <div className="flex flex-wrap items-center gap-2">
+                  {CURATED_CALENDAR_COLORS.map((c) => (
+                    <button
+                      key={c.hex}
+                      type="button"
+                      onClick={() => setSelectedColor(c.hex)}
+                      className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center ${
+                        selectedColor.toLowerCase() === c.hex.toLowerCase()
+                          ? 'border-text-primary ring-2 ring-teal-deep/50 scale-110'
+                          : 'border-transparent'
+                      }`}
+                      style={{ backgroundColor: c.hex }}
+                      title={c.label}
+                    />
+                  ))}
+                  <div className="flex items-center gap-1.5 ml-2">
+                    <input
+                      type="color"
+                      value={selectedColor}
+                      onChange={(e) => setSelectedColor(e.target.value)}
+                      className="w-7 h-7 rounded border border-border cursor-pointer bg-transparent"
+                      title="Pilih Warna Kustom"
+                    />
+                    <span className="text-[11px] font-mono text-text-muted">{selectedColor}</span>
+                  </div>
+                </div>
               </div>
 
               {creationType !== 'personal' && (

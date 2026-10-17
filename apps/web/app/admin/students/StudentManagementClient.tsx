@@ -15,12 +15,15 @@ import {
   AlertCircle,
   X,
   Search,
+  FileSpreadsheet,
 } from 'lucide-react';
 import {
   addWhitelistStudentAction,
   toggleWhitelistStatusAction,
   resetStudentPasswordAction,
 } from '@/actions/whitelist';
+import { CsvImportModal } from '@/components/csv/CsvImportModal';
+import { previewStudentCsvAction, executeStudentCsvAction } from '@/actions/csv-imports';
 
 interface StudentItem {
   id: string;
@@ -62,20 +65,9 @@ export function StudentManagementClient({
   const [isResetting, setIsResetting] = useState<string | null>(null);
   const [isToggling, setIsToggling] = useState<string | null>(null);
 
-  // Muat modal yang belum ditutup dari sessionStorage saat mount (tahan refresh)
-  useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem('novarion_pending_temp_password');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && parsed.password && parsed.nim) {
-          setTempPasswordModal(parsed);
-        }
-      }
-    } catch {}
-  }, []);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
 
-  // Helper untuk menyimpan atau membersihkan sessionStorage
+  // Helper untuk modal password sementara (in-memory only, no insecure browser storage)
   const updateTempPasswordModal = (
     data: {
       nim: string;
@@ -86,13 +78,6 @@ export function StudentManagementClient({
     } | null
   ) => {
     setTempPasswordModal(data);
-    try {
-      if (data) {
-        sessionStorage.setItem('novarion_pending_temp_password', JSON.stringify(data));
-      } else {
-        sessionStorage.removeItem('novarion_pending_temp_password');
-      }
-    } catch {}
   };
 
   // Sinkronkan state saat props data server diperbarui
@@ -468,8 +453,8 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
         {/* Tabel Data Whitelist */}
         <Card className="lg:col-span-8 p-0 overflow-hidden flex flex-col">
           <div className="p-4 bg-surface-soft border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 max-w-sm w-full">
-              <div className="relative w-full">
+            <div className="flex flex-wrap items-center gap-2 max-w-lg w-full">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-2.5" />
                 <input
                   value={searchQuery}
@@ -478,6 +463,16 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
                   className="w-full pl-8 pr-3 py-1.5 text-xs bg-surface border border-border rounded-lg text-text-primary focus:outline-none focus:border-teal-deep"
                 />
               </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsCsvModalOpen(true)}
+                className="gap-1.5 text-xs shrink-0"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-teal-deep" />
+                <span>Impor CSV Mahasiswa</span>
+              </Button>
             </div>
 
             <span className="text-xs text-text-muted shrink-0">
@@ -557,6 +552,60 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
           </div>
         </Card>
       </div>
+
+      {/* CSV IMPORT MODAL (MODULE A: DATA MAHASISWA) */}
+      <CsvImportModal
+        isOpen={isCsvModalOpen}
+        onClose={() => setIsCsvModalOpen(false)}
+        title="Impor Data Mahasiswa (Whitelist)"
+        description="Unggah berkas CSV berisi NIM, Nama Lengkap, dan Email untuk pendaftaran whitelist secara massal."
+        templateFileName="template_data_mahasiswa_novarion.csv"
+        templateHeaders={['nim', 'nama', 'email']}
+        templateSampleRows={[
+          ['G1401201001', 'Ahmad Fadillah', 'ahmad.f@apps.ipb.ac.id'],
+          ['G1401201002', 'Budi Pratama Santoso', 'budi.p@apps.ipb.ac.id'],
+          ['G1401201003', 'Citra Dewi Lestari', 'citra.d@apps.ipb.ac.id'],
+        ]}
+        onPreview={async (content, name) => {
+          const res = await previewStudentCsvAction(content, name);
+          return res;
+        }}
+        onExecute={async (content, name) => {
+          const res = await executeStudentCsvAction(content, name);
+          return res;
+        }}
+        onSuccessComplete={() => {
+          router.refresh();
+        }}
+        renderPreviewTable={(preview) => (
+          <table className="w-full text-left text-xs">
+            <thead className="bg-surface-soft border-b border-border text-[10px] uppercase font-bold text-text-muted">
+              <tr>
+                <th className="py-2.5 px-3">NIM</th>
+                <th className="py-2.5 px-3">Nama</th>
+                <th className="py-2.5 px-3">Email</th>
+                <th className="py-2.5 px-3">Aksi</th>
+                <th className="py-2.5 px-3">Keterangan</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {preview.validRows.map((r: any, idx: number) => (
+                <tr key={idx} className="hover:bg-surface-soft/40">
+                  <td className="py-2 px-3 font-mono font-bold">{r.nim}</td>
+                  <td className="py-2 px-3">{r.nama}</td>
+                  <td className="py-2 px-3 font-mono text-[11px] text-text-muted">{r.email}</td>
+                  <td className="py-2 px-3">
+                    <Badge variant={r.action === 'insert' ? 'success' : 'orange'} size="sm">
+                      {r.action === 'insert' ? 'Tambah Baru' : 'Perbarui'}
+                    </Badge>
+                  </td>
+                  <td className="py-2 px-3 text-[11px] text-text-muted">{r.note || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      />
     </div>
   );
 }

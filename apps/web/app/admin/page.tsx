@@ -11,9 +11,12 @@ import {
   GraduationCap, 
   MessageSquare, 
   Clock, 
-  Upload, 
   AlertTriangle,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck,
+  CalendarCheck,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { formatWIBShort } from '@novarion/shared';
 
@@ -21,17 +24,19 @@ export default async function AdminDashboardPage() {
   await requireAdmin();
   const db = getDb();
 
-  // Eksekusi seluruh metrik operasional secara paralel tanpa waterfall
+  // Eksekusi seluruh metrik operasional secara agregat (COUNT) tanpa full table scans
   const [
-    whitelistRows,
-    courseRows,
+    totalStudentsRes,
+    activeStudentsRes,
+    totalCoursesRes,
     pendingAgendas,
     waConns,
-    queuedJobs,
-    failedJobs,
+    queuedJobsRes,
+    failedJobsRes,
   ] = await Promise.all([
-    db.select({ id: studentWhitelist.id, isActive: studentWhitelist.isActive }).from(studentWhitelist),
-    db.select({ id: courses.id }).from(courses),
+    db.select({ count: sql<number>`count(*)::int` }).from(studentWhitelist),
+    db.select({ count: sql<number>`count(*)::int` }).from(studentWhitelist).where(eq(studentWhitelist.isActive, true)),
+    db.select({ count: sql<number>`count(*)::int` }).from(courses),
     db
       .select({
         id: agendas.id,
@@ -40,20 +45,23 @@ export default async function AdminDashboardPage() {
         scope: agendas.scope,
       })
       .from(agendas)
-      .where(eq(agendas.status, 'pending')),
+      .where(eq(agendas.status, 'pending'))
+      .limit(6),
     db.select().from(whatsappConnections).limit(1),
-    db.select({ id: reminderJobs.id }).from(reminderJobs).where(eq(reminderJobs.status, 'queued')),
-    db.select({ id: reminderJobs.id }).from(reminderJobs).where(eq(reminderJobs.status, 'failed')),
+    db.select({ count: sql<number>`count(*)::int` }).from(reminderJobs).where(eq(reminderJobs.status, 'queued')),
+    db.select({ count: sql<number>`count(*)::int` }).from(reminderJobs).where(eq(reminderJobs.status, 'failed')),
   ]);
 
-  const totalStudents = whitelistRows.length;
-  const activeStudents = whitelistRows.filter((s) => s.isActive).length;
-  const totalCourses = courseRows.length;
+  const totalStudents = totalStudentsRes[0]?.count ?? 0;
+  const activeStudents = activeStudentsRes[0]?.count ?? 0;
+  const totalCourses = totalCoursesRes[0]?.count ?? 0;
+  const queuedJobsCount = queuedJobsRes[0]?.count ?? 0;
+  const failedJobsCount = failedJobsRes[0]?.count ?? 0;
   const waConn = waConns[0] || null;
-
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight">
@@ -64,23 +72,66 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link href="/admin/imports">
-            <Button variant="primary" size="sm">
-              <Upload className="w-3.5 h-3.5 mr-1" />
-              <span>Impor Roster CSV</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/admin/students">
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+              <Users className="w-3.5 h-3.5" />
+              <span>Data Mahasiswa</span>
+            </Button>
+          </Link>
+          <Link href="/admin/agendas">
+            <Button variant="primary" size="sm" className="gap-1.5 text-xs">
+              <CalendarCheck className="w-3.5 h-3.5" />
+              <span>Kelola Agenda</span>
             </Button>
           </Link>
           <Link href="/admin/whatsapp">
-            <Button variant="dark" size="sm">
-              <MessageSquare className="w-3.5 h-3.5 mr-1" />
+            <Button variant="dark" size="sm" className="gap-1.5 text-xs">
+              <MessageSquare className="w-3.5 h-3.5" />
               <span>Kontrol WhatsApp</span>
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Grid Status Faktual */}
+      {/* Actionable Administrative Alerts */}
+      <div className="flex flex-col gap-3">
+        {pendingAgendas.length > 0 && (
+          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5 text-amber-800 dark:text-amber-300">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>
+                <strong>{pendingAgendas.length} Pengajuan Agenda</strong> menunggu peninjauan dan persetujuan dari administrator.
+              </span>
+            </div>
+            <Link href="/admin/submissions" className="shrink-0">
+              <Button variant="outline" size="sm" className="gap-1 text-xs">
+                <span>Tinjau Sekarang</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        {failedJobsCount > 0 && (
+          <div className="p-4 rounded-xl bg-danger-surface border border-danger-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-danger-text">
+            <div className="flex items-center gap-2.5">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>
+                <strong>{failedJobsCount} Pengingat WhatsApp</strong> gagal terkirim. Periksa koneksi bot atau status nomor tujuan.
+              </span>
+            </div>
+            <Link href="/admin/whatsapp?tab=reminders" className="shrink-0">
+              <Button variant="danger" size="sm" className="gap-1 text-xs">
+                <span>Lihat Log Reminder</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Grid Status Faktual (Agregat Ringan) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-5 flex items-center justify-between">
           <div>
@@ -103,7 +154,7 @@ export default async function AdminDashboardPage() {
             <p className="text-2xl font-heading font-black text-text-primary mt-1">
               {totalCourses}
             </p>
-            <span className="text-[11px] text-text-muted">Semester Berjalan</span>
+            <span className="text-[11px] text-text-muted">Katalog Aktif</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-brand-cream text-text-primary flex items-center justify-center">
             <GraduationCap className="w-5 h-5" />
@@ -142,11 +193,11 @@ export default async function AdminDashboardPage() {
           <div>
             <p className="text-xs font-semibold text-text-muted">Antrean Reminder</p>
             <p className="text-2xl font-heading font-black text-text-primary mt-1">
-              {queuedJobs.length}
+              {queuedJobsCount}
             </p>
-            {failedJobs.length > 0 ? (
+            {failedJobsCount > 0 ? (
               <span className="text-[11px] text-danger-text font-bold">
-                {failedJobs.length} gagal terkirim
+                {failedJobsCount} gagal terkirim
               </span>
             ) : (
               <span className="text-[11px] text-teal-deep font-medium">0 kegagalan</span>
@@ -158,70 +209,46 @@ export default async function AdminDashboardPage() {
         </Card>
       </div>
 
-      {/* Actionable Cards: Pengajuan Pending & Masalah Gateway */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-heading font-bold text-sm text-text-primary">
-              Pengajuan Agenda Perlu Ditinjau ({pendingAgendas.length})
-            </h2>
-            <Link href="/admin/submissions" className="text-xs font-semibold text-teal-deep hover:underline">
-              Buka Panel Review →
-            </Link>
+      {/* Daftar Pengajuan Agenda Pending */}
+      <Card className="p-0 overflow-hidden flex flex-col">
+        <div className="p-4 bg-surface-soft border-b border-border flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CalendarCheck className="w-4 h-4 text-teal-deep" />
+            <span className="font-heading font-bold text-xs text-text-primary">
+              Pengajuan Agenda Mahasiswa yang Membutuhkan Verifikasi
+            </span>
           </div>
+          <Badge variant="primary" size="sm">{pendingAgendas.length} Antrean</Badge>
+        </div>
 
-          {pendingAgendas.length === 0 ? (
-            <p className="text-xs text-text-muted py-6 text-center">
-              Tidak ada pengajuan agenda baru yang menunggu persetujuan.
-            </p>
-          ) : (
-            <div className="divide-y divide-border">
-              {pendingAgendas.slice(0, 3).map((item) => (
-                <div key={item.id} className="py-2.5 flex items-center justify-between text-xs">
-                  <div className="truncate">
-                    <span className="font-bold text-text-primary block truncate">{item.title}</span>
-                    <span className="text-text-muted capitalize">{item.category} • {item.scope}</span>
+        {pendingAgendas.length === 0 ? (
+          <div className="p-10 text-center text-xs text-text-muted flex flex-col items-center gap-2">
+            <CheckCircle2 className="w-8 h-8 text-teal-deep/50" />
+            <span>Tidak ada pengajuan agenda yang menunggu review saat ini.</span>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {pendingAgendas.map((item) => (
+              <div key={item.id} className="p-4 flex items-center justify-between gap-4 hover:bg-surface-soft/40 transition-colors">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="primary" size="sm">{item.category}</Badge>
+                    <span className="text-[11px] text-text-muted capitalize">• Cakupan {item.scope}</span>
                   </div>
-                  <Badge variant="warning" size="sm">Pending</Badge>
+                  <h3 className="font-heading font-bold text-sm text-text-primary truncate">
+                    {item.title}
+                  </h3>
                 </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        <Card className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-heading font-bold text-sm text-text-primary">
-              Status Gateway WhatsApp
-            </h2>
-            <Link href="/admin/whatsapp" className="text-xs font-semibold text-teal-deep hover:underline">
-              Kelola Gateway →
-            </Link>
+                <Link href="/admin/submissions">
+                  <Button variant="outline" size="sm">
+                    Tinjau
+                  </Button>
+                </Link>
+              </div>
+            ))}
           </div>
-
-          {waConn?.status !== 'connected' ? (
-            <div className="p-4 rounded-xl bg-warning-surface border border-warning-border flex items-start gap-3 text-xs text-warning-text">
-              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold">Baileys Service Tidak Terhubung</p>
-                <p className="mt-0.5 text-text-muted">
-                  Worker WhatsApp saat ini offline atau memerlukan scan QR awal di menu WhatsApp Gateway.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 rounded-xl bg-success-surface border border-success-border flex items-start gap-3 text-xs text-success-text">
-              <div className="w-2 h-2 rounded-full bg-success-text mt-1.5" />
-              <div>
-                <p className="font-bold">Gateway Aktif dan Siap Mengirim</p>
-                <p className="mt-0.5 text-text-muted">
-                  Nomor pengirim: {waConn.phoneNumber || 'Akun Novarion'}
-                </p>
-              </div>
-            </div>
-          )}
-        </Card>
-      </div>
+        )}
+      </Card>
     </div>
   );
 }

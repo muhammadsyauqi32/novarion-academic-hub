@@ -5,3 +5,5 @@ export * from './knowledge';
 export * from './messaging';
 export * from './reminders';
 export * from './operational';
+export * from './permissions';
+export * from './cms';

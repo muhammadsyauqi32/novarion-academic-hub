@@ -15,6 +15,8 @@ export const agendas = pgTable('agendas', {
   createdBy: uuid('created_by').references(() => profiles.id, { onDelete: 'set null' }),
   status: varchar('status', { length: 20 }).notNull().default('pending'), // 'pending' | 'published' | 'rejected' | 'cancelled'
   version: integer('version').notNull().default(1),
+  color: varchar('color', { length: 20 }), // e.g. '#41C2A1'
+  externalId: varchar('external_id', { length: 100 }), // Stable ID for CSV imports
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
@@ -65,7 +67,9 @@ export const personalTasks = pgTable('personal_tasks', {
     .references(() => profiles.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 200 }).notNull(),
   description: text('description'),
+  startTime: timestamp('start_time', { withTimezone: true }),
   deadline: timestamp('deadline', { withTimezone: true }),
+  color: varchar('color', { length: 20 }),
   status: varchar('status', { length: 20 }).notNull().default('todo'), // 'todo' | 'done'
   completedAt: timestamp('completed_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

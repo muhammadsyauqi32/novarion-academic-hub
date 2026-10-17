@@ -43,6 +43,17 @@ export function createWIBDate(
 }
 
 /**
+ * Mengonversi string format ISO atau YYYY-MM-DD HH:mm:ss dalam WIB ke Date UTC
+ */
+export function parseWIBToUTC(dateStr: string): Date {
+  const normalized = dateStr.trim().replace('T', ' ');
+  const [datePart, timePart = '00:00:00'] = normalized.split(' ');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hours = 0, minutes = 0, seconds = 0] = timePart.split(':').map(Number);
+  return createWIBDate(year, month - 1, day, hours, minutes, seconds);
+}
+
+/**
  * Menghitung empat pemicu reminder wajib:
  * 1. H-7: Pukul 08.00 WIB, 7 hari kalender sebelum tanggal deadline
  * 2. H-3: Pukul 08.00 WIB, 3 hari kalender sebelum tanggal deadline

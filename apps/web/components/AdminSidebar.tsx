@@ -10,53 +10,51 @@ import {
   CalendarCheck,
   GraduationCap,
   Users,
-  Upload,
   FolderOpen,
   HelpCircle,
   MessageSquare,
-  Network,
-  Clock,
   History,
   Eye,
-  LogOut
+  LogOut,
+  ShieldCheck,
+  Globe,
 } from 'lucide-react';
 
 export const ADMIN_NAV_SECTIONS = [
   {
-    title: 'Operasional',
+    title: 'Beranda',
     items: [
-      { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
-      { label: 'Review Pengajuan', href: '/admin/submissions', icon: CheckCircle },
+      { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: 'Akademik',
+    items: [
       { label: 'Kelola Agenda', href: '/admin/agendas', icon: CalendarCheck },
-    ],
-  },
-  {
-    title: 'Data Angkatan',
-    items: [
+      { label: 'Pengajuan Agenda', href: '/admin/submissions', icon: CheckCircle },
       { label: 'Struktur Akademik', href: '/admin/academics', icon: GraduationCap },
-      { label: 'Mahasiswa & Whitelist', href: '/admin/students', icon: Users },
-      { label: 'Impor Data CSV', href: '/admin/imports', icon: Upload },
-    ],
-  },
-  {
-    title: 'Konten',
-    items: [
       { label: 'File Materi', href: '/admin/materials', icon: FolderOpen },
-      { label: 'Knowledge Hub', href: '/admin/knowledge', icon: HelpCircle },
+      { label: 'Knowledge Hub & FAQ', href: '/admin/knowledge', icon: HelpCircle },
     ],
   },
   {
-    title: 'WhatsApp & Reminder',
+    title: 'Angkatan',
     items: [
-      { label: 'WhatsApp Gateway', href: '/admin/whatsapp', icon: MessageSquare },
-      { label: 'Mapping Grup', href: '/admin/whatsapp/groups', icon: Network },
-      { label: 'Log Reminder', href: '/admin/reminders', icon: Clock },
+      { label: 'Data Mahasiswa', href: '/admin/students', icon: Users },
+      { label: 'Role & Permission', href: '/admin/permissions', icon: ShieldCheck },
     ],
   },
   {
-    title: 'Keamanan',
+    title: 'Website',
     items: [
-      { label: 'Audit Trail', href: '/admin/audit', icon: History },
+      { label: 'Kelola Website', href: '/admin/website', icon: Globe },
+    ],
+  },
+  {
+    title: 'Sistem',
+    items: [
+      { label: 'WhatsApp & Reminder', href: '/admin/whatsapp', icon: MessageSquare },
+      { label: 'Pengaturan & Audit', href: '/admin/audit', icon: History },
     ],
   },
 ];

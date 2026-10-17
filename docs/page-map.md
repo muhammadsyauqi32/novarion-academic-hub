@@ -1,7 +1,7 @@
 # Information Architecture & Route Map
 
-> **Status:** Approved Baseline Route Map  
-> **Source of Truth:** MASTER_PROMPT.md V3.2 (Section 10B & 10C)
+> **Status:** Overhauled & Approved Architecture  
+> **Source of Truth:** Novarion Academic Hub V3 Overhaul
 
 ---
 
@@ -9,44 +9,40 @@
 
 ```mermaid
 graph TD
-    Root["/ (Public Landing Page)"]
-    Login["/login (Login Google OAuth)"]
+    Root["/ (Public Landing Page — Editorial Community & Identity)"]
+    Login["/login (Login NIM + Kata Sandi)"]
+    ChangePwd["/auth/change-password (Wajib Ganti Password Pertama)"]
     Invalid["/auth/invalid-account (Whitelist Mismatch 403)"]
     Privacy["/privacy (Kebijakan Privasi)"]
 
     subgraph Student["Student Workspace (/app/*)"]
-        SDash["/app (Dashboard Mahasiswa)"]
-        SCal["/app/calendar (Kalender Akademik)"]
-        SAgendas["/app/agendas (Daftar Agenda)"]
-        SAgendaNew["/app/agendas/new (Ajukan Agenda)"]
-        SAgendaDetail["/app/agendas/:id (Detail Agenda)"]
+        SDash["/app (Dashboard Mahasiswa & Scope-filtered deadines)"]
+        SCal["/app/calendar (Kalender Akademik & Custom HEX Colors)"]
+        SAgendas["/app/agendas (Daftar Agenda & Delegated Create)"]
+        SAgendaNew["/app/agendas/new (Ajukan / Buat Agenda)"]
         SSubmissions["/app/submissions (Pengajuan Saya)"]
         STasks["/app/tasks (Tugas & Checklist Saya)"]
-        SMaterials["/app/materials (File Materi)"]
-        SMaterialDetail["/app/materials/:id (Detail Materi)"]
-        SKnowledge["/app/knowledge (Knowledge Hub)"]
-        SKnowledgeDetail["/app/knowledge/:slug (Artikel/FAQ)"]
-        SNotif["/app/notifications (Notifikasi)"]
+        SMaterials["/app/materials (File Materi Perkuliahan)"]
+        SKnowledge["/app/knowledge (Knowledge Hub & Searchable FAQ)"]
         SAccount["/app/account (Profil & Akun)"]
     end
 
     subgraph Admin["Admin Workspace (/admin/*)"]
-        ADash["/admin (Ringkasan Operasional)"]
+        ADash["/admin (Ringkasan Operasional & Agregasi Cepat)"]
+        AAgendas["/admin/agendas (Kelola Agenda + CSV Agenda)"]
         ASubmissions["/admin/submissions (Review Pengajuan)"]
-        AAgendas["/admin/agendas (Kelola Agenda)"]
-        AAcademics["/admin/academics (Struktur Akademik)"]
-        AStudents["/admin/students (Mahasiswa & Whitelist)"]
-        AImports["/admin/imports (Impor Data CSV)"]
-        AMaterials["/admin/materials (Kelola Materi)"]
-        AKnowledge["/admin/knowledge (Kelola Knowledge Hub)"]
-        AWA["/admin/whatsapp (WhatsApp Gateway & QR)"]
-        AWAGroups["/admin/whatsapp/groups (Mapping Grup)"]
-        AReminders["/admin/reminders (Antrean & Log Reminder)"]
-        AAudit["/admin/audit (Audit Trail)"]
+        AAcademics["/admin/academics (Struktur Akademik + CSV Mapping)"]
+        AMaterials["/admin/materials (File Materi)"]
+        AKnowledge["/admin/knowledge (Knowledge Hub & FAQ Admin)"]
+        AStudents["/admin/students (Data Mahasiswa + CSV Import)"]
+        APermissions["/admin/permissions (Role & Granular Permission)"]
+        ACms["/admin/website (Kelola Website CMS Terintegrasi)"]
+        AWA["/admin/whatsapp (WhatsApp Gateway, Pairing, Grup, Log)"]
+        AAudit["/admin/audit (Pengaturan & Audit Trail)"]
     end
 
     Root --> Login
-    Login --> Invalid
+    Login --> ChangePwd
     Login --> SDash
     Login --> ADash
 ```
@@ -62,21 +58,27 @@ graph TD
   - 📋 Daftar Agenda (`/app/agendas`)
   - ✅ Tugas Saya (`/app/tasks`)
   - 📁 File Materi (`/app/materials`)
-  - 💡 Knowledge Hub (`/app/knowledge`)
+  - 💡 Knowledge Hub & FAQ (`/app/knowledge`)
   - 📝 Pengajuan Saya (`/app/submissions`)
   - ⚙️ Akun (`/app/account`)
-- **Mobile (Bottom Navigation - Maks 4 Titik Prioritas + Menu Lainnya)**:
-  - `Beranda` (`/app`)
-  - `Kalender` (`/app/calendar`)
-  - `Tugas` (`/app/tasks`)
-  - `Materi` (`/app/materials`)
-  - `Lainnya` (Drawer: Knowledge Hub, Pengajuan, Akun)
+- **Agenda Manager Delegasi**:
+  - Tombol aksi langsung "Buat Agenda Resmi" di Kalender dan Daftar Agenda (langsung `published` tanpa approval).
 
-### 2.2 Navigasi Admin Angkatan
-- **Header Khusus**: Banner penanda jelas `Admin Workspace` + tombol pintas `Kembali ke Tampilan Mahasiswa`.
-- **Sidebar Admin Terstruktur**:
-  - **Operasional**: Ringkasan (`/admin`), Review Pengajuan (`/admin/submissions`), Kelola Agenda (`/admin/agendas`).
-  - **Data Angkatan**: Struktur Akademik (`/admin/academics`), Mahasiswa & Whitelist (`/admin/students`), Impor CSV (`/admin/imports`).
-  - **Konten**: Kelola Materi (`/admin/materials`), Knowledge Hub (`/admin/knowledge`).
-  - **WhatsApp & Reminder**: WhatsApp Gateway (`/admin/whatsapp`), Pemetaan Grup (`/admin/whatsapp/groups`), Log Pengingat (`/admin/reminders`).
-  - **Keamanan**: Audit Trail (`/admin/audit`).
+### 2.2 Navigasi Admin Workspace
+- **BERANDA**:
+  - Dashboard Operasional (`/admin`)
+- **AKADEMIK**:
+  - Kelola Agenda + CSV Agenda (`/admin/agendas`)
+  - Pengajuan Agenda (`/admin/submissions`)
+  - Struktur Akademik + CSV Mapping (`/admin/academics`)
+  - File Materi (`/admin/materials`)
+  - Knowledge Hub & FAQ (`/admin/knowledge`)
+- **ANGKATAN**:
+  - Data Mahasiswa + CSV Mahasiswa (`/admin/students`)
+  - Role & Permission Granular (`/admin/permissions`)
+- **WEBSITE**:
+  - Kelola Website CMS (`/admin/website`) — Hero, Warta, Galeri, Prestasi, Media Library
+- **SISTEM**:
+  - WhatsApp & Reminder terpadu (`/admin/whatsapp` dengan tabs Gateway, Grup, Log)
+  - Pengaturan & Audit Trail (`/admin/audit`)
+

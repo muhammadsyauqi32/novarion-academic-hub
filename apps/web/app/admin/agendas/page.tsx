@@ -1,11 +1,23 @@
 import React from 'react';
-import { requireAdmin } from '@/lib/auth/guards';
+import { requireAuth } from '@/lib/auth/guards';
+import { hasPermission } from '@/lib/auth/permissions';
 import { getDb, agendas } from '@novarion/db';
 import { desc } from 'drizzle-orm';
 import { AdminAgendasClient } from './AdminAgendasClient';
+import { redirect } from 'next/navigation';
 
 export default async function AdminAgendasPage() {
-  await requireAdmin();
+  const user = await requireAuth();
+
+  const canManageAgenda =
+    user.role === 'admin' ||
+    (await hasPermission(user, 'agenda.create')) ||
+    (await hasPermission(user, 'agenda.import'));
+
+  if (!canManageAgenda) {
+    redirect('/app');
+  }
+
   const db = getDb();
 
   const allAgendas = await db
