@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { 
-  Sparkles, 
   Image as ImageIcon, 
   Newspaper, 
   Layers, 
@@ -466,7 +465,7 @@ export function CmsClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Active Hero Preview & Controls */}
           <div className="lg:col-span-7 flex flex-col gap-6">
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-heading font-bold text-base text-text-primary">
                   Foto Hero Aktif di Landing Page
@@ -502,7 +501,7 @@ export function CmsClient({
             </div>
 
             {/* Past / Archived Heroes */}
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4">
               <h3 className="font-heading font-bold text-base text-text-primary">
                 Riwayat Foto Hero ({heroes.length})
               </h3>
@@ -546,7 +545,7 @@ export function CmsClient({
 
           {/* New Hero Form */}
           <div className="lg:col-span-5">
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-5 sticky top-20">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-5 sticky top-20">
               <h3 className="font-heading font-bold text-base text-text-primary">
                 Unggah / Atur Foto Hero Baru
               </h3>
@@ -770,7 +769,7 @@ export function CmsClient({
 
           {/* Create / Edit News Form */}
           <div className="lg:col-span-5">
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4 sticky top-20">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4 sticky top-20">
               <h3 className="font-heading font-bold text-base text-text-primary">
                 {editingNewsId ? 'Edit Warta Angkatan' : 'Tulis Warta / Artikel Baru'}
               </h3>
@@ -903,7 +902,7 @@ export function CmsClient({
                 {albums.map((album) => (
                   <div
                     key={album.id}
-                    className="p-5 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4"
+                    className="p-5 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -988,7 +987,7 @@ export function CmsClient({
           {/* Album & Photo Forms */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             {/* Create Album */}
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4">
               <h3 className="font-heading font-bold text-base text-text-primary">
                 Buat Album Kegiatan Baru
               </h3>
@@ -1047,7 +1046,7 @@ export function CmsClient({
 
             {/* Add Photo to Selected Album */}
             {selectedAlbumForPhotos && (
-              <div className="p-6 rounded-2xl bg-surface border border-teal-deep/50 shadow-xs flex flex-col gap-4 animate-in fade-in">
+              <div className="p-6 rounded-card bg-surface border border-teal-deep/50 shadow-xs flex flex-col gap-4 animate-in fade-in">
                 <div className="flex items-center justify-between">
                   <h3 className="font-heading font-bold text-base text-teal-deep">
                     Tambah Foto ke Album
@@ -1151,7 +1150,7 @@ export function CmsClient({
 
           {/* Create Achievement Form */}
           <div className="lg:col-span-5">
-            <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4 sticky top-20">
+            <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4 sticky top-20">
               <h3 className="font-heading font-bold text-base text-text-primary">
                 Catat Prestasi Mahasiswa Baru
               </h3>
@@ -1257,7 +1256,7 @@ export function CmsClient({
       {activeTab === 'media' && (
         <div className="flex flex-col gap-6">
           {/* Upload Box */}
-          <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4">
+          <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4">
             <h3 className="font-heading font-bold text-base text-text-primary">
               Unggah Media Baru ke Repositori
             </h3>
@@ -1287,7 +1286,7 @@ export function CmsClient({
           </div>
 
           {/* Media Grid */}
-          <div className="p-6 rounded-2xl bg-surface border border-border shadow-xs flex flex-col gap-4">
+          <div className="p-6 rounded-card bg-surface border border-border shadow-xs flex flex-col gap-4">
             <h3 className="font-heading font-bold text-base text-text-primary">
               Berkas Media Tersimpan ({mediaList.length})
             </h3>
