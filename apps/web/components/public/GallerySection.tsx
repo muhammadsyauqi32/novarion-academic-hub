@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { CMSAlbum, CMSAlbumPhoto } from '@novarion/shared';
 import { Camera, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Reveal } from './Reveal';
 
 interface GallerySectionProps {
   albums: CMSAlbum[];
@@ -62,105 +63,118 @@ export function GallerySection({ albums }: GallerySectionProps) {
   }, [lightboxIndex, showNext, showPrev]);
 
   return (
-    <section id="galeri" className="w-full bg-[#0D1B2A] border-b border-[#FAF9F5]/10 py-16 md:py-24 scroll-mt-16 text-[#FAF9F5]">
+    <section id="galeri" className="w-full bg-[#0D1B2A] py-16 md:py-24 scroll-mt-20 text-[#FAF9F5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Horizontally Centered Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
-          <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-tight leading-tight">
-            Galeri dan Dokumentasi
-          </h2>
-          <p className="text-sm sm:text-base text-[#FAF9F5]/75 max-w-xl mx-auto leading-relaxed font-sans font-medium">
-            Arsip visual dan rekaman momen kebersamaan Angkatan 62.
-          </p>
+        <Reveal yOffset={16}>
+          <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
+            <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-tight leading-tight">
+              Galeri dan Dokumentasi
+            </h2>
+            <p className="text-sm sm:text-base text-[#FAF9F5]/75 max-w-xl mx-auto leading-relaxed font-sans font-medium">
+              Arsip visual dan rekaman momen kebersamaan Angkatan 62.
+            </p>
 
-          {/* Album Selector Tabs */}
-          {albums.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
-              <button
-                onClick={() => setSelectedAlbumId('all')}
-                className={`text-xs font-mono font-bold px-3 py-1.5 rounded-xs border transition-colors ${
-                  selectedAlbumId === 'all'
-                    ? 'bg-[#FFAE5D] text-[#0D1B2A] border-[#FFAE5D]'
-                    : 'bg-[#15283C] text-[#FAF9F5] border-[#FAF9F5]/20 hover:border-[#FFAE5D]'
-                }`}
-              >
-                Semua Album ({allPhotos.length})
-              </button>
-              {albums.map((alb) => (
+            {/* Album Selector Tabs (No borders) */}
+            {albums.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
                 <button
-                  key={alb.id}
-                  onClick={() => setSelectedAlbumId(alb.id)}
-                  className={`text-xs font-mono font-bold px-3 py-1.5 rounded-xs border transition-colors ${
-                    selectedAlbumId === alb.id
-                      ? 'bg-[#FFAE5D] text-[#0D1B2A] border-[#FFAE5D]'
-                      : 'bg-[#15283C] text-[#FAF9F5] border-[#FAF9F5]/20 hover:border-[#FFAE5D]'
+                  onClick={() => setSelectedAlbumId('all')}
+                  className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
+                    selectedAlbumId === 'all'
+                      ? 'bg-[#FFAE5D] text-[#0D1B2A]'
+                      : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
                   }`}
                 >
-                  {alb.title} ({alb.photos?.length || 0})
+                  Semua Album ({allPhotos.length})
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
+                {albums.map((alb) => (
+                  <button
+                    key={alb.id}
+                    onClick={() => setSelectedAlbumId(alb.id)}
+                    className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
+                      selectedAlbumId === alb.id
+                        ? 'bg-[#FFAE5D] text-[#0D1B2A]'
+                        : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
+                    }`}
+                  >
+                    {alb.title} ({alb.photos?.length || 0})
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </Reveal>
 
         {displayedPhotos.length === 0 ? (
-          /* Visually Restrained Clean Empty State (Zero Technical CMS Jargon) */
-          <div className="p-12 sm:p-16 rounded-xs bg-[#15283C] border border-[#FAF9F5]/20 text-center max-w-lg mx-auto flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-xs bg-[#41C2A1]/20 border border-[#41C2A1]/40 flex items-center justify-center text-[#41C2A1]">
-              <Camera className="w-6 h-6" />
+          /* Visually Restrained Clean Empty State */
+          <Reveal yOffset={16}>
+            <div className="p-12 sm:p-16 rounded-xs bg-[#15283C] text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
+              <div className="w-12 h-12 rounded-xs bg-[#41C2A1]/20 flex items-center justify-center text-[#41C2A1] shadow-2xs">
+                <Camera className="w-6 h-6" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <h3 className="font-heading font-black text-lg text-[#FAF9F5]">
+                  Belum Ada Foto dalam Album Ini
+                </h3>
+                <p className="text-xs text-[#FAF9F5]/70 leading-relaxed font-sans">
+                  Arsip visual kegiatan angkatan akan didokumentasikan di sini sebagai rekam jejak memori kebersamaan Statistika 62.
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <h3 className="font-heading font-black text-lg text-[#FAF9F5]">
-                Belum Ada Foto dalam Album Ini
-              </h3>
-              <p className="text-xs text-[#FAF9F5]/70 leading-relaxed font-sans">
-                Arsip visual kegiatan angkatan akan didokumentasikan di sini sebagai rekam jejak memori kebersamaan Statistika 62.
-              </p>
-            </div>
-          </div>
+          </Reveal>
         ) : (
-          /* Asymmetrical Photography Collage with Square Image Edges (rounded-xs / rounded-none) */
+          /* Asymmetrical Photography Collage (No decorative borders, subtle hover zoom & lift) */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
             {displayedPhotos.map((item, idx) => {
-              // Asymmetric editorial sizing pattern
               const isLarge = idx % 5 === 0;
               const isMedium = idx % 5 === 1 || idx % 5 === 2;
               const colSpan = isLarge ? 'lg:col-span-8' : isMedium ? 'lg:col-span-4' : 'lg:col-span-6';
               const aspect = isLarge ? 'aspect-[16/10]' : 'aspect-square';
 
               return (
-                <div
-                  key={item.photo.id || idx}
-                  onClick={() => openLightbox(idx)}
-                  className={`${colSpan} group relative ${aspect} overflow-hidden rounded-xs bg-[#15283C] border border-[#FAF9F5]/20 hover:border-[#FFAE5D] transition-all cursor-pointer`}
-                >
-                  <Image
-                    src={item.photo.imageUrl}
-                    alt={item.photo.caption || item.albumTitle}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+                <Reveal key={item.photo.id || idx} delayMs={(idx % 6) * 60} yOffset={16} className={colSpan}>
+                  <div
+                    onClick={() => openLightbox(idx)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Lihat foto dari album ${item.albumTitle}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openLightbox(idx);
+                      }
+                    }}
+                    className={`group relative ${aspect} w-full overflow-hidden rounded-xs bg-[#15283C] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#FFAE5D]`}
+                  >
+                    <Image
+                      src={item.photo.imageUrl}
+                      alt={item.photo.caption || item.albumTitle}
+                      fill
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
 
-                  {/* Caption Strip */}
-                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-[#0D1B2A] via-[#0D1B2A]/80 to-transparent flex flex-col justify-end">
-                    <span className="text-[10px] font-mono font-bold text-[#FFAE5D] uppercase tracking-wider">
-                      {item.albumTitle}
-                    </span>
-                    {item.photo.caption && (
-                      <p className="text-xs font-semibold text-[#FAF9F5] line-clamp-1 mt-0.5">
-                        {item.photo.caption}
-                      </p>
-                    )}
+                    {/* Caption Strip */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-[#0D1B2A] via-[#0D1B2A]/75 to-transparent flex flex-col justify-end">
+                      <span className="text-[10px] font-mono font-bold text-[#FFAE5D] uppercase tracking-wider">
+                        {item.albumTitle}
+                      </span>
+                      {item.photo.caption && (
+                        <p className="text-xs font-semibold text-[#FAF9F5] line-clamp-1 mt-0.5">
+                          {item.photo.caption}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </Reveal>
               );
             })}
           </div>
         )}
       </div>
 
-      {/* Lightbox Viewer (Sharp Corners) */}
+      {/* Lightbox Viewer */}
       {lightboxIndex !== null && displayedPhotos[lightboxIndex] && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0D1B2A]/95 backdrop-blur-xs"
@@ -177,7 +191,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
               </span>
               <button
                 onClick={closeLightbox}
-                className="p-2 rounded-xs border border-[#FAF9F5]/30 hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors"
+                className="p-2 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors"
                 aria-label="Tutup"
               >
                 <X className="w-5 h-5" />
@@ -185,7 +199,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
             </div>
 
             {/* Photo Container */}
-            <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden border border-[#FAF9F5]/20 bg-[#0D1B2A]">
+            <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden bg-[#0D1B2A] shadow-2xl">
               <Image
                 src={displayedPhotos[lightboxIndex].photo.imageUrl}
                 alt={displayedPhotos[lightboxIndex].photo.caption || 'Foto Galeri'}
@@ -199,7 +213,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
             <div className="w-full flex items-center justify-between px-2 text-xs font-mono">
               <button
                 onClick={showPrev}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs border border-[#FAF9F5]/30 hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors bg-[#15283C]"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Sebelumnya</span>
@@ -218,7 +232,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
 
               <button
                 onClick={showNext}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs border border-[#FAF9F5]/30 hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors bg-[#15283C]"
               >
                 <span>Selanjutnya</span>
                 <ChevronRight className="w-4 h-4" />

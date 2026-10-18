@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Novarion — Academic Hub Angkatan Statistika',
+    title: 'Novarion - Academic Hub Angkatan Statistika',
     description:
       'Satu angkatan, satu ruang. Platform terpadu agenda perkuliahan, bank materi, dan bot pengingat deadline WhatsApp otomatis.',
     url: 'https://novarion.web.id',
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Novarion — Academic Hub Angkatan Statistika',
+    title: 'Novarion - Academic Hub Angkatan Statistika',
     description:
       'Platform terpadu agenda perkuliahan, kalender akademik, dan bot pengingat deadline WhatsApp otomatis angkatan.',
   },

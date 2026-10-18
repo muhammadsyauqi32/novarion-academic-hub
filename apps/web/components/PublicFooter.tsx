@@ -1,10 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
+import { getHubLoginUrl } from '@/lib/links';
 
 export function PublicFooter() {
+  const hubLoginUrl = getHubLoginUrl();
+
   return (
-    <footer className="w-full bg-[#0D1B2A] border-t border-[#FAF9F5]/15 py-12 text-[#FAF9F5]">
+    <footer className="w-full bg-[#0D1B2A] py-14 text-[#FAF9F5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
           <BrandLogo size="sm" inverted={true} />
@@ -13,28 +16,29 @@ export function PublicFooter() {
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6 text-xs font-sans font-medium text-[#FAF9F5]/80">
+        {/* 1-Word Clean Navigation Links */}
+        <div className="flex flex-wrap justify-center gap-6 text-xs font-sans font-medium text-[#FAF9F5]/85">
+          <a href="#tentang" className="hover:text-[#FFAE5D] transition-colors">
+            Tentang
+          </a>
+          <a href="#pengurus" className="hover:text-[#FFAE5D] transition-colors">
+            Pengurus
+          </a>
+          <a href="#berita" className="hover:text-[#FFAE5D] transition-colors">
+            Berita
+          </a>
+          <a href="#galeri" className="hover:text-[#FFAE5D] transition-colors">
+            Galeri
+          </a>
+          <a href="#prestasi" className="hover:text-[#FFAE5D] transition-colors">
+            Prestasi
+          </a>
           <Link href="/privacy" className="hover:text-[#FFAE5D] transition-colors">
             Kebijakan Privasi
           </Link>
-          <a href="#tentang" className="hover:text-[#FFAE5D] transition-colors">
-            Tentang Novarion
-          </a>
-          <a href="#pengurus" className="hover:text-[#FFAE5D] transition-colors">
-            Pengurus Angkatan
-          </a>
-          <a href="#berita" className="hover:text-[#FFAE5D] transition-colors">
-            Berita dan Kegiatan
-          </a>
-          <a href="#galeri" className="hover:text-[#FFAE5D] transition-colors">
-            Galeri dan Dokumentasi
-          </a>
-          <a href="#prestasi" className="hover:text-[#FFAE5D] transition-colors">
-            Prestasi Angkatan
-          </a>
-          <Link href="/login" className="hover:text-[#FFAE5D] transition-colors font-bold text-[#41C2A1]">
+          <a href={hubLoginUrl} className="hover:text-[#FFAE5D] transition-colors font-bold text-[#41C2A1]">
             Academic Hub
-          </Link>
+          </a>
         </div>
 
         <div className="text-xs text-[#FAF9F5]/70 text-center md:text-right font-mono">
