@@ -89,8 +89,8 @@ export function DashboardTaskList({ initialTasks }: DashboardTaskListProps) {
       {/* Header Bar */}
       <div className="px-4 py-3 bg-surface-soft/60 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-text-primary">Tugas Mandiri</span>
-          <span className="text-[11px] font-mono text-text-muted bg-surface px-1.5 py-0.5 rounded border border-border">
+          <span className="font-heading font-semibold text-xs text-text-primary tracking-tight">Tugas Mandiri</span>
+          <span className="text-[11px] font-mono font-medium text-teal-deep bg-teal-deep/10 px-1.5 py-0.5 rounded border border-teal-deep/20">
             {completedCount}/{tasks.length}
           </span>
         </div>

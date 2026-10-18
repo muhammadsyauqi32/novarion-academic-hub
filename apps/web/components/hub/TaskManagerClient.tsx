@@ -118,9 +118,9 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
       {/* 1. Header & Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-card bg-surface border border-border">
         <div>
-          <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
             Tugas & Checklist Saya
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -129,14 +129,14 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep border border-teal-deep/20">
+          <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep border border-teal-deep/20">
             {completedTasks.length} / {tasks.length} Selesai
           </span>
         </div>
       </div>
 
       {/* 2. Quick Task Creation Card */}
-      <div className="p-4 sm:p-5 rounded-card bg-surface border border-border flex flex-col gap-3 shadow-xs">
+      <div className="p-4 sm:p-5 rounded-card bg-surface border border-border flex flex-col gap-3">
         <form onSubmit={handleCreate} className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-2.5">
             <input
@@ -154,14 +154,14 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
               value={newDeadline}
               onChange={(e) => setNewDeadline(e.target.value)}
               title="Batas waktu tugas (Opsional)"
-              className="w-full sm:w-auto px-3.5 py-2 text-xs bg-surface-soft border border-border rounded-input text-text-muted focus:border-teal-deep focus:outline-none"
+              className="w-full sm:w-auto px-3.5 py-2 text-xs bg-surface-soft border border-border rounded-input text-text-muted focus:border-teal-deep focus:outline-none font-mono"
             />
             <Button
               type="submit"
               variant="primary"
               size="sm"
               disabled={!newTitle.trim()}
-              className="w-full sm:w-auto shrink-0 text-xs"
+              className="w-full sm:w-auto shrink-0 text-xs font-medium"
             >
               <Plus className="w-3.5 h-3.5 mr-1" />
               <span>Tambah</span>
@@ -199,7 +199,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
             placeholder="Cari dalam daftar tugas..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-surface border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
           />
         </div>
       )}
@@ -208,10 +208,10 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted">
+            <h2 className="text-xs font-heading font-bold uppercase tracking-wider text-text-muted">
               Tugas Berjalan
             </h2>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-surface-soft text-text-muted font-bold">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-soft text-text-muted font-bold border border-border">
               {pendingTasks.length}
             </span>
           </div>
@@ -240,7 +240,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
                     aria-label="Tandai selesai"
                   />
                   <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-xs font-semibold text-text-primary">
+                    <span className="text-xs font-medium text-text-primary">
                       {t.title}
                     </span>
                     {t.description && (
@@ -279,7 +279,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
             <button
               type="button"
               onClick={() => setShowCompleted(!showCompleted)}
-              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-text-primary"
+              className="flex items-center gap-2 text-xs font-heading font-bold uppercase tracking-wider text-text-muted hover:text-text-primary"
             >
               <span>Telah Selesai ({completedTasks.length})</span>
               {showCompleted ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

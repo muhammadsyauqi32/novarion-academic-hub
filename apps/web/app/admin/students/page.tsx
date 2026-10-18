@@ -21,10 +21,10 @@ export default async function StudentsWhitelistPage({
     .orderBy(desc(studentWhitelist.createdAt));
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-card bg-surface border border-border">
         <div>
-          <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
             Mahasiswa & Akses Akun
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -33,9 +33,9 @@ export default async function StudentsWhitelistPage({
         </div>
 
         <div className="flex items-center gap-3">
-          <Badge variant="primary" size="md">
+          <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep border border-teal-deep/20">
             {allStudents.length} Mahasiswa Terdaftar
-          </Badge>
+          </span>
         </div>
       </div>
 

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { requireAuth } from '@/lib/auth/guards';
 import { getDb, academicTerms, agendas, personalTasks, agendaTargets, courses } from '@novarion/db';
 import { eq, and, gte, desc, or } from 'drizzle-orm';
-import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
 import { formatWIBShort, formatWIB } from '@novarion/shared';
@@ -147,22 +146,22 @@ export default async function StudentDashboardPage() {
   const firstName = user.fullName.split(' ')[0];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       {/* 1. Above the fold: Focused Academic Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 sm:p-6 rounded-card bg-surface border border-border">
-        <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-card bg-surface border border-border">
+        <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-teal-deep/10 text-teal-deep">
+            <span className="px-2.5 py-0.5 rounded text-[11px] font-heading font-bold bg-teal-deep/10 text-teal-deep border border-teal-deep/20 uppercase tracking-wider">
               {activeTerm ? activeTerm.name : 'Semester Aktif'}
             </span>
             <span className="text-xs font-mono text-text-muted">NIM {user.nim}</span>
             {canPublishOfficial && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-orange/15 text-[#9E5507] flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" /> Delegasi Agenda
+              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-brand-orange/15 text-[#9E5507] flex items-center gap-1 border border-brand-orange/20">
+                <ShieldCheck className="w-3.5 h-3.5" /> Delegasi Agenda
               </span>
             )}
           </div>
-          <h1 className="font-heading font-bold text-xl sm:text-2xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
             Halo, {firstName}
           </h1>
           <p className="text-xs text-text-muted">
@@ -171,21 +170,21 @@ export default async function StudentDashboardPage() {
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           <Link href="/app/tasks">
-            <Button variant="secondary" size="sm" className="gap-1.5 text-xs">
+            <Button variant="secondary" size="sm" className="gap-1.5 text-xs font-medium">
               <Plus className="w-3.5 h-3.5" />
               <span>Catat Tugas</span>
             </Button>
           </Link>
           <Link href="/app/calendar">
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs font-medium">
               <CalendarIcon className="w-3.5 h-3.5" />
               <span>Kalender</span>
             </Button>
           </Link>
           <Link href="/app/agendas/new">
-            <Button variant="primary" size="sm" className="gap-1.5 text-xs">
+            <Button variant="primary" size="sm" className="gap-1.5 text-xs font-medium">
               <Send className="w-3.5 h-3.5" />
               <span>{canPublishOfficial ? 'Buat Agenda' : 'Ajukan Agenda'}</span>
             </Button>
@@ -199,10 +198,10 @@ export default async function StudentDashboardPage() {
         <div className="lg:col-span-7 flex flex-col gap-6">
           {/* Priority Area: Upcoming Deadlines */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-teal-deep" />
-                <h2 className="font-heading font-bold text-sm sm:text-base text-text-primary">
+                <h2 className="font-heading font-bold text-base text-text-primary tracking-tight">
                   Tenggat Waktu Terdekat
                 </h2>
               </div>
@@ -211,7 +210,7 @@ export default async function StudentDashboardPage() {
                 className="text-xs font-semibold text-teal-deep hover:underline flex items-center gap-1"
               >
                 <span>Lihat Semua</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
@@ -224,24 +223,24 @@ export default async function StudentDashboardPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-2.5">
+              <div className="rounded-card bg-surface border border-border divide-y divide-border overflow-hidden">
                 {upcomingDeadlines.map((item) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-card bg-surface border border-border hover:border-border-strong transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="p-4 hover:bg-surface-soft/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     <div className="flex flex-col gap-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant="primary" size="sm">{item.category}</Badge>
                         {item.courseCode && (
-                          <span className="text-[11px] font-mono font-semibold text-text-muted">
+                          <span className="text-[11px] font-mono font-semibold text-teal-deep bg-teal-deep/10 px-1.5 py-0.5 rounded border border-teal-deep/20">
                             {item.courseCode}
                           </span>
                         )}
                         {item.deadline && getUrgencyBadge(new Date(item.deadline))}
                       </div>
 
-                      <h3 className="font-heading font-bold text-sm text-text-primary truncate">
+                      <h3 className="font-heading font-semibold text-sm text-text-primary truncate">
                         {item.title}
                       </h3>
 
@@ -251,7 +250,7 @@ export default async function StudentDashboardPage() {
                         </p>
                       )}
 
-                      <p className="text-[11px] text-text-muted">
+                      <p className="text-[11px] text-text-muted font-mono">
                         Batas: <span className="font-semibold text-text-primary">{item.deadline ? formatWIB(item.deadline) : 'Fleksibel'}</span>
                       </p>
                     </div>
@@ -269,7 +268,7 @@ export default async function StudentDashboardPage() {
                         </a>
                       )}
                       <Link href={`/app/agendas/${item.id}`}>
-                        <Button variant="outline" size="sm" className="text-xs">
+                        <Button variant="outline" size="sm" className="text-xs font-medium">
                           Detail
                         </Button>
                       </Link>
@@ -282,10 +281,10 @@ export default async function StudentDashboardPage() {
 
           {/* Schedule Preview: Today / This Week */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <CalendarDays className="w-4 h-4 text-teal-deep" />
-                <h2 className="font-heading font-bold text-sm sm:text-base text-text-primary">
+                <h2 className="font-heading font-bold text-base text-text-primary tracking-tight">
                   Jadwal 7 Hari ke Depan
                 </h2>
               </div>
@@ -294,7 +293,7 @@ export default async function StudentDashboardPage() {
                 className="text-xs font-semibold text-teal-deep hover:underline flex items-center gap-1"
               >
                 <span>Buka Kalender</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
@@ -308,7 +307,7 @@ export default async function StudentDashboardPage() {
                   <div key={agenda.id} className="p-3.5 flex items-center justify-between gap-3 text-xs hover:bg-surface-soft/40 transition-colors">
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-soft text-text-muted font-bold">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-soft text-text-muted font-bold border border-border">
                           {agenda.category}
                         </span>
                         {agenda.courseCode && (
@@ -317,7 +316,7 @@ export default async function StudentDashboardPage() {
                           </span>
                         )}
                       </div>
-                      <span className="font-semibold text-text-primary truncate">{agenda.title}</span>
+                      <span className="font-heading font-semibold text-text-primary truncate">{agenda.title}</span>
                     </div>
 
                     <div className="text-right shrink-0">
@@ -342,16 +341,18 @@ export default async function StudentDashboardPage() {
 
           {/* Academic Resource Shortcuts */}
           <div className="flex flex-col gap-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-text-muted px-1">
+            <h3 className="text-[11px] font-heading font-bold uppercase tracking-wider text-text-muted px-1">
               Pusat Sumber Belajar
             </h3>
 
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/app/materials"
-                className="p-3.5 rounded-card bg-surface border border-border hover:border-teal-deep/40 hover:bg-surface-soft/50 transition-all flex flex-col gap-1.5 group"
+                className="p-4 rounded-card bg-surface border border-border hover:border-teal-deep/50 hover:bg-surface-soft/40 transition-all flex flex-col gap-2 group"
               >
-                <FolderOpen className="w-4 h-4 text-teal-deep group-hover:scale-105 transition-transform" />
+                <div className="w-8 h-8 rounded-lg bg-teal-deep/10 text-teal-deep flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <FolderOpen className="w-4 h-4" />
+                </div>
                 <span className="font-heading font-bold text-xs text-text-primary">File Materi</span>
                 <span className="text-[10px] text-text-muted leading-tight">
                   Slide kuliah, modul lab, dan silabus
@@ -360,9 +361,11 @@ export default async function StudentDashboardPage() {
 
               <Link
                 href="/app/knowledge"
-                className="p-3.5 rounded-card bg-surface border border-border hover:border-teal-deep/40 hover:bg-surface-soft/50 transition-all flex flex-col gap-1.5 group"
+                className="p-4 rounded-card bg-surface border border-border hover:border-teal-deep/50 hover:bg-surface-soft/40 transition-all flex flex-col gap-2 group"
               >
-                <BookOpen className="w-4 h-4 text-teal-deep group-hover:scale-105 transition-transform" />
+                <div className="w-8 h-8 rounded-lg bg-teal-deep/10 text-teal-deep flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <BookOpen className="w-4 h-4" />
+                </div>
                 <span className="font-heading font-bold text-xs text-text-primary">Knowledge Hub</span>
                 <span className="text-[10px] text-text-muted leading-tight">
                   FAQ akademik & tautan resmi IPB
@@ -371,9 +374,11 @@ export default async function StudentDashboardPage() {
 
               <Link
                 href="/app/calendar"
-                className="p-3.5 rounded-card bg-surface border border-border hover:border-teal-deep/40 hover:bg-surface-soft/50 transition-all flex flex-col gap-1.5 group"
+                className="p-4 rounded-card bg-surface border border-border hover:border-teal-deep/50 hover:bg-surface-soft/40 transition-all flex flex-col gap-2 group"
               >
-                <CalendarIcon className="w-4 h-4 text-teal-deep group-hover:scale-105 transition-transform" />
+                <div className="w-8 h-8 rounded-lg bg-teal-deep/10 text-teal-deep flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <CalendarIcon className="w-4 h-4" />
+                </div>
                 <span className="font-heading font-bold text-xs text-text-primary">Kalender Semester</span>
                 <span className="text-[10px] text-text-muted leading-tight">
                   Tampilan bulan, pekan, dan filter matkul
@@ -382,9 +387,11 @@ export default async function StudentDashboardPage() {
 
               <Link
                 href="/app/agendas/new"
-                className="p-3.5 rounded-card bg-surface border border-border hover:border-teal-deep/40 hover:bg-surface-soft/50 transition-all flex flex-col gap-1.5 group"
+                className="p-4 rounded-card bg-surface border border-border hover:border-teal-deep/50 hover:bg-surface-soft/40 transition-all flex flex-col gap-2 group"
               >
-                <Send className="w-4 h-4 text-teal-deep group-hover:scale-105 transition-transform" />
+                <div className="w-8 h-8 rounded-lg bg-teal-deep/10 text-teal-deep flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <Send className="w-4 h-4" />
+                </div>
                 <span className="font-heading font-bold text-xs text-text-primary">
                   {canPublishOfficial ? 'Buat Agenda' : 'Ajukan Agenda'}
                 </span>

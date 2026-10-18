@@ -94,8 +94,8 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
   return (
     <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       {/* 1. Documentation Header */}
-      <div className="flex flex-col gap-1.5 border-b border-border pb-5">
-        <div className="flex items-center gap-2 text-xs font-semibold text-teal-deep uppercase tracking-wider">
+      <div className="flex flex-col gap-2 p-6 rounded-card bg-surface border border-border">
+        <div className="flex items-center gap-2 text-xs font-heading font-bold text-teal-deep uppercase tracking-wider">
           <BookOpen className="w-3.5 h-3.5" />
           <span>Knowledge Hub</span>
           <span>•</span>
@@ -110,7 +110,7 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
       </div>
 
       {/* 2. Search Toolbar */}
-      <div className="p-3.5 sm:p-4 rounded-card bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 rounded-card bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-96">
           <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -155,7 +155,7 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs transition-colors shrink-0 ${
                 isSelected
-                  ? 'bg-teal-deep text-white font-bold shadow-xs'
+                  ? 'bg-teal-deep text-white font-bold'
                   : 'bg-surface text-text-muted hover:text-text-primary border border-border font-medium'
               }`}
             >
@@ -194,7 +194,7 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
             return (
               <div
                 key={item.id}
-                className="rounded-card bg-surface border border-border overflow-hidden transition-colors hover:border-border-strong shadow-xs"
+                className="rounded-card bg-surface border border-border overflow-hidden transition-colors hover:border-border-strong"
               >
                 {/* Accordion Heading Trigger */}
                 <button
@@ -204,16 +204,16 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
                   aria-expanded={isExpanded}
                 >
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="p-2 rounded-lg bg-surface-soft shrink-0 mt-0.5">
+                    <div className="p-2 rounded-lg bg-surface-soft shrink-0 mt-0.5 border border-border">
                       <Icon className={`w-4 h-4 ${meta.color}`} />
                     </div>
                     <div className="flex flex-col gap-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wide text-text-muted bg-surface-soft px-1.5 py-0.5 rounded border border-border">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wide text-teal-deep bg-teal-deep/10 px-1.5 py-0.5 rounded border border-teal-deep/20">
                           {meta.label}
                         </span>
                       </div>
-                      <h3 className="font-heading font-bold text-sm sm:text-base text-text-primary leading-snug">
+                      <h3 className="font-heading font-semibold text-sm sm:text-base text-text-primary leading-snug">
                         {item.title}
                       </h3>
                       {!isExpanded && (

@@ -79,9 +79,9 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
       {/* 1. Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-card bg-surface border border-border">
         <div>
-          <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
             File Materi & Modul Perkuliahan
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -90,14 +90,14 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep border border-teal-deep/20">
+          <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep border border-teal-deep/20">
             {filteredMaterials.length} Berkas Tersedia
           </span>
         </div>
       </div>
 
       {/* 2. Search & Course Filter Toolbar */}
-      <div className="p-3.5 sm:p-4 rounded-card bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 rounded-card bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -105,7 +105,7 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
             placeholder="Cari materi kuliah, topik, atau kode..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-1.5 text-xs bg-surface-soft border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+            className="w-full pl-9 pr-3.5 py-2 text-xs bg-surface-soft border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
           />
         </div>
 
@@ -115,7 +115,7 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
-            className="w-full sm:w-auto px-3 py-1.5 text-xs bg-surface-soft border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none"
+            className="w-full sm:w-auto px-3 py-2 text-xs bg-surface-soft border border-border rounded-input text-text-primary focus:border-teal-deep focus:outline-none font-medium"
           >
             <option value="all">Semua Mata Kuliah ({initialMaterials.length})</option>
             {courseOptions.map((c) => (
@@ -149,9 +149,9 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
           )}
         </div>
       ) : (
-        <div className="rounded-card bg-surface border border-border overflow-hidden shadow-xs">
+        <div className="rounded-card bg-surface border border-border overflow-hidden">
           {/* Desktop Table Header */}
-          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2.5 bg-surface-soft/80 border-b border-border text-[11px] font-bold uppercase tracking-wider text-text-muted">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-surface-soft/60 border-b border-border text-[10px] font-heading font-bold uppercase tracking-wider text-text-muted">
             <div className="col-span-6">Nama Berkas & Deskripsi</div>
             <div className="col-span-3">Mata Kuliah</div>
             <div className="col-span-1 text-center">Tipe</div>
@@ -171,11 +171,11 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
                 >
                   {/* File Title and Description */}
                   <div className="md:col-span-6 flex items-start gap-3 min-w-0">
-                    <div className="p-2 rounded-lg bg-surface-soft shrink-0 mt-0.5">
+                    <div className="p-2 rounded-lg bg-surface-soft shrink-0 mt-0.5 border border-border">
                       <Icon className={`w-4 h-4 ${meta.color}`} />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-text-primary leading-snug">
+                      <span className="font-heading font-semibold text-xs text-text-primary leading-snug">
                         {m.title}
                       </span>
                       {m.description && (

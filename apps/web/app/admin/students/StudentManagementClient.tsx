@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
 import { Input } from '@/components/Input';
@@ -226,7 +225,7 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
       {/* Modal Password Sementara (One-Time Display & Persistent across refresh) */}
       {tempPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <Card className="w-full max-w-lg p-6 bg-surface border-border shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg p-6 rounded-card bg-surface border border-border shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -372,14 +371,15 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
             >
               Saya Telah Menyalin Kredensial & Tutup
             </Button>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* Grid: Form Tambah Mahasiswa & Tabel Roster */}
+      {/* Grid: Form Tambah Mahasiswa & Tabel Roster */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Form Tambah Satuan */}
-        <Card className="lg:col-span-4 p-5 flex flex-col gap-4">
+        <div className="lg:col-span-4 p-5 rounded-card bg-surface border border-border flex flex-col gap-4">
           <div className="flex items-center gap-2 pb-3 border-b border-border">
             <Plus className="w-4 h-4 text-teal-deep" />
             <h2 className="font-heading font-bold text-sm text-text-primary">
@@ -448,11 +448,11 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
               Simpan & Buat Akun
             </Button>
           </form>
-        </Card>
+        </div>
 
         {/* Tabel Data Whitelist */}
-        <Card className="lg:col-span-8 p-0 overflow-hidden flex flex-col">
-          <div className="p-4 bg-surface-soft border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="lg:col-span-8 rounded-card bg-surface border border-border overflow-hidden flex flex-col">
+          <div className="p-4 bg-surface-soft/60 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2 max-w-lg w-full">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-2.5" />
@@ -475,14 +475,14 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
               </Button>
             </div>
 
-            <span className="text-xs text-text-muted shrink-0">
+            <span className="text-xs font-mono text-text-muted shrink-0">
               Menampilkan {filtered.length} data
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-text-primary">
-              <thead className="bg-surface-soft/60 border-b border-border text-text-muted uppercase text-[10px] tracking-wider">
+              <thead className="bg-surface-soft/60 border-b border-border text-[10px] font-heading font-bold uppercase tracking-wider text-text-muted">
                 <tr>
                   <th className="py-3 px-4">NIM</th>
                   <th className="py-3 px-4">Nama Lengkap</th>
@@ -502,9 +502,9 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
                 ) : (
                   filtered.map((s) => (
                     <tr key={s.id} className="hover:bg-surface-soft/40 transition-colors">
-                      <td className="py-3 px-4 font-bold font-mono">{s.nim}</td>
+                      <td className="py-3 px-4 font-bold font-mono text-teal-deep">{s.nim}</td>
                       <td className="py-3 px-4 font-medium">{s.fullName}</td>
-                      <td className="py-3 px-4 text-text-muted">{s.email}</td>
+                      <td className="py-3 px-4 font-mono text-text-muted text-[11px]">{s.email}</td>
                       <td className="py-3 px-4">
                         <Badge variant={s.role === 'admin' ? 'orange' : 'primary'} size="sm">
                           {s.role}
@@ -550,7 +550,7 @@ _Penting: Jangan bagikan kata sandi sementara ini kepada pihak lain._`;
               </tbody>
             </table>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* CSV IMPORT MODAL (MODULE A: DATA MAHASISWA) */}
