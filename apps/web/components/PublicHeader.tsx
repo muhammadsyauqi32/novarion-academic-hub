@@ -3,32 +3,31 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { BrandLogo } from './BrandLogo';
-import { Button } from './Button';
 import { Menu, X, ArrowRight } from 'lucide-react';
 
 export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-canvas/90 backdrop-blur-md border-b border-border/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] border-b border-[#112A24]/15 shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <BrandLogo size="md" showTagline={true} />
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-text-muted uppercase tracking-wider">
-          <a href="#tentang" className="hover:text-teal-deep transition-colors">
+        <nav className="hidden lg:flex items-center gap-6 text-xs font-mono font-bold text-[#112A24]/80 uppercase tracking-wider">
+          <a href="#tentang" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
             Tentang Kita
           </a>
-          <a href="#pengurus" className="hover:text-teal-deep transition-colors">
+          <a href="#pengurus" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
             Pengurus
           </a>
-          <a href="#berita" className="hover:text-teal-deep transition-colors">
-            Warta & Kegiatan
+          <a href="#berita" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
+            Warta & Jurnal
           </a>
-          <a href="#galeri" className="hover:text-teal-deep transition-colors">
-            Galeri Momen
+          <a href="#galeri" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
+            Galeri Memori
           </a>
-          <a href="#prestasi" className="hover:text-teal-deep transition-colors">
+          <a href="#prestasi" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
             Prestasi
           </a>
         </nav>
@@ -36,24 +35,24 @@ export function PublicHeader() {
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
-            <Button variant="primary" size="sm" className="font-semibold text-xs py-2 px-4 shadow-xs">
+            <button className="px-4 py-2 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 border border-[#112A24]">
               <span>Masuk Academic Hub</span>
-              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-            </Button>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </Link>
         </div>
 
         {/* Mobile & Tablet Menu Button */}
         <div className="flex lg:hidden items-center gap-2">
           <Link href="/login">
-            <Button variant="primary" size="sm" className="text-xs py-1.5 px-3">
+            <button className="px-3 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase transition-colors">
               Masuk
-            </Button>
+            </button>
           </Link>
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl border border-border text-text-muted hover:text-text-primary hover:bg-surface-soft transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+            className="p-2 rounded-xs border border-[#112A24]/20 text-[#112A24] hover:bg-[#EAEAB7] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
             aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -62,53 +61,53 @@ export function PublicHeader() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer (Sharp Corners) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-border bg-surface px-4 py-4 flex flex-col gap-3 animate-in slide-in-from-top-2">
+        <div className="lg:hidden border-b-2 border-[#112A24] bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
           <a
             href="#tentang"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
           >
             Tentang Kita
           </a>
           <a
             href="#pengurus"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
           >
             Struktur Pengurus
           </a>
           <a
             href="#berita"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
           >
-            Warta & Kegiatan
+            Warta & Jurnal
           </a>
           <a
             href="#galeri"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
           >
-            Galeri Momen
+            Galeri Memori
           </a>
           <a
             href="#prestasi"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2.5 px-3 rounded-lg text-sm font-semibold text-text-primary hover:bg-surface-soft transition-colors"
+            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
           >
             Prestasi Angkatan
           </a>
-          <div className="pt-2 border-t border-border">
+          <div className="pt-2 border-t border-[#112A24]/15">
             <Link
               href="/login"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
-              <Button variant="primary" size="sm" className="w-full justify-center font-bold">
+              <button className="w-full py-2.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors">
                 Masuk ke Academic Hub
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

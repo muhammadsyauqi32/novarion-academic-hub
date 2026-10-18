@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { CMSNews } from '@novarion/shared';
-import { Calendar, Tag, ArrowRight, X, Newspaper, Clock, BookOpen } from 'lucide-react';
-import { Button } from '@/components/Button';
+import { ArrowRight, X, Newspaper, Calendar } from 'lucide-react';
 
 interface NewsSectionProps {
   news: CMSNews[];
@@ -34,172 +33,182 @@ export function NewsSection({ news }: NewsSectionProps) {
   };
 
   return (
-    <section id="berita" className="py-16 md:py-24 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-border/80 scroll-mt-16">
-      {/* Editorial Header & Category Filter */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="flex flex-col gap-2 max-w-xl">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-teal-deep">
-            <span>{'// BAB III'}</span>
-            <span>•</span>
-            <span>WARTA & JURNAL KEGIATAN</span>
-          </div>
-          <h2 className="font-heading font-black text-3xl sm:text-5xl text-text-primary tracking-tight leading-tight">
-            Kabar Kolektif & Dinamika Angkatan
-          </h2>
-        </div>
-
-        {/* Category Pills */}
-        {news.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`text-xs font-mono font-semibold px-3 py-1.5 rounded-lg border transition-all ${
-                  activeCategory === cat
-                    ? 'bg-teal-deep text-white border-teal-deep shadow-2xs'
-                    : 'bg-surface text-text-muted border-border hover:border-teal-deep/50'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {news.length === 0 ? (
-        /* Visually Restrained Clean Empty State (Zero Technical CMS jargon) */
-        <div className="p-12 sm:p-16 rounded-2xl bg-surface border border-border/80 text-center max-w-lg mx-auto flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-teal-deep/10 border border-teal-deep/20 flex items-center justify-center text-teal-deep">
-            <Newspaper className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <h3 className="font-heading font-bold text-lg text-text-primary">
-              Belum Ada Catatan Warta untuk Edisi Ini
-            </h3>
-            <p className="text-xs text-text-muted leading-relaxed">
-              Liputan kegiatan resmi, kabar akademik, dan buletin berkala angkatan akan dipublikasikan pada kolom warta ini.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-10">
-          {/* Featured Headline Article (Newspaper Lead Story Style) */}
-          {featured && (
-            <div className="p-6 sm:p-10 rounded-2xl bg-surface border border-border shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {featured.coverImageUrl && (
-                <div className="lg:col-span-5 relative aspect-[16/10] rounded-xl overflow-hidden bg-surface-soft border border-border/70">
-                  <Image
-                    src={featured.coverImageUrl}
-                    alt={featured.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-
-              <div className={`${featured.coverImageUrl ? 'lg:col-span-7' : 'lg:col-span-12'} flex flex-col gap-4`}>
-                <div className="flex items-center gap-3 text-xs font-mono">
-                  <span className="px-2.5 py-0.5 rounded bg-[#FFAE5D]/20 text-[#B54708] font-bold">
-                    EDISI PILIHAN
-                  </span>
-                  <span className="text-teal-deep font-semibold">
-                    {featured.category}
-                  </span>
-                  <span className="text-text-muted">
-                    {formatDate(featured.publishedAt)}
-                  </span>
-                </div>
-
-                <h3 className="font-heading font-black text-2xl sm:text-4xl text-text-primary leading-tight tracking-tight">
-                  {featured.title}
-                </h3>
-
-                <p className="text-sm text-text-secondary leading-relaxed line-clamp-3 font-sans">
-                  {featured.excerpt || featured.content.slice(0, 200)}...
-                </p>
-
-                <div className="pt-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => setSelectedArticle(featured)}
-                    className="font-bold text-xs gap-1.5"
-                  >
-                    <span>Baca Selengkapnya</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
+    <section id="berita" className="w-full bg-[#C9FBD4] border-b border-[#0F2821]/15 py-16 md:py-24 scroll-mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Editorial Header & Category Filter */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col gap-2 max-w-xl">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#0F2821]">
+              <span className="bg-[#0F2821] text-[#C9FBD4] px-2 py-0.5 rounded-xs">BAB III</span>
+              <span>/</span>
+              <span>WARTA & JURNAL KEGIATAN</span>
             </div>
-          )}
+            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#0F2821] tracking-tight leading-tight">
+              Kabar Kolektif & Dinamika Angkatan
+            </h2>
+          </div>
 
-          {/* Secondary Articles Grid */}
-          {regularUpdates.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularUpdates.map((item) => (
-                <article
-                  key={item.id}
-                  onClick={() => setSelectedArticle(item)}
-                  className="p-6 rounded-2xl bg-surface border border-border hover:border-teal-deep/50 transition-all flex flex-col justify-between cursor-pointer group shadow-2xs"
+          {/* Category Filter Pills (Sharp Corners) */}
+          {news.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`text-xs font-mono font-bold px-3 py-1.5 rounded-xs border transition-colors ${
+                    activeCategory === cat
+                      ? 'bg-[#0F2821] text-[#C9FBD4] border-[#0F2821]'
+                      : 'bg-[#FAF9F5] text-[#0F2821] border-[#0F2821]/20 hover:border-[#0F2821]'
+                  }`}
                 >
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between text-xs font-mono text-text-muted">
-                      <span className="text-teal-deep font-semibold">{item.category}</span>
-                      <span>{formatDate(item.publishedAt)}</span>
-                    </div>
-
-                    <h4 className="font-heading font-bold text-base text-text-primary group-hover:text-teal-deep transition-colors line-clamp-2">
-                      {item.title}
-                    </h4>
-
-                    <p className="text-xs text-text-muted leading-relaxed line-clamp-3">
-                      {item.excerpt || item.content.slice(0, 120)}...
-                    </p>
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-border/60 flex items-center justify-between text-xs font-bold text-teal-deep">
-                    <span>Baca Warta</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </article>
+                  {cat}
+                </button>
               ))}
             </div>
           )}
         </div>
-      )}
 
-      {/* Reader Modal */}
+        {news.length === 0 ? (
+          /* Visually Restrained Clean Empty State (Zero Technical CMS Jargon) */
+          <div className="p-12 sm:p-16 rounded-xs bg-[#FAF9F5] border-2 border-[#0F2821]/20 text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
+            <div className="w-12 h-12 rounded-xs bg-[#41C2A1]/20 border border-[#0F2821]/20 flex items-center justify-center text-[#0F2821]">
+              <Newspaper className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <h3 className="font-heading font-black text-lg text-[#0F2821]">
+                Belum Ada Catatan Warta untuk Edisi Ini
+              </h3>
+              <p className="text-xs text-[#0F2821]/75 leading-relaxed font-sans">
+                Liputan kegiatan resmi, kabar akademik, dan buletin berkala angkatan akan dipublikasikan pada kolom warta ini.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8">
+            {/* Featured Headline Article (Magazine Lead Story Style) */}
+            {featured && (
+              <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border-2 border-[#0F2821] shadow-md grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {featured.coverImageUrl && (
+                  <div className="lg:col-span-5 relative aspect-[16/10] rounded-xs overflow-hidden bg-[#FAF9F5] border border-[#0F2821]/20">
+                    <Image
+                      src={featured.coverImageUrl}
+                      alt={featured.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                    />
+                  </div>
+                )}
+
+                <div className={`${featured.coverImageUrl ? 'lg:col-span-7' : 'lg:col-span-12'} flex flex-col gap-4`}>
+                  <div className="flex items-center gap-3 text-xs font-mono">
+                    <span className="px-2.5 py-0.5 rounded-xs bg-[#FFAE5D] text-[#112A24] font-black uppercase tracking-wider">
+                      {featured.category || 'WARTA UTAMA'}
+                    </span>
+                    <span className="text-[#0F2821]/70">{formatDate(featured.publishedAt)}</span>
+                  </div>
+
+                  <h3 className="font-heading font-black text-2xl sm:text-4xl text-[#0F2821] tracking-tight leading-tight">
+                    {featured.title}
+                  </h3>
+
+                  <p className="text-sm text-[#0F2821]/80 leading-relaxed font-sans line-clamp-3">
+                    {featured.excerpt || featured.content.slice(0, 220)}...
+                  </p>
+
+                  <button
+                    onClick={() => setSelectedArticle(featured)}
+                    className="self-start inline-flex items-center gap-2 px-4 py-2 rounded-xs bg-[#0F2821] text-[#C9FBD4] text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#FFAE5D] hover:text-[#0F2821] transition-colors mt-2"
+                  >
+                    <span>Baca Catatan Lengkap</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Secondary Updates (Asymmetrical Magazine Column Layout) */}
+            {regularUpdates.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {regularUpdates.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedArticle(item)}
+                    className="p-5 rounded-xs bg-[#FAF9F5] border border-[#0F2821]/20 hover:border-[#0F2821] transition-all cursor-pointer flex flex-col justify-between shadow-xs group"
+                  >
+                    <div className="flex flex-col gap-3">
+                      {item.coverImageUrl && (
+                        <div className="relative aspect-[16/9] w-full rounded-xs overflow-hidden bg-[#FAF9F5] border border-[#0F2821]/10">
+                          <Image
+                            src={item.coverImageUrl}
+                            alt={item.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between text-[11px] font-mono text-[#0F2821]/70 pt-1">
+                        <span className="font-bold text-[#0F2821] uppercase">{item.category || 'BULETIN'}</span>
+                        <span>{formatDate(item.publishedAt)}</span>
+                      </div>
+
+                      <h4 className="font-heading font-black text-lg text-[#0F2821] tracking-tight leading-snug group-hover:text-[#176C5B] transition-colors">
+                        {item.title}
+                      </h4>
+
+                      <p className="text-xs text-[#0F2821]/75 leading-relaxed font-sans line-clamp-2">
+                        {item.excerpt || item.content.slice(0, 120)}...
+                      </p>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-[#0F2821]/10 flex items-center justify-between text-xs font-mono font-bold text-[#0F2821]">
+                      <span>BACA SELENGKAPNYA</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Reader Modal (Sharp Corners / No AI Slop) */}
       {selectedArticle && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#112A24]/75 backdrop-blur-xs"
           onClick={() => setSelectedArticle(null)}
         >
           <div
-            className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-2xl flex flex-col gap-5"
+            className="w-full max-w-3xl max-h-[85vh] overflow-y-auto bg-[#FAF9F5] border-2 border-[#0F2821] rounded-xs p-6 sm:p-10 shadow-2xl flex flex-col gap-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setSelectedArticle(null)}
-              className="absolute top-5 right-5 p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-soft transition-colors"
-              aria-label="Tutup warta"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-start justify-between border-b border-[#0F2821]/20 pb-4">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2 text-xs font-mono">
+                  <span className="px-2 py-0.5 rounded-xs bg-[#FFAE5D] text-[#112A24] font-bold">
+                    {selectedArticle.category || 'WARTA'}
+                  </span>
+                  <span className="text-[#0F2821]/70">{formatDate(selectedArticle.publishedAt)}</span>
+                </div>
+                <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#0F2821] tracking-tight">
+                  {selectedArticle.title}
+                </h3>
+              </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
-              <span className="text-teal-deep font-bold">{selectedArticle.category}</span>
-              <span>•</span>
-              <span>{formatDate(selectedArticle.publishedAt)}</span>
+              <button
+                onClick={() => setSelectedArticle(null)}
+                className="p-1.5 rounded-xs border border-[#0F2821]/20 hover:bg-[#FFAE5D] text-[#0F2821] transition-colors"
+                aria-label="Tutup"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <h2 className="font-heading font-black text-2xl sm:text-3xl text-text-primary tracking-tight">
-              {selectedArticle.title}
-            </h2>
-
             {selectedArticle.coverImageUrl && (
-              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-surface-soft border border-border/80">
+              <div className="relative aspect-[16/9] w-full rounded-xs overflow-hidden border border-[#0F2821]/20">
                 <Image
                   src={selectedArticle.coverImageUrl}
                   alt={selectedArticle.title}
@@ -209,19 +218,17 @@ export function NewsSection({ news }: NewsSectionProps) {
               </div>
             )}
 
-            <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap font-sans border-t border-border/60 pt-4">
+            <div className="prose prose-sm max-w-none text-[#0F2821] leading-relaxed font-sans whitespace-pre-wrap">
               {selectedArticle.content}
             </div>
 
-            <div className="pt-4 border-t border-border flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
+            <div className="pt-4 border-t border-[#0F2821]/20 flex justify-end">
+              <button
                 onClick={() => setSelectedArticle(null)}
-                className="text-xs"
+                className="px-5 py-2 rounded-xs bg-[#0F2821] text-[#C9FBD4] font-mono text-xs font-bold uppercase hover:bg-[#FFAE5D] hover:text-[#0F2821] transition-colors"
               >
-                Tutup
-              </Button>
+                Tutup Pembaca
+              </button>
             </div>
           </div>
         </div>

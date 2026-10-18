@@ -8,17 +8,16 @@ import { NewsSection } from '@/components/public/NewsSection';
 import { GallerySection } from '@/components/public/GallerySection';
 import { AchievementsSection } from '@/components/public/AchievementsSection';
 import { AcademicHubCtaSection } from '@/components/public/AcademicHubCtaSection';
-import { COHORT_CONFIG } from '@/lib/config/cohort';
 
 export const metadata: Metadata = {
-  title: 'NOVARION — Angkatan 62 Statistika dan Sains Data IPB University',
+  title: 'NOVARION · Angkatan 62 Statistika dan Sains Data IPB University',
   description:
-    'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University (NOVARION). "Kita Satu, Kita Bisa!" — Warta kegiatan, kepengurusan, galeri momen, dan prestasi angkatan.',
+    'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University (NOVARION). "Kita Satu, Kita Bisa!" - Warta kegiatan, kepengurusan, galeri momen, dan prestasi angkatan.',
   alternates: {
     canonical: 'https://novarion.web.id',
   },
   openGraph: {
-    title: 'NOVARION — Statistika dan Sains Data 62 IPB',
+    title: 'NOVARION · Statistika dan Sains Data 62 IPB',
     description: 'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University. "Kita Satu, Kita Bisa!"',
     url: 'https://novarion.web.id',
     siteName: 'NOVARION Academic Hub',
@@ -36,11 +35,11 @@ export default async function LandingPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
-    name: 'NOVARION — Statistika dan Sains Data 62 IPB',
+    name: 'NOVARION · Statistika dan Sains Data 62 IPB',
     alternateName: 'Novarion Academic Hub',
     url: 'https://novarion.web.id',
     description:
-      'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University. "Kita Satu, Kita Bisa!" — Menyatukan cahaya inovasi dan arah kepemimpinan masa depan.',
+      'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University. "Kita Satu, Kita Bisa!" - Menyatukan cahaya inovasi dan arah kepemimpinan masa depan.',
     keywords: 'Statistika, Sains Data, Novarion, IPB University, Angkatan 62, Kalender Akademik',
     inLanguage: 'id-ID',
     parentOrganization: {
@@ -51,32 +50,32 @@ export default async function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col w-full overflow-hidden min-h-screen bg-canvas text-text-primary">
+    <div className="flex flex-col w-full min-h-screen bg-[#FAF9F5] text-text-primary">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Section 1 — Hero / The Collective */}
+      {/* Section 1: Hero / Butter Cream (#EAEAB7) with Warm Orange (#FFAE5D) Accent */}
       <HeroSection hero={hero} />
 
-      {/* Section 2 — Tentang Novarion (Nova + Orion Philosophy) */}
+      {/* Section 2: Tentang Novarion / Saturated Mint (#41C2A1) */}
       <AboutSection />
 
-      {/* Section 3 — Struktur Pengurus Angkatan */}
+      {/* Section 3: Struktur Pengurus / Neutral Off-White (#FAF9F5) with Brand Details */}
       <LeadershipSection />
 
-      {/* Section 4 — Berita & Kegiatan (Update Singkat & Artikel Lengkap) */}
+      {/* Section 4: Berita & Dinamika / Soft Green (#C9FBD4) */}
       <NewsSection news={news} />
 
-      {/* Section 5 — Galeri & Dokumentasi (Hybrid Collage & Lightbox) */}
+      {/* Section 5: Galeri Visual / Deep Neutral (#0D1B2A) with Large Photos */}
       <GallerySection albums={albums} />
 
-      {/* Section 6 — Prestasi Angkatan */}
+      {/* Section 6: Prestasi Angkatan / Warm Orange (#FFAE5D) */}
       <AchievementsSection achievements={achievements} />
 
-      {/* Section 7 — Academic Hub Access CTA */}
+      {/* Section 7: Academic Hub Gateway / Mint & Cream */}
       <AcademicHubCtaSection />
     </div>
   );

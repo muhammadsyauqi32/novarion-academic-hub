@@ -46,6 +46,8 @@ const config: Config = {
         heading: ['var(--font-heading)', 'Space Grotesk', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
+        xs: '2px',
+        sharp: '0px',
         card: '14px',
         input: '10px',
         modal: '16px',

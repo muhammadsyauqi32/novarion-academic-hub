@@ -1,137 +1,117 @@
 import React from 'react';
 import { COHORT_CONFIG } from '@/lib/config/cohort';
-import { Sparkles, Compass, ShieldCheck, Cpu, Users2 } from 'lucide-react';
 
 export function AboutSection() {
   const { philosophy, values } = COHORT_CONFIG;
 
   return (
-    <section id="tentang" className="py-16 md:py-24 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-border/80 scroll-mt-16">
-      {/* Section Editorial Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="flex flex-col gap-2 max-w-xl">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-teal-deep">
-            <span>{'// BAB I'}</span>
-            <span>•</span>
-            <span>IDENTITAS & MAKNA</span>
+    <section id="tentang" className="w-full bg-[#41C2A1] border-b border-[#112A24]/20 py-16 md:py-24 scroll-mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Editorial Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col gap-2 max-w-xl">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#112A24]">
+              <span className="bg-[#112A24] text-[#41C2A1] px-2 py-0.5 rounded-xs">BAB I</span>
+              <span>/</span>
+              <span>IDENTITAS & MAKNA KOLEKTIF</span>
+            </div>
+            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#112A24] tracking-tight leading-tight">
+              Menyatukan Cahaya, Menentukan Arah
+            </h2>
           </div>
-          <h2 className="font-heading font-black text-3xl sm:text-5xl text-text-primary tracking-tight leading-tight">
-            Menyatukan Cahaya, Menentukan Arah
-          </h2>
+          <p className="text-xs sm:text-sm text-[#112A24]/85 max-w-md leading-relaxed font-sans font-medium">
+            {philosophy.summary}
+          </p>
         </div>
-        <p className="text-xs sm:text-sm text-text-muted max-w-md leading-relaxed font-sans">
-          {philosophy.summary}
-        </p>
-      </div>
 
-      {/* Editorial Dual Essay: Nova (Cahaya) vs Orion (Arah) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        {/* Nova Essay */}
-        <div className="relative p-8 rounded-2xl bg-surface border border-[#41C2A1]/30 overflow-hidden shadow-xs flex flex-col justify-between">
-          <div className="absolute top-0 right-0 p-6 font-mono text-6xl font-black text-[#41C2A1]/10 select-none pointer-events-none">
-            NOVA
-          </div>
+        {/* Oversized Typographic Compositions (Color Fields and Spacing, Not Icon Cards) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          {/* Nova Composition (Dark Forest Field) */}
+          <div className="relative p-6 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] border-2 border-[#112A24] overflow-hidden flex flex-col justify-between shadow-md">
+            <div className="font-mono text-7xl sm:text-9xl font-black text-[#41C2A1]/15 leading-none select-none pointer-events-none mb-4">
+              NOVA
+            </div>
 
-          <div className="flex flex-col gap-5 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#C9FBD4]/70 border border-[#41C2A1]/40 flex items-center justify-center text-teal-deep">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-teal-deep">
-                  Pilar Pertama
-                </span>
+            <div className="flex flex-col gap-4 relative z-10">
+              <div className="flex items-center justify-between border-b border-[#EAEAB7]/20 pb-3 text-xs font-mono uppercase tracking-wider text-[#41C2A1]">
+                <span className="font-bold">[ PILAR PERTAMA ]</span>
+                <span className="text-[#EAEAB7]/70">ENERGI & DAYA NALAR</span>
               </div>
-              <span className="text-[11px] font-mono text-text-muted">KILAU CAHAYA</span>
-            </div>
 
-            <div>
-              <h3 className="font-heading font-black text-2xl sm:text-3xl text-text-primary tracking-tight mb-3">
-                {philosophy.nova.term}
-              </h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {philosophy.nova.meaning}
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-surface-soft border border-border/70 text-xs text-teal-deep font-semibold flex items-center gap-2">
-              <Cpu className="w-4 h-4 shrink-0" />
-              <span>Simbol ledakan ide, kecerdasan komputasional, dan inovasi sains data.</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Orion Essay */}
-        <div className="relative p-8 rounded-2xl bg-surface border border-[#FFAE5D]/40 overflow-hidden shadow-xs flex flex-col justify-between">
-          <div className="absolute top-0 right-0 p-6 font-mono text-6xl font-black text-[#FFAE5D]/10 select-none pointer-events-none">
-            ORION
-          </div>
-
-          <div className="flex flex-col gap-5 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/60 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#FFAE5D]/20 border border-[#FFAE5D]/50 flex items-center justify-center text-[#B54708]">
-                  <Compass className="w-5 h-5" />
-                </div>
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#B54708]">
-                  Pilar Kedua
-                </span>
+              <div>
+                <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#EAEAB7] tracking-tight mb-2">
+                  {philosophy.nova.term}: Kilau Inovasi
+                </h3>
+                <p className="text-sm text-[#EAEAB7]/85 leading-relaxed font-sans">
+                  {philosophy.nova.meaning}
+                </p>
               </div>
-              <span className="text-[11px] font-mono text-text-muted">PENUNJUK ARAH</span>
+
+              <div className="p-3 rounded-xs bg-[#1A3830] border border-[#41C2A1]/30 text-xs text-[#C9FBD4] font-mono">
+                Simbol ledakan ide, kecerdasan komputasional, dan ketajaman berpikir analitis.
+              </div>
+            </div>
+          </div>
+
+          {/* Orion Composition (Butter Cream Field) */}
+          <div className="relative p-6 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] border-2 border-[#112A24] overflow-hidden flex flex-col justify-between shadow-md">
+            <div className="font-mono text-7xl sm:text-9xl font-black text-[#FFAE5D]/35 leading-none select-none pointer-events-none mb-4">
+              ORION
             </div>
 
-            <div>
-              <h3 className="font-heading font-black text-2xl sm:text-3xl text-text-primary tracking-tight mb-3">
-                {philosophy.orion.term}
-              </h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {philosophy.orion.meaning}
-              </p>
-            </div>
+            <div className="flex flex-col gap-4 relative z-10">
+              <div className="flex items-center justify-between border-b border-[#112A24]/20 pb-3 text-xs font-mono uppercase tracking-wider text-[#112A24]">
+                <span className="font-bold">[ PILAR KEDUA ]</span>
+                <span className="text-[#112A24]/70">KOMPAS & KEPEMIMPINAN</span>
+              </div>
 
-            <div className="p-3.5 rounded-xl bg-surface-soft border border-border/70 text-xs text-[#B54708] font-semibold flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Kompas moral, etika pengolahan informasi, dan kepemimpinan visioner.</span>
+              <div>
+                <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#112A24] tracking-tight mb-2">
+                  {philosophy.orion.term}: Panduan Arah
+                </h3>
+                <p className="text-sm text-[#112A24]/90 leading-relaxed font-sans">
+                  {philosophy.orion.meaning}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xs bg-[#FAF9F5] border border-[#FFAE5D] text-xs text-[#112A24] font-mono">
+                Kompas moral, etika pengolahan informasi, dan kepemimpinan visioner.
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Synthesis Pull-Quote Manifest */}
-      <div className="p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#C9FBD4]/25 via-[#EAEAB7]/30 to-[#FFAE5D]/15 border border-border mb-16 relative overflow-hidden">
-        <div className="max-w-3xl mx-auto text-center flex flex-col gap-3">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-teal-deep font-bold">
-            SINTESIS FILOSOFI ANGKATAN
-          </span>
-          <blockquote className="font-heading font-black text-lg sm:text-2xl text-text-primary leading-snug">
-            &ldquo;{philosophy.synthesis}&rdquo;
-          </blockquote>
-          <span className="text-xs font-medium text-text-muted pt-1">
-            — Piagam Angkatan 62 Statistika & Sains Data IPB
-          </span>
-        </div>
-      </div>
-
-      {/* 3 Core Tenets as an Editorial Ledger */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-border pb-2">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-text-muted">
-            TIGA NILAI UTAMA (CORE TENETS)
-          </span>
-          <span className="text-[11px] font-mono text-teal-deep font-semibold">NOVARION 62</span>
+        {/* Synthesis Manifest Quote */}
+        <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border-2 border-[#112A24] shadow-sm mb-10">
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#112A24]/70 font-bold">
+              SINTESIS MAKNA KOLEKTIF
+            </span>
+            <blockquote className="font-heading font-bold text-lg sm:text-2xl text-[#112A24] tracking-tight leading-relaxed">
+              &ldquo;{philosophy.synthesis}&rdquo;
+            </blockquote>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Core Values: Numbered Typographic Ledger (Not Icon Cards) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {values.map((v, i) => (
-            <div key={i} className="p-6 rounded-xl bg-surface border border-border/80 flex flex-col gap-3 relative hover:border-teal-deep/40 transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-teal-deep">0{i + 1}</span>
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: v.accent }} />
+            <div
+              key={i}
+              className="p-5 rounded-xs bg-[#FAF9F5] border border-[#112A24]/25 flex flex-col gap-2.5"
+            >
+              <div className="flex items-center justify-between border-b border-[#112A24]/15 pb-2">
+                <span className="font-mono text-xs font-bold text-[#112A24]">
+                  0{i + 1}
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#112A24]/70">
+                  NILAI DASAR
+                </span>
               </div>
-              <h4 className="font-heading font-bold text-base text-text-primary">
+              <h4 className="font-heading font-black text-base text-[#112A24] tracking-tight">
                 {v.title}
               </h4>
-              <p className="text-xs text-text-muted leading-relaxed">
+              <p className="text-xs text-[#112A24]/80 leading-relaxed font-sans">
                 {v.description}
               </p>
             </div>
