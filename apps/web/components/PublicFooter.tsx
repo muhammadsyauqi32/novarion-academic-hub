@@ -140,7 +140,7 @@ export function PublicFooter() {
                 Departemen Statistika dan Sains Data
               </span>
               <span className="text-[11px] text-[#FAF9F5]/50 font-sans">
-                Fakultas Matematika dan Ilmu Pengetahuan Alam
+                SSMI IPB University
               </span>
 
               {/* Back to Top */}

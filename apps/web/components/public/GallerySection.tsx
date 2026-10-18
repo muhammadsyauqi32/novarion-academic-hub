@@ -151,14 +151,9 @@ export function GallerySection({ albums }: GallerySectionProps) {
             </div>
           </Reveal>
         ) : (
-          /* Asymmetrical Photography Collage (Smooth filter transition without card-level Reveal restarts) */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
-            {displayedItems.map(({ data: item, id, isExiting }, idx) => {
-              const isLarge = idx % 5 === 0;
-              const isMedium = idx % 5 === 1 || idx % 5 === 2;
-              const colSpan = isLarge ? 'lg:col-span-8' : isMedium ? 'lg:col-span-4' : 'lg:col-span-6';
-              const aspect = isLarge ? 'aspect-[16/10]' : 'aspect-square';
-
+          /* Clean Editorial Photography Grid (Always reflows from leftmost position with smooth FLIP transitions) */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch justify-start">
+            {displayedItems.map(({ data: item, id, isExiting }) => {
               return (
                 <div
                   key={id}
@@ -166,10 +161,10 @@ export function GallerySection({ albums }: GallerySectionProps) {
                   style={{
                     transition: isExiting ? 'opacity 160ms ease-out, transform 160ms ease-out' : undefined,
                     opacity: isExiting ? 0 : undefined,
-                    transform: isExiting ? 'translateY(-8px) scale(0.98)' : undefined,
+                    transform: isExiting ? 'translateY(-8px) scale(0.96)' : undefined,
                     pointerEvents: isExiting ? 'none' : 'auto',
                   }}
-                  className={colSpan}
+                  className="w-full flex"
                 >
                   <div
                     onClick={() => openLightbox(id)}
@@ -182,7 +177,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
                         openLightbox(id);
                       }
                     }}
-                    className={`group relative ${aspect} w-full overflow-hidden rounded-xs bg-[#15283C] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#FFAE5D]`}
+                    className="group relative aspect-[4/3] w-full overflow-hidden rounded-xs bg-[#15283C] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#FFAE5D]"
                   >
                     <Image
                       src={item.photo.imageUrl}

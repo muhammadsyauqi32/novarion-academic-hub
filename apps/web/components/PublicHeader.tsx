@@ -38,9 +38,13 @@ export function PublicHeader() {
     const handleScroll = () => {
       const heroEl = document.getElementById('hero');
       const threshold = heroEl
-        ? heroEl.offsetTop + heroEl.offsetHeight - 90
+        ? heroEl.offsetTop + heroEl.offsetHeight - 80
         : 350;
-      setIsScrolledPastHero(window.scrollY > threshold);
+      setIsScrolledPastHero((prev) => {
+        if (!prev && window.scrollY > threshold) return true;
+        if (prev && window.scrollY < threshold - 40) return false;
+        return prev;
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -111,15 +115,15 @@ export function PublicHeader() {
   return (
     <header
       aria-label="Navigasi Utama"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-400 ease-out motion-reduce:transition-none flex items-center justify-between gap-3 sm:gap-6 ${
+      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-300 ease-out motion-reduce:transition-none flex items-center justify-between gap-3 sm:gap-6 backdrop-blur-md rounded-card top-3 w-[94%] sm:w-[88%] md:w-[780px] lg:w-[860px] max-w-4xl px-4 sm:px-5 py-2.5 ${
         isCompact
-          ? 'top-3 w-[94%] sm:w-[88%] md:w-[760px] lg:w-[840px] max-w-4xl px-3.5 sm:px-5 py-2 rounded-[12px] bg-[#FAF9F5] shadow-md text-[#112A24]'
-          : 'top-0 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 rounded-none bg-transparent shadow-none text-[#FAF9F5]'
+          ? 'bg-[#FAF9F5]/95 shadow-md text-[#112A24] border border-[#112A24]/10'
+          : 'bg-[#0D1B2A]/60 shadow-xs text-[#FAF9F5] border border-white/15'
       }`}
     >
       {/* Brand Logo with Smooth Appearance */}
-      <div className="shrink-0 transition-all duration-300">
-        <BrandLogo size={isCompact ? 'sm' : 'md'} inverted={!isCompact} />
+      <div className="shrink-0 transition-transform duration-200">
+        <BrandLogo size="sm" inverted={!isCompact} />
       </div>
 
       {/* Desktop 1-word Navigation Links with Active Tracking */}

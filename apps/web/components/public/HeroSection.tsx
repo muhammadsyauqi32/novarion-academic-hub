@@ -94,7 +94,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
         {/* Bottom Editorial Caption */}
         <div className="flex items-center justify-between text-xs opacity-75 pt-4">
           <span>Departemen Statistika dan Sains Data</span>
-          <span className="font-semibold">FMIPA IPB University</span>
+          <span className="font-semibold">SSMI IPB University</span>
         </div>
       </div>
     </section>
