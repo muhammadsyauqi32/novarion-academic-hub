@@ -6,7 +6,7 @@ import { ShieldX, ArrowLeft, Mail } from 'lucide-react';
 
 export default function InvalidAccountPage() {
   return (
-    <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <Card className="shadow-lg border-danger-border p-8 flex flex-col items-center text-center gap-5">
           <div className="w-14 h-14 rounded-2xl bg-danger-surface border border-danger-border text-danger-text flex items-center justify-center">
