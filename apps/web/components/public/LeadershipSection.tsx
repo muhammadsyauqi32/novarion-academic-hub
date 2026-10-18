@@ -23,28 +23,22 @@ export function LeadershipSection() {
   return (
     <section id="pengurus" className="w-full bg-[#FAF9F5] border-b border-[#112A24]/10 py-16 md:py-24 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Editorial Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex flex-col gap-2 max-w-xl">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#112A24]">
-              <span className="bg-[#112A24] text-[#EAEAB7] px-2 py-0.5 rounded-xs">BAB II</span>
-              <span>/</span>
-              <span>DIREKTORI KEPENGURUSAN</span>
-            </div>
-            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#112A24] tracking-tight leading-tight">
-              Struktur & Roster Angkatan 62
-            </h2>
-          </div>
-          <p className="text-xs sm:text-sm text-[#112A24]/80 max-w-md leading-relaxed font-sans font-medium">
-            Mewujudkan mandat kolektivitas melalui tata kelola yang transparan, harmonis, dan berorientasi pada kemajuan akademik seluruh mahasiswa.
+        {/* Horizontally Centered Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-12 flex flex-col items-center gap-3">
+          <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#112A24] tracking-tight leading-tight">
+            Pengurus Angkatan
+          </h2>
+          <p className="text-sm sm:text-base text-[#112A24]/80 max-w-xl mx-auto leading-relaxed font-sans font-medium">
+            Struktur kepengurusan dan divisi mahasiswa Statistika dan Sains Data Angkatan 62.
           </p>
         </div>
 
-        {/* Part 1: Pengurus Inti (The Core Cabinet) */}
+        {/* Part 1: Pengurus Inti */}
         <div className="mb-14">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#112A24] font-bold mb-4 pb-2 border-b border-[#112A24]/10">
-            <span>KABINET PENGURUS INTI (BPH)</span>
-            <span className="text-[11px] text-[#112A24]/60">MANDAT EKSEKUTIF</span>
+          <div className="text-center mb-6">
+            <h3 className="font-heading font-bold text-xl text-[#112A24]">
+              Pengurus Inti
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -55,15 +49,15 @@ export function LeadershipSection() {
               >
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between border-b border-[#112A24]/10 pb-2">
-                    <span className="font-mono text-[10px] text-[#112A24] font-black tracking-widest">
-                      [BPH-0{idx + 1}]
+                    <span className="text-xs font-semibold text-[#112A24]">
+                      {member.role}
                     </span>
                     <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs border ${getRoleAccent(idx)}`}>
-                      {member.role.split(' ')[0]}
+                      BPH
                     </span>
                   </div>
 
-                  {/* Portrait Photograph or Monogram (Sharp Corners) */}
+                  {/* Portrait Photograph or Monogram */}
                   <div className="relative w-full aspect-square rounded-xs overflow-hidden bg-[#FAF9F5] border border-[#112A24]/20 flex items-center justify-center">
                     {member.photoUrl ? (
                       <Image
@@ -74,12 +68,9 @@ export function LeadershipSection() {
                         sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-[#EAEAB7]/25 text-[#112A24]">
+                      <div className="w-full h-full flex items-center justify-center bg-[#EAEAB7]/25 text-[#112A24]">
                         <span className="font-heading font-black text-3xl text-[#112A24]/80">
                           {member.name.slice(0, 2).toUpperCase()}
-                        </span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-[#112A24]/60 mt-1">
-                          PORTRAIT
                         </span>
                       </div>
                     )}
@@ -105,11 +96,12 @@ export function LeadershipSection() {
           </div>
         </div>
 
-        {/* Part 2: Divisi Pelaksana & Koordinator Bidang (Editorial Tabular Ledger Style) */}
+        {/* Part 2: Divisi Pelaksana */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-[#112A24]/20 pb-2 text-xs font-mono uppercase tracking-wider text-[#112A24] font-bold">
-            <span>DIVISI KERJA ANGKATAN</span>
-            <span className="text-[11px] text-[#112A24]/60">NOVARION 62</span>
+          <div className="text-center mb-4">
+            <h3 className="font-heading font-bold text-xl text-[#112A24]">
+              Divisi Angkatan
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -119,25 +111,19 @@ export function LeadershipSection() {
                 className="p-5 rounded-xs bg-[#FFFFFF] border border-[#112A24]/20 flex flex-col gap-3"
               >
                 <div className="flex items-center justify-between border-b border-[#112A24]/10 pb-2">
-                  <span className="text-xs font-mono font-black text-[#112A24]">
-                    DIVISI 0{idx + 1}
-                  </span>
+                  <h4 className="font-heading font-black text-base text-[#112A24] tracking-tight">
+                    {div.divisionName}
+                  </h4>
                   <span className="w-2 h-2 rounded-xs bg-[#FFAE5D]" />
                 </div>
 
                 <div>
-                  <h4 className="font-heading font-black text-base text-[#112A24] tracking-tight">
-                    {div.divisionName}
-                  </h4>
-                  <p className="text-xs text-[#112A24]/75 leading-relaxed font-sans mt-1">
+                  <p className="text-xs text-[#112A24]/75 leading-relaxed font-sans">
                     {div.description}
                   </p>
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-[#112A24]/10 flex flex-col gap-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#112A24]/60 font-bold">
-                    ROSTER ANGGOTA
-                  </span>
                   <div className="flex flex-col gap-1">
                     {div.members.map((m, mIdx) => (
                       <div key={mIdx} className="flex items-center justify-between text-xs py-1 border-b border-[#112A24]/5">

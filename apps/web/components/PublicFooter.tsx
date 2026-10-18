@@ -13,24 +13,24 @@ export function PublicFooter() {
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6 text-xs font-mono text-[#FAF9F5]/80">
+        <div className="flex flex-wrap justify-center gap-6 text-xs font-sans font-medium text-[#FAF9F5]/80">
           <Link href="/privacy" className="hover:text-[#FFAE5D] transition-colors">
             Kebijakan Privasi
           </Link>
           <a href="#tentang" className="hover:text-[#FFAE5D] transition-colors">
-            Tentang Kita
+            Tentang Novarion
           </a>
           <a href="#pengurus" className="hover:text-[#FFAE5D] transition-colors">
-            Pengurus
+            Pengurus Angkatan
           </a>
           <a href="#berita" className="hover:text-[#FFAE5D] transition-colors">
-            Warta
+            Berita dan Kegiatan
           </a>
           <a href="#galeri" className="hover:text-[#FFAE5D] transition-colors">
-            Galeri
+            Galeri dan Dokumentasi
           </a>
           <a href="#prestasi" className="hover:text-[#FFAE5D] transition-colors">
-            Prestasi
+            Prestasi Angkatan
           </a>
           <Link href="/login" className="hover:text-[#FFAE5D] transition-colors font-bold text-[#41C2A1]">
             Academic Hub

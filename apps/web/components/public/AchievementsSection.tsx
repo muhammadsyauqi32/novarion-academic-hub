@@ -31,22 +31,18 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
   return (
     <section id="prestasi" className="w-full bg-[#FFAE5D] border-b border-[#1A1815]/10 py-16 md:py-24 scroll-mt-16 text-[#1A1815]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Editorial Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex flex-col gap-2 max-w-xl">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#1A1815]">
-              <span className="bg-[#1A1815] text-[#FFAE5D] px-2 py-0.5 rounded-xs">BAB V</span>
-              <span>/</span>
-              <span>REKOGNISI & APRESIASI</span>
-            </div>
-            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#1A1815] tracking-tight leading-tight">
-              Lembar Kehormatan & Prestasi
-            </h2>
-          </div>
+        {/* Horizontally Centered Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
+          <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#1A1815] tracking-tight leading-tight">
+            Prestasi Angkatan
+          </h2>
+          <p className="text-sm sm:text-base text-[#1A1815]/80 max-w-xl mx-auto leading-relaxed font-sans font-medium">
+            Rekognisi dan apresiasi karya mahasiswa Statistika dan Sains Data Angkatan 62.
+          </p>
 
-          {/* Filter Categories (Sharp Corners) */}
+          {/* Filter Categories */}
           {achievements.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
               {categories.map((cat) => (
                 <button
                   key={cat}

@@ -10,32 +10,34 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] border-b border-[#112A24]/10 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <BrandLogo size="md" showSubtitle={true} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <div className="shrink-0">
+          <BrandLogo size="sm" showSubtitle={true} />
+        </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 text-xs font-mono font-bold text-[#112A24]/80 uppercase tracking-wider">
-          <a href="#tentang" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
-            Tentang Kita
+        <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-3 text-xs 2xl:text-sm font-sans font-semibold text-[#112A24]/85 shrink-0">
+          <a href="#tentang" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
+            Tentang Novarion
           </a>
-          <a href="#pengurus" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
-            Pengurus
+          <a href="#pengurus" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
+            Pengurus Angkatan
           </a>
-          <a href="#berita" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
-            Warta & Jurnal
+          <a href="#berita" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
+            Berita dan Kegiatan
           </a>
-          <a href="#galeri" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
-            Galeri Memori
+          <a href="#galeri" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
+            Galeri dan Dokumentasi
           </a>
-          <a href="#prestasi" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors">
-            Prestasi
+          <a href="#prestasi" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
+            Prestasi Angkatan
           </a>
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3 shrink-0">
           <Link href="/login">
-            <button className="px-4 py-2 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 border border-[#112A24]/20">
+            <button className="px-3.5 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 border border-[#112A24]/20">
               <span>Masuk Academic Hub</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -43,9 +45,9 @@ export function PublicHeader() {
         </div>
 
         {/* Mobile & Tablet Menu Button */}
-        <div className="flex lg:hidden items-center gap-2">
+        <div className="flex xl:hidden items-center gap-2">
           <Link href="/login">
-            <button className="px-3 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase transition-colors">
+            <button className="px-3 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors">
               Masuk
             </button>
           </Link>
@@ -63,39 +65,39 @@ export function PublicHeader() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-[#112A24]/10 bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
+        <div className="xl:hidden border-b border-[#112A24]/10 bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
           <a
             href="#tentang"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
+            className="py-2 px-3 rounded-xs text-sm font-sans font-semibold text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
           >
-            Tentang Kita
+            Tentang Novarion
           </a>
           <a
             href="#pengurus"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
+            className="py-2 px-3 rounded-xs text-sm font-sans font-semibold text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
           >
-            Struktur Pengurus
+            Pengurus Angkatan
           </a>
           <a
             href="#berita"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
+            className="py-2 px-3 rounded-xs text-sm font-sans font-semibold text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
           >
-            Warta & Jurnal
+            Berita dan Kegiatan
           </a>
           <a
             href="#galeri"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
+            className="py-2 px-3 rounded-xs text-sm font-sans font-semibold text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
           >
-            Galeri Memori
+            Galeri dan Dokumentasi
           </a>
           <a
             href="#prestasi"
             onClick={() => setMobileMenuOpen(false)}
-            className="py-2 px-3 rounded-xs text-xs font-mono font-bold text-[#112A24] hover:bg-[#EAEAB7] transition-colors uppercase tracking-wider"
+            className="py-2 px-3 rounded-xs text-sm font-sans font-semibold text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
           >
             Prestasi Angkatan
           </a>
@@ -105,7 +107,7 @@ export function PublicHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="w-full"
             >
-              <button className="w-full py-2.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors">
+              <button className="w-full py-2.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors">
                 Masuk ke Academic Hub
               </button>
             </Link>

@@ -35,22 +35,18 @@ export function NewsSection({ news }: NewsSectionProps) {
   return (
     <section id="berita" className="w-full bg-[#C9FBD4] border-b border-[#0F2821]/10 py-16 md:py-24 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Editorial Header & Category Filter */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex flex-col gap-2 max-w-xl">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#0F2821]">
-              <span className="bg-[#0F2821] text-[#C9FBD4] px-2 py-0.5 rounded-xs">BAB III</span>
-              <span>/</span>
-              <span>WARTA & JURNAL KEGIATAN</span>
-            </div>
-            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#0F2821] tracking-tight leading-tight">
-              Kabar Kolektif & Dinamika Angkatan
-            </h2>
-          </div>
+        {/* Horizontally Centered Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
+          <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#0F2821] tracking-tight leading-tight">
+            Berita dan Kegiatan
+          </h2>
+          <p className="text-sm sm:text-base text-[#0F2821]/80 max-w-xl mx-auto leading-relaxed font-sans font-medium">
+            Kabar terbaru, dokumentasi kegiatan, dan agenda resmi angkatan.
+          </p>
 
-          {/* Category Filter Pills (Sharp Corners) */}
+          {/* Category Filter Pills */}
           {news.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
               {categories.map((cat) => (
                 <button
                   key={cat}

@@ -64,22 +64,18 @@ export function GallerySection({ albums }: GallerySectionProps) {
   return (
     <section id="galeri" className="w-full bg-[#0D1B2A] border-b border-[#FAF9F5]/10 py-16 md:py-24 scroll-mt-16 text-[#FAF9F5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Editorial Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="flex flex-col gap-2 max-w-xl">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-[#FFAE5D]">
-              <span className="bg-[#FFAE5D] text-[#0D1B2A] px-2 py-0.5 rounded-xs">BAB IV</span>
-              <span>/</span>
-              <span>ARSIP VISUAL & MEMORI</span>
-            </div>
-            <h2 className="font-heading font-black text-4xl sm:text-6xl text-[#FAF9F5] tracking-tight leading-tight">
-              Jejak Langkah & Dokumentasi
-            </h2>
-          </div>
+        {/* Horizontally Centered Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
+          <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-tight leading-tight">
+            Galeri dan Dokumentasi
+          </h2>
+          <p className="text-sm sm:text-base text-[#FAF9F5]/75 max-w-xl mx-auto leading-relaxed font-sans font-medium">
+            Arsip visual dan rekaman momen kebersamaan Angkatan 62.
+          </p>
 
-          {/* Album Selector Tabs (Sharp Corners) */}
+          {/* Album Selector Tabs */}
           {albums.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
               <button
                 onClick={() => setSelectedAlbumId('all')}
                 className={`text-xs font-mono font-bold px-3 py-1.5 rounded-xs border transition-colors ${
@@ -146,11 +142,6 @@ export function GallerySection({ albums }: GallerySectionProps) {
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
 
-                  {/* Archival Physical Marker Overlay */}
-                  <div className="absolute top-2 left-2 text-[10px] font-mono text-[#FFAE5D] font-bold select-none opacity-0 group-hover:opacity-100 transition-opacity">
-                    + FRAME #{String(idx + 1).padStart(3, '0')}
-                  </div>
-
                   {/* Caption Strip */}
                   <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-[#0D1B2A] via-[#0D1B2A]/80 to-transparent flex flex-col justify-end">
                     <span className="text-[10px] font-mono font-bold text-[#FFAE5D] uppercase tracking-wider">
@@ -182,7 +173,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
             {/* Top Toolbar */}
             <div className="w-full flex items-center justify-between text-xs font-mono text-[#FAF9F5]/80 px-2">
               <span className="font-bold text-[#FFAE5D]">
-                DOKUMEN {lightboxIndex + 1} / {displayedPhotos.length}
+                Foto {lightboxIndex + 1} dari {displayedPhotos.length}
               </span>
               <button
                 onClick={closeLightbox}
