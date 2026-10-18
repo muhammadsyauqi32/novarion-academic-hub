@@ -63,6 +63,11 @@ export const metadata: Metadata = {
     description:
       'Platform terpadu agenda perkuliahan, kalender akademik, dan bot pengingat deadline WhatsApp otomatis angkatan.',
   },
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export const viewport: Viewport = {

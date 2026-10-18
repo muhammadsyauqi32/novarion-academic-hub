@@ -7,7 +7,7 @@ export function PublicFooter() {
     <footer className="w-full bg-[#0D1B2A] border-t border-[#FAF9F5]/15 py-12 text-[#FAF9F5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
-          <BrandLogo size="sm" showTagline={true} />
+          <BrandLogo size="sm" showTagline={true} inverted={true} />
           <p className="text-xs text-[#FAF9F5]/70 text-center md:text-left max-w-sm mt-1 font-sans">
             Arsip digital dan portal akademik terpadu Mahasiswa Statistika dan Sains Data Angkatan 62 IPB University.
           </p>
