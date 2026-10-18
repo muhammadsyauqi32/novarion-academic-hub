@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Font: Enrika */
+@font-face {
+  font-family: 'Enrika';
+  src: url('/fonts/enrika.woff2') format('woff2'),
+       url('/fonts/enrika.woff') format('woff'),
+       url('/fonts/enrika.otf') format('opentype'),
+       url('/fonts/enrika.ttf') format('truetype'),
+       url('/fonts/Enrika.woff2') format('woff2'),
+       url('/fonts/Enrika.woff') format('woff'),
+       url('/fonts/Enrika.otf') format('opentype'),
+       url('/fonts/Enrika.ttf') format('truetype'),
+       url('/fonts/enrika-regular.woff2') format('woff2'),
+       url('/fonts/enrika-regular.otf') format('opentype'),
+       url('/fonts/enrika-regular.ttf') format('truetype'),
+       url('/fonts/Enrika-Regular.otf') format('opentype'),
+       url('/fonts/Enrika-Regular.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Enrika';
+  src: url('/fonts/enrika-bold.woff2') format('woff2'),
+       url('/fonts/enrika-bold.woff') format('woff'),
+       url('/fonts/enrika-bold.otf') format('opentype'),
+       url('/fonts/enrika-bold.ttf') format('truetype'),
+       url('/fonts/Enrika-Bold.woff2') format('woff2'),
+       url('/fonts/Enrika-Bold.otf') format('opentype'),
+       url('/fonts/Enrika-Bold.ttf') format('truetype'),
+       url('/fonts/EnrikaBold.otf') format('opentype'),
+       url('/fonts/EnrikaBold.ttf') format('truetype');
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --brand-primary: #41C2A1;
   --brand-mint-soft: #C9FBD4;

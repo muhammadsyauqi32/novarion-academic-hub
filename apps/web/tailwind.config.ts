@@ -43,7 +43,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
-        heading: ['var(--font-heading)', 'Space Grotesk', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        heading: ['Enrika', 'var(--font-heading)', 'Space Grotesk', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        enrika: ['Enrika', 'var(--font-heading)', 'Space Grotesk', 'sans-serif'],
       },
       borderRadius: {
         xs: '2px',
