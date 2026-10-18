@@ -10,19 +10,6 @@ export function LeadershipSection() {
   const coreLeadership = leadership.find((l) => l.divisionName === 'Pengurus Inti') || leadership[0];
   const divisionLeaderships = leadership.filter((l) => l.divisionName !== 'Pengurus Inti');
 
-  const getRoleAccent = (index: number) => {
-    switch (index) {
-      case 0:
-        return 'bg-[#FFAE5D] text-[#112A24]'; // Ketua: Warm Orange
-      case 1:
-        return 'bg-[#41C2A1] text-[#112A24]'; // Wakil: Mint
-      case 2:
-        return 'bg-[#EAEAB7] text-[#112A24]'; // Sekretaris: Butter Cream
-      default:
-        return 'bg-[#C9FBD4] text-[#112A24]'; // Bendahara: Soft Green
-    }
-  };
-
   return (
     <section id="pengurus" className="w-full bg-[#FAF9F5] py-16 md:py-24 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,13 +44,13 @@ export function LeadershipSection() {
                       <span className="text-xs font-semibold text-[#112A24]/85">
                         {member.role}
                       </span>
-                      <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs shadow-2xs ${getRoleAccent(idx)}`}>
+                      <span className="text-[11px] font-mono font-bold uppercase text-[#112A24]/70">
                         BPH
                       </span>
                     </div>
 
-                    {/* Portrait Photograph or Monogram */}
-                    <div className="relative w-full aspect-square rounded-xs overflow-hidden bg-[#FAF9F5] flex items-center justify-center">
+                    {/* Portrait Photograph or Monogram (No nested boxes) */}
+                    <div className="relative w-full aspect-square rounded-xs overflow-hidden bg-[#EAEAB7]/35 flex items-center justify-center">
                       {member.photoUrl ? (
                         <Image
                           src={member.photoUrl}
@@ -73,11 +60,9 @@ export function LeadershipSection() {
                           sizes="(max-width: 768px) 100vw, 25vw"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#EAEAB7]/35 text-[#112A24] rounded-xs">
-                          <span className="font-heading font-black text-3xl text-[#112A24]/85">
-                            {member.name.slice(0, 2).toUpperCase()}
-                          </span>
-                        </div>
+                        <span className="font-heading font-black text-3xl text-[#112A24]/85">
+                          {member.name.slice(0, 2).toUpperCase()}
+                        </span>
                       )}
                     </div>
 

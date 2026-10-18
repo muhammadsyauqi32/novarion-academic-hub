@@ -22,19 +22,19 @@ export function AboutSection() {
           </div>
         </Reveal>
 
-        {/* Typographic Compositions (Nova & Orion) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        {/* Typographic Compositions (Nova & Orion) - Flat hierarchy, zero nested boxes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {/* Nova Composition */}
           <Reveal delayMs={100} yOffset={20}>
-            <div className="relative p-7 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] overflow-hidden flex flex-col justify-between shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+            <div className="relative p-7 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] overflow-hidden flex flex-col justify-between shadow-sm hover:-translate-y-1 transition-all duration-300 h-full">
               <div className="font-mono text-7xl sm:text-9xl font-black text-[#41C2A1]/15 leading-none select-none pointer-events-none mb-4">
                 NOVA
               </div>
 
               <div className="flex flex-col gap-4 relative z-10">
-                <div className="text-xs font-mono font-bold text-[#41C2A1] tracking-wider uppercase">
+                <span className="text-xs font-mono font-bold text-[#41C2A1] tracking-wider uppercase">
                   Energi & Daya Nalar
-                </div>
+                </span>
 
                 <div>
                   <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#EAEAB7] tracking-tight mb-2">
@@ -45,24 +45,25 @@ export function AboutSection() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xs bg-[#1A3830] text-xs text-[#C9FBD4] font-mono leading-relaxed">
+                {/* Plain typographic footnote without nested box */}
+                <p className="text-xs text-[#C9FBD4] font-mono leading-relaxed pt-2">
                   Simbol ledakan ide, kecerdasan komputasional, dan ketajaman berpikir analitis.
-                </div>
+                </p>
               </div>
             </div>
           </Reveal>
 
           {/* Orion Composition */}
           <Reveal delayMs={180} yOffset={20}>
-            <div className="relative p-7 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] overflow-hidden flex flex-col justify-between shadow-md hover:-translate-y-1 transition-all duration-300 h-full">
+            <div className="relative p-7 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] overflow-hidden flex flex-col justify-between shadow-sm hover:-translate-y-1 transition-all duration-300 h-full">
               <div className="font-mono text-7xl sm:text-9xl font-black text-[#FFAE5D]/35 leading-none select-none pointer-events-none mb-4">
                 ORION
               </div>
 
               <div className="flex flex-col gap-4 relative z-10">
-                <div className="text-xs font-mono font-bold text-[#112A24] tracking-wider uppercase">
+                <span className="text-xs font-mono font-bold text-[#112A24] tracking-wider uppercase">
                   Kompas & Kepemimpinan
-                </div>
+                </span>
 
                 <div>
                   <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#112A24] tracking-tight mb-2">
@@ -73,9 +74,10 @@ export function AboutSection() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xs bg-[#FAF9F5] text-xs text-[#112A24] font-mono leading-relaxed shadow-2xs">
+                {/* Plain typographic footnote without nested box */}
+                <p className="text-xs text-[#112A24]/85 font-mono leading-relaxed pt-2">
                   Kompas moral, etika pengolahan informasi, dan kepemimpinan visioner.
-                </div>
+                </p>
               </div>
             </div>
           </Reveal>
@@ -83,23 +85,22 @@ export function AboutSection() {
 
         {/* Synthesis Quote */}
         <Reveal delayMs={150} yOffset={16}>
-          <div className="p-7 sm:p-9 rounded-xs bg-[#FAF9F5] shadow-sm mb-10 text-center">
-            <blockquote className="font-heading font-bold text-lg sm:text-2xl text-[#112A24] tracking-tight leading-relaxed max-w-3xl mx-auto">
+          <div className="py-6 px-4 mb-12 text-center">
+            <blockquote className="font-heading font-bold text-xl sm:text-3xl text-[#112A24] tracking-tight leading-relaxed max-w-3xl mx-auto">
               &ldquo;{philosophy.synthesis}&rdquo;
             </blockquote>
           </div>
         </Reveal>
 
-        {/* Core Values */}
+        {/* Core Values (No decorative number boxes, clean flat card composition) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {values.map((v, i) => (
             <Reveal key={i} delayMs={120 + i * 80} yOffset={16}>
-              <div className="p-6 rounded-xs bg-[#FAF9F5] shadow-sm hover:-translate-y-1 transition-all duration-300 flex flex-col gap-3 h-full">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-black text-[#41C2A1] bg-[#112A24] px-2 py-0.5 rounded-xs">
-                    0{i + 1}
-                  </span>
-                </div>
+              <div className="p-7 rounded-xs bg-[#FAF9F5] shadow-xs hover:-translate-y-1 transition-all duration-300 flex flex-col gap-2.5 h-full">
+                {/* Plain text label without box */}
+                <span className="font-mono text-xs font-bold text-[#112A24]/60">
+                  Prinsip 0{i + 1}
+                </span>
                 <h4 className="font-heading font-black text-lg text-[#112A24] tracking-tight">
                   {v.title}
                 </h4>

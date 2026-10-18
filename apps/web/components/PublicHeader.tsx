@@ -21,6 +21,20 @@ const NAV_ITEMS: NavItem[] = [
 export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
+
+  // Scroll listener for hero threshold
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolledPastHero(scrollY > 280);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Active section tracking via IntersectionObserver
   useEffect(() => {
@@ -33,7 +47,7 @@ export function PublicHeader() {
       });
 
       // If hero is in view or user is near the top of the page, no nav link should be active
-      if (window.scrollY < 180 || (ratios['hero'] && ratios['hero'] > 0.35)) {
+      if (window.scrollY < 200 || (ratios['hero'] && ratios['hero'] > 0.35)) {
         setActiveSection(null);
         return;
       }
@@ -75,17 +89,82 @@ export function PublicHeader() {
   const hubLoginUrl = getHubLoginUrl();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <>
+      {/* 1. TOP NAVBAR (Initially transparent over Full-Bleed Hero) */}
+      <header
+        className={`absolute top-0 left-0 right-0 z-40 w-full transition-opacity duration-300 ${
+          isScrolledPastHero ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+          <div className="shrink-0">
+            <BrandLogo size="md" inverted={true} />
+          </div>
+
+          {/* Desktop Navigation - 1-word clean labels */}
+          <nav
+            className="hidden lg:flex items-center gap-2 xl:gap-4 text-xs xl:text-sm font-sans shrink-0"
+            aria-label="Navigasi Utama"
+          >
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={() => handleNavClick(item.id)}
+                className="px-3 py-1.5 rounded-xs text-[#FAF9F5]/90 font-medium hover:text-[#FFAE5D] hover:bg-[#FAF9F5]/10 transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden lg:flex items-center gap-3 shrink-0">
+            <a
+              href={hubLoginUrl}
+              className="px-4 py-2 rounded-xs bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <span>Masuk Academic Hub</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Mobile & Tablet Menu Button */}
+          <div className="flex lg:hidden items-center gap-2">
+            <a
+              href={hubLoginUrl}
+              className="px-3 py-1.5 rounded-xs bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors"
+            >
+              Masuk
+            </a>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xs text-[#FAF9F5] hover:bg-[#FAF9F5]/10 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+              aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* 2. FIXED COMPACT FLOATING NAVBAR (Centered horizontally after scrolling past hero) */}
+      <nav
+        aria-label="Navigasi Mengambang"
+        className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out flex items-center justify-between gap-3 sm:gap-6 px-3.5 sm:px-5 py-2 rounded-xs bg-[#FAF9F5]/95 backdrop-blur-md shadow-md ${
+          isScrolledPastHero
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 -translate-y-4 pointer-events-none'
+        } max-w-4xl w-[94%] sm:w-auto`}
+      >
         <div className="shrink-0">
-          <BrandLogo size="md" />
+          <BrandLogo size="sm" inverted={false} />
         </div>
 
-        {/* Desktop Navigation - 1-word labels */}
-        <nav
-          className="hidden lg:flex items-center gap-1.5 xl:gap-3 text-xs xl:text-sm font-sans shrink-0"
-          aria-label="Navigasi Utama"
-        >
+        {/* 1-Word Links with Active Tracking */}
+        <div className="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-sans">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             return (
@@ -104,42 +183,34 @@ export function PublicHeader() {
               </a>
             );
           })}
-        </nav>
-
-        {/* Desktop CTA - Native <a> tag for cross-origin navigation */}
-        <div className="hidden lg:flex items-center gap-3 shrink-0">
-          <a
-            href={hubLoginUrl}
-            className="px-3.5 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5"
-          >
-            <span>Masuk Academic Hub</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </a>
         </div>
 
-        {/* Mobile & Tablet Menu Button */}
-        <div className="flex lg:hidden items-center gap-2">
+        {/* Floating CTA */}
+        <div className="flex items-center gap-2">
           <a
             href={hubLoginUrl}
-            className="px-3 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors"
+            className="px-3.5 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0"
           >
-            Masuk
+            <span className="hidden sm:inline">Academic Hub</span>
+            <span className="sm:hidden">Masuk</span>
+            <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
           </a>
+
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xs text-[#112A24] hover:bg-[#EAEAB7] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-1.5 rounded-xs md:hidden text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
             aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer (Accessible anytime menu is opened) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#FAF9F5] px-4 py-4 flex flex-col gap-1.5 shadow-sm">
+        <div className="fixed top-16 left-0 right-0 z-50 lg:hidden bg-[#FAF9F5] px-4 py-4 flex flex-col gap-1.5 shadow-lg">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             return (
@@ -169,6 +240,6 @@ export function PublicHeader() {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
