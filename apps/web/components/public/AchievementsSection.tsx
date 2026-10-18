@@ -108,9 +108,9 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                     }}
                     className="p-5 sm:p-6 rounded-xs bg-[#FFFDF8] shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 focus-visible:outline-2 focus-visible:outline-[#176C5B]"
                   >
-                    {/* Rank Badge */}
-                    <div className="md:col-span-2 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-[#1A1815] text-[#FFAE5D] text-xs font-mono font-bold uppercase tracking-wider shadow-2xs">
+                    {/* Rank Typography */}
+                    <div className="md:col-span-2 flex items-center">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#1A1815]">
                         {item.rank || 'PRESTASI'}
                       </span>
                     </div>

@@ -89,7 +89,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                 key={item.id}
                 delayMs={(idx % 6) * 60}
                 yOffset={16}
-                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[380px] flex"
+                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[380px] shrink-0 flex"
               >
                 <div
                   onClick={() => setSelectedArticle(item)}

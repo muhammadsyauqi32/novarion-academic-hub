@@ -23,17 +23,24 @@ export function PublicHeader() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
 
-  // Scroll listener for hero threshold
+  // Scroll listener tracking when hero leaves/enters viewport
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolledPastHero(scrollY > 280);
+      const heroEl = document.getElementById('hero');
+      const threshold = heroEl
+        ? heroEl.offsetTop + heroEl.offsetHeight - 90
+        : 350;
+      setIsScrolledPastHero(window.scrollY > threshold);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   // Active section tracking via IntersectionObserver
@@ -153,7 +160,7 @@ export function PublicHeader() {
       {/* 2. FIXED COMPACT FLOATING NAVBAR (Centered horizontally after scrolling past hero) */}
       <nav
         aria-label="Navigasi Mengambang"
-        className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out flex items-center justify-between gap-3 sm:gap-6 px-3.5 sm:px-5 py-2 rounded-xs bg-[#FAF9F5]/95 backdrop-blur-md shadow-md ${
+        className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out flex items-center justify-between gap-3 sm:gap-6 px-3.5 sm:px-5 py-2 rounded-xs bg-[#FAF9F5] shadow-md ${
           isScrolledPastHero
             ? 'opacity-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 -translate-y-4 pointer-events-none'
