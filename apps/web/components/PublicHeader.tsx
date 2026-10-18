@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { BrandLogo } from './BrandLogo';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { getHubLoginUrl } from '@/lib/links';
@@ -19,12 +20,21 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function PublicHeader() {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
+  // On non-landing pages (e.g. /privacy), start in solid/compact state immediately
+  const [isScrolledPastHero, setIsScrolledPastHero] = useState(!isLandingPage);
 
-  // Scroll listener tracking when hero leaves/enters viewport
+  // Scroll listener tracking when hero leaves/enters viewport on landing page
   useEffect(() => {
+    if (!isLandingPage) {
+      setIsScrolledPastHero(true);
+      return;
+    }
+
     const handleScroll = () => {
       const heroEl = document.getElementById('hero');
       const threshold = heroEl
@@ -41,10 +51,12 @@ export function PublicHeader() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, []);
+  }, [isLandingPage]);
 
   // Active section tracking via IntersectionObserver
   useEffect(() => {
+    if (!isLandingPage) return;
+
     const trackedIds = ['hero', ...NAV_ITEMS.map((item) => item.id)];
     const ratios: Record<string, number> = {};
 
@@ -53,7 +65,7 @@ export function PublicHeader() {
         ratios[entry.target.id] = entry.isIntersecting ? entry.intersectionRatio : 0;
       });
 
-      // If hero is in view or user is near the top of the page, no nav link should be active
+      // If hero is in view or user is near top of page, no nav link is active
       if (window.scrollY < 200 || (ratios['hero'] && ratios['hero'] > 0.35)) {
         setActiveSection(null);
         return;
@@ -86,7 +98,7 @@ export function PublicHeader() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [isLandingPage]);
 
   const handleNavClick = (id: string) => {
     setActiveSection(id);
@@ -94,136 +106,91 @@ export function PublicHeader() {
   };
 
   const hubLoginUrl = getHubLoginUrl();
+  const isCompact = isScrolledPastHero;
 
   return (
-    <>
-      {/* 1. TOP NAVBAR (Initially transparent over Full-Bleed Hero) */}
-      <header
-        className={`absolute top-0 left-0 right-0 z-40 w-full transition-opacity duration-300 ${
-          isScrolledPastHero ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-          <div className="shrink-0">
-            <BrandLogo size="md" inverted={true} />
-          </div>
+    <header
+      aria-label="Navigasi Utama"
+      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-400 ease-out motion-reduce:transition-none flex items-center justify-between gap-3 sm:gap-6 ${
+        isCompact
+          ? 'top-3 w-[94%] sm:w-[88%] md:w-[760px] lg:w-[840px] max-w-4xl px-3.5 sm:px-5 py-2 rounded-[12px] bg-[#FAF9F5] shadow-md text-[#112A24]'
+          : 'top-0 w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 rounded-none bg-transparent shadow-none text-[#FAF9F5]'
+      }`}
+    >
+      {/* Brand Logo with Smooth Appearance */}
+      <div className="shrink-0 transition-all duration-300">
+        <BrandLogo size={isCompact ? 'sm' : 'md'} inverted={!isCompact} />
+      </div>
 
-          {/* Desktop Navigation - 1-word clean labels */}
-          <nav
-            className="hidden lg:flex items-center gap-2 xl:gap-4 text-xs xl:text-sm font-sans shrink-0"
-            aria-label="Navigasi Utama"
-          >
-            {NAV_ITEMS.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => handleNavClick(item.id)}
-                className="px-3 py-1.5 rounded-xs text-[#FAF9F5]/90 font-medium hover:text-[#FFAE5D] hover:bg-[#FAF9F5]/10 transition-colors whitespace-nowrap"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3 shrink-0">
-            <a
-              href={hubLoginUrl}
-              className="px-4 py-2 rounded-xs bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
-            >
-              <span>Masuk Academic Hub</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
-          {/* Mobile & Tablet Menu Button */}
-          <div className="flex lg:hidden items-center gap-2">
-            <a
-              href={hubLoginUrl}
-              className="px-3 py-1.5 rounded-xs bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors"
-            >
-              Masuk
-            </a>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xs text-[#FAF9F5] hover:bg-[#FAF9F5]/10 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
-              aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* 2. FIXED COMPACT FLOATING NAVBAR (Centered horizontally after scrolling past hero) */}
+      {/* Desktop 1-word Navigation Links with Active Tracking */}
       <nav
-        aria-label="Navigasi Mengambang"
-        className={`fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-out flex items-center justify-between gap-3 sm:gap-6 px-3.5 sm:px-5 py-2 rounded-xs bg-[#FAF9F5] shadow-md ${
-          isScrolledPastHero
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-4 pointer-events-none'
-        } max-w-4xl w-[94%] sm:w-auto`}
+        className="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-sans shrink-0"
+        aria-label="Tautan Bagian"
       >
-        <div className="shrink-0">
-          <BrandLogo size="sm" inverted={false} />
-        </div>
-
-        {/* 1-Word Links with Active Tracking */}
-        <div className="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-sans">
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.id;
-            return (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => handleNavClick(item.id)}
-                aria-current={isActive ? 'location' : undefined}
-                className={`px-3 py-1.5 rounded-xs transition-colors whitespace-nowrap ${
-                  isActive
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeSection === item.id;
+          return (
+            <a
+              key={item.id}
+              href={`/#${item.id}`}
+              onClick={() => handleNavClick(item.id)}
+              aria-current={isActive ? 'location' : undefined}
+              className={`px-3 py-1.5 rounded-xs transition-colors duration-200 whitespace-nowrap ${
+                isCompact
+                  ? isActive
                     ? 'bg-[#EAEAB7] text-[#112A24] font-bold'
                     : 'text-[#112A24]/80 font-medium hover:text-[#112A24] hover:bg-[#EAEAB7]/60'
-                }`}
-              >
-                {item.label}
-              </a>
-            );
-          })}
-        </div>
-
-        {/* Floating CTA */}
-        <div className="flex items-center gap-2">
-          <a
-            href={hubLoginUrl}
-            className="px-3.5 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0"
-          >
-            <span className="hidden sm:inline">Academic Hub</span>
-            <span className="sm:hidden">Masuk</span>
-            <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
-          </a>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 rounded-xs md:hidden text-[#112A24] hover:bg-[#EAEAB7] transition-colors"
-            aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
-        </div>
+                  : isActive
+                  ? 'bg-[#FAF9F5]/25 text-[#FAF9F5] font-bold'
+                  : 'text-[#FAF9F5]/90 font-medium hover:text-[#FFAE5D] hover:bg-[#FAF9F5]/10'
+              }`}
+            >
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
-      {/* Mobile Drawer (Accessible anytime menu is opened) */}
+      {/* CTA Button and Mobile Menu Toggle */}
+      <div className="flex items-center gap-2 shrink-0">
+        <a
+          href={hubLoginUrl}
+          className={`px-3.5 py-1.5 rounded-xs font-sans text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shrink-0 ${
+            isCompact
+              ? 'bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24]'
+              : 'bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] shadow-xs'
+          }`}
+        >
+          <span className="hidden sm:inline">Academic Hub</span>
+          <span className="sm:hidden">Masuk</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </a>
+
+        {/* Mobile Toggle Button */}
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className={`p-1.5 rounded-xs md:hidden transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center ${
+            isCompact
+              ? 'text-[#112A24] hover:bg-[#EAEAB7]'
+              : 'text-[#FAF9F5] hover:bg-[#FAF9F5]/10'
+          }`}
+          aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu Drawer (Attached cleanly to single navbar container) */}
       {mobileMenuOpen && (
-        <div className="fixed top-16 left-0 right-0 z-50 lg:hidden bg-[#FAF9F5] px-4 py-4 flex flex-col gap-1.5 shadow-lg">
+        <div className="absolute top-full mt-2 left-0 right-0 z-50 md:hidden bg-[#FAF9F5] rounded-xs px-4 py-4 flex flex-col gap-1.5 shadow-lg border border-[#112A24]/10 text-[#112A24]">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             return (
               <a
                 key={item.id}
-                href={`#${item.id}`}
+                href={`/#${item.id}`}
                 onClick={() => handleNavClick(item.id)}
                 aria-current={isActive ? 'location' : undefined}
                 className={`py-2 px-3 rounded-xs text-sm font-sans transition-colors ${
@@ -247,6 +214,6 @@ export function PublicHeader() {
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 }

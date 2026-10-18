@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { CMSAchievement } from '@novarion/shared';
 import { Trophy, ExternalLink, X } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { useFilterAnimation } from './useFilterAnimation';
 
 interface AchievementsSectionProps {
   achievements: CMSAchievement[];
@@ -16,9 +17,16 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
 
   const categories = ['Semua', ...Array.from(new Set(achievements.map((a) => a.category).filter(Boolean)))];
 
-  const filtered = activeCategory === 'Semua'
-    ? achievements
-    : achievements.filter((a) => a.category === activeCategory);
+  const filterFn = useCallback(
+    (a: CMSAchievement) => activeCategory === 'Semua' || a.category === activeCategory,
+    [activeCategory]
+  );
+
+  const { displayedItems, registerItemRef } = useFilterAnimation({
+    items: achievements,
+    filterFn,
+    getItemId: (a) => a.id,
+  });
 
   const formatDate = (d?: Date | string | null) => {
     if (!d) return 'Tahun ini';
@@ -44,26 +52,31 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
 
             {/* Filter Categories (No decorative borders) */}
             {achievements.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
-                      activeCategory === cat
-                        ? 'bg-[#1A1815] text-[#FFAE5D]'
-                        : 'bg-[#FFFDF8] text-[#1A1815] hover:bg-[#1A1815] hover:text-[#FFAE5D]'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-3" role="group" aria-label="Filter kategori prestasi">
+                {categories.map((cat) => {
+                  const isSelected = activeCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
+                        isSelected
+                          ? 'bg-[#1A1815] text-[#FFAE5D]'
+                          : 'bg-[#FFFDF8] text-[#1A1815] hover:bg-[#1A1815] hover:text-[#FFAE5D]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
         </Reveal>
 
-        {filtered.length === 0 ? (
+        {displayedItems.length === 0 ? (
           /* Visually Restrained Clean Empty State */
           <Reveal yOffset={16}>
             <div className="p-12 sm:p-16 rounded-xs bg-[#FFFDF8] text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
@@ -93,8 +106,17 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
 
             {/* Ledger Rows */}
             <div className="flex flex-col gap-3">
-              {filtered.map((item, idx) => (
-                <Reveal key={item.id} delayMs={(idx % 6) * 60} yOffset={14}>
+              {displayedItems.map(({ data: item, id, isExiting }) => (
+                <div
+                  key={id}
+                  ref={registerItemRef(id)}
+                  style={{
+                    transition: isExiting ? 'opacity 160ms ease-out, transform 160ms ease-out' : undefined,
+                    opacity: isExiting ? 0 : undefined,
+                    transform: isExiting ? 'translateY(-8px) scale(0.98)' : undefined,
+                    pointerEvents: isExiting ? 'none' : 'auto',
+                  }}
+                >
                   <div
                     onClick={() => setSelectedAchievement(item)}
                     tabIndex={0}
@@ -143,7 +165,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                       <ExternalLink className="w-3.5 h-3.5 text-[#1A1815]/60 group-hover:text-[#1A1815] group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>
-                </Reveal>
+                </div>
               ))}
             </div>
           </div>

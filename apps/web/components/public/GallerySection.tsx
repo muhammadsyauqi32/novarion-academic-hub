@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { CMSAlbum, CMSAlbumPhoto } from '@novarion/shared';
 import { Camera, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { useFilterAnimation } from './useFilterAnimation';
 
 interface GallerySectionProps {
   albums: CMSAlbum[];
@@ -15,23 +16,42 @@ export function GallerySection({ albums }: GallerySectionProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   // Flatten all photos with album metadata for unified viewing
-  const allPhotos: Array<{ photo: CMSAlbumPhoto; albumTitle: string }> = albums.flatMap((album) =>
-    (album.photos || []).map((photo) => ({
-      photo,
-      albumTitle: album.title,
-    }))
+  const allPhotos: Array<{ photo: CMSAlbumPhoto; albumTitle: string }> = useMemo(
+    () =>
+      albums.flatMap((album) =>
+        (album.photos || []).map((photo) => ({
+          photo,
+          albumTitle: album.title,
+        }))
+      ),
+    [albums]
   );
 
-  const displayedPhotos =
-    selectedAlbumId === 'all'
-      ? allPhotos
-      : allPhotos.filter((item) => {
-          const alb = albums.find((a) => a.id === selectedAlbumId);
-          return alb && alb.photos?.some((p) => p.id === item.photo.id);
-        });
+  const filterFn = useCallback(
+    (item: { photo: CMSAlbumPhoto; albumTitle: string }) => {
+      if (selectedAlbumId === 'all') return true;
+      const alb = albums.find((a) => a.id === selectedAlbumId);
+      return alb ? alb.photos?.some((p) => p.id === item.photo.id) ?? false : false;
+    },
+    [albums, selectedAlbumId]
+  );
 
-  const openLightbox = (idx: number) => {
-    setLightboxIndex(idx);
+  const { displayedItems, registerItemRef } = useFilterAnimation({
+    items: allPhotos,
+    filterFn,
+    getItemId: (item) => item.photo.id || item.photo.imageUrl,
+  });
+
+  const activePhotos = useMemo(
+    () => displayedItems.filter((i) => !i.isExiting).map((i) => i.data),
+    [displayedItems]
+  );
+
+  const openLightbox = (photoId: string) => {
+    const idx = activePhotos.findIndex((p) => (p.photo.id || p.photo.imageUrl) === photoId);
+    if (idx !== -1) {
+      setLightboxIndex(idx);
+    }
   };
 
   const closeLightbox = () => {
@@ -39,16 +59,16 @@ export function GallerySection({ albums }: GallerySectionProps) {
   };
 
   const showNext = useCallback(() => {
-    if (lightboxIndex !== null) {
-      setLightboxIndex((prev) => (prev! + 1) % displayedPhotos.length);
+    if (lightboxIndex !== null && activePhotos.length > 0) {
+      setLightboxIndex((prev) => (prev! + 1) % activePhotos.length);
     }
-  }, [lightboxIndex, displayedPhotos.length]);
+  }, [lightboxIndex, activePhotos.length]);
 
   const showPrev = useCallback(() => {
-    if (lightboxIndex !== null) {
-      setLightboxIndex((prev) => (prev! - 1 + displayedPhotos.length) % displayedPhotos.length);
+    if (lightboxIndex !== null && activePhotos.length > 0) {
+      setLightboxIndex((prev) => (prev! - 1 + activePhotos.length) % activePhotos.length);
     }
-  }, [lightboxIndex, displayedPhotos.length]);
+  }, [lightboxIndex, activePhotos.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,12 +95,14 @@ export function GallerySection({ albums }: GallerySectionProps) {
               Arsip visual dan rekaman momen kebersamaan Angkatan 62.
             </p>
 
-            {/* Album Selector Tabs (No borders) */}
+            {/* Album Selector Tabs (Clean buttons, smooth color transition, no borders) */}
             {albums.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-3" role="group" aria-label="Pilihan album galeri">
                 <button
+                  type="button"
+                  aria-pressed={selectedAlbumId === 'all'}
                   onClick={() => setSelectedAlbumId('all')}
-                  className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
+                  className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
                     selectedAlbumId === 'all'
                       ? 'bg-[#FFAE5D] text-[#0D1B2A]'
                       : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
@@ -88,25 +110,30 @@ export function GallerySection({ albums }: GallerySectionProps) {
                 >
                   Semua Album ({allPhotos.length})
                 </button>
-                {albums.map((alb) => (
-                  <button
-                    key={alb.id}
-                    onClick={() => setSelectedAlbumId(alb.id)}
-                    className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
-                      selectedAlbumId === alb.id
-                        ? 'bg-[#FFAE5D] text-[#0D1B2A]'
-                        : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
-                    }`}
-                  >
-                    {alb.title} ({alb.photos?.length || 0})
-                  </button>
-                ))}
+                {albums.map((alb) => {
+                  const isSelected = selectedAlbumId === alb.id;
+                  return (
+                    <button
+                      key={alb.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => setSelectedAlbumId(alb.id)}
+                      className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
+                        isSelected
+                          ? 'bg-[#FFAE5D] text-[#0D1B2A]'
+                          : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
+                      }`}
+                    >
+                      {alb.title} ({alb.photos?.length || 0})
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
         </Reveal>
 
-        {displayedPhotos.length === 0 ? (
+        {displayedItems.length === 0 ? (
           /* Visually Restrained Clean Empty State */
           <Reveal yOffset={16}>
             <div className="p-12 sm:p-16 rounded-xs bg-[#15283C] text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
@@ -124,25 +151,35 @@ export function GallerySection({ albums }: GallerySectionProps) {
             </div>
           </Reveal>
         ) : (
-          /* Asymmetrical Photography Collage (No decorative borders, subtle hover zoom & lift) */
+          /* Asymmetrical Photography Collage (Smooth filter transition without card-level Reveal restarts) */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
-            {displayedPhotos.map((item, idx) => {
+            {displayedItems.map(({ data: item, id, isExiting }, idx) => {
               const isLarge = idx % 5 === 0;
               const isMedium = idx % 5 === 1 || idx % 5 === 2;
               const colSpan = isLarge ? 'lg:col-span-8' : isMedium ? 'lg:col-span-4' : 'lg:col-span-6';
               const aspect = isLarge ? 'aspect-[16/10]' : 'aspect-square';
 
               return (
-                <Reveal key={item.photo.id || idx} delayMs={(idx % 6) * 60} yOffset={16} className={colSpan}>
+                <div
+                  key={id}
+                  ref={registerItemRef(id)}
+                  style={{
+                    transition: isExiting ? 'opacity 160ms ease-out, transform 160ms ease-out' : undefined,
+                    opacity: isExiting ? 0 : undefined,
+                    transform: isExiting ? 'translateY(-8px) scale(0.98)' : undefined,
+                    pointerEvents: isExiting ? 'none' : 'auto',
+                  }}
+                  className={colSpan}
+                >
                   <div
-                    onClick={() => openLightbox(idx)}
+                    onClick={() => openLightbox(id)}
                     tabIndex={0}
                     role="button"
                     aria-label={`Lihat foto dari album ${item.albumTitle}`}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        openLightbox(idx);
+                        openLightbox(id);
                       }
                     }}
                     className={`group relative ${aspect} w-full overflow-hidden rounded-xs bg-[#15283C] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#FFAE5D]`}
@@ -167,7 +204,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
                       )}
                     </div>
                   </div>
-                </Reveal>
+                </div>
               );
             })}
           </div>
@@ -175,7 +212,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
       </div>
 
       {/* Lightbox Viewer */}
-      {lightboxIndex !== null && displayedPhotos[lightboxIndex] && (
+      {lightboxIndex !== null && activePhotos[lightboxIndex] && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0D1B2A]/95 backdrop-blur-xs"
           onClick={closeLightbox}
@@ -187,7 +224,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
             {/* Top Toolbar */}
             <div className="w-full flex items-center justify-between text-xs font-mono text-[#FAF9F5]/80 px-2">
               <span className="font-bold text-[#FFAE5D]">
-                Foto {lightboxIndex + 1} dari {displayedPhotos.length}
+                Foto {lightboxIndex + 1} dari {activePhotos.length}
               </span>
               <button
                 onClick={closeLightbox}
@@ -201,8 +238,8 @@ export function GallerySection({ albums }: GallerySectionProps) {
             {/* Photo Container */}
             <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden bg-[#0D1B2A] shadow-2xl">
               <Image
-                src={displayedPhotos[lightboxIndex].photo.imageUrl}
-                alt={displayedPhotos[lightboxIndex].photo.caption || 'Foto Galeri'}
+                src={activePhotos[lightboxIndex].photo.imageUrl}
+                alt={activePhotos[lightboxIndex].photo.caption || 'Foto Galeri'}
                 fill
                 className="object-contain"
                 sizes="100vw"
@@ -221,11 +258,11 @@ export function GallerySection({ albums }: GallerySectionProps) {
 
               <div className="text-center max-w-md px-4">
                 <span className="font-bold text-[#FFAE5D] block">
-                  {displayedPhotos[lightboxIndex].albumTitle}
+                  {activePhotos[lightboxIndex].albumTitle}
                 </span>
-                {displayedPhotos[lightboxIndex].photo.caption && (
+                {activePhotos[lightboxIndex].photo.caption && (
                   <p className="text-xs text-[#FAF9F5]/90 mt-0.5">
-                    {displayedPhotos[lightboxIndex].photo.caption}
+                    {activePhotos[lightboxIndex].photo.caption}
                   </p>
                 )}
               </div>
@@ -244,3 +281,4 @@ export function GallerySection({ albums }: GallerySectionProps) {
     </section>
   );
 }
+

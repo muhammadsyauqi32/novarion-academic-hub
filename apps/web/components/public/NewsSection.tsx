@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { CMSNews } from '@novarion/shared';
 import { ArrowRight, X, Newspaper } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { useFilterAnimation } from './useFilterAnimation';
 
 interface NewsSectionProps {
   news: CMSNews[];
@@ -16,9 +17,16 @@ export function NewsSection({ news }: NewsSectionProps) {
 
   const categories = ['Semua', ...Array.from(new Set(news.map((n) => n.category).filter(Boolean)))];
 
-  const filteredNews = activeCategory === 'Semua' 
-    ? news 
-    : news.filter((n) => n.category === activeCategory);
+  const filterFn = useCallback(
+    (n: CMSNews) => activeCategory === 'Semua' || n.category === activeCategory,
+    [activeCategory]
+  );
+
+  const { displayedItems, registerItemRef } = useFilterAnimation({
+    items: news,
+    filterFn,
+    getItemId: (n) => n.id,
+  });
 
   const formatDate = (d?: Date | string | null) => {
     if (!d) return 'Baru saja';
@@ -45,26 +53,31 @@ export function NewsSection({ news }: NewsSectionProps) {
 
             {/* Category Filter Options (Plain clean buttons without decorative borders) */}
             {news.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors shadow-2xs ${
-                      activeCategory === cat
-                        ? 'bg-[#0F2821] text-[#C9FBD4]'
-                        : 'bg-[#FAF9F5] text-[#0F2821] hover:bg-[#FFAE5D]'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-3" role="group" aria-label="Filter kategori warta">
+                {categories.map((cat) => {
+                  const isSelected = activeCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
+                        isSelected
+                          ? 'bg-[#0F2821] text-[#C9FBD4]'
+                          : 'bg-[#FAF9F5] text-[#0F2821] hover:bg-[#FFAE5D]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
         </Reveal>
 
-        {filteredNews.length === 0 ? (
+        {displayedItems.length === 0 ? (
           /* Clean Empty State without Nested Containers */
           <Reveal yOffset={16}>
             <div className="p-10 sm:p-14 rounded-xs bg-[#FAF9F5] text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
@@ -84,11 +97,16 @@ export function NewsSection({ news }: NewsSectionProps) {
         ) : (
           /* ONE Clean Content Container Holding All News Cards (No giant card wrapper) */
           <div className="flex flex-wrap gap-6 justify-center lg:justify-start items-stretch">
-            {filteredNews.map((item, idx) => (
-              <Reveal
-                key={item.id}
-                delayMs={(idx % 6) * 60}
-                yOffset={16}
+            {displayedItems.map(({ data: item, id, isExiting }) => (
+              <div
+                key={id}
+                ref={registerItemRef(id)}
+                style={{
+                  transition: isExiting ? 'opacity 160ms ease-out, transform 160ms ease-out' : undefined,
+                  opacity: isExiting ? 0 : undefined,
+                  transform: isExiting ? 'translateY(-8px) scale(0.98)' : undefined,
+                  pointerEvents: isExiting ? 'none' : 'auto',
+                }}
                 className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[380px] shrink-0 flex"
               >
                 <div
@@ -148,7 +166,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </Reveal>
+              </div>
             ))}
           </div>
         )}
