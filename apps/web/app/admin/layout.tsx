@@ -9,7 +9,7 @@ import { Eye } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Admin Workspace | Novarion Academic Hub',
+  title: 'Admin Workspace',
   robots: {
     index: false,
     follow: false,

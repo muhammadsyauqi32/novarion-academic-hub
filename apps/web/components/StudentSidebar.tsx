@@ -43,7 +43,7 @@ export function StudentSidebar({ userRole, userName, userNim }: StudentSidebarPr
     <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0 px-4 py-5 justify-between select-none">
       <div className="flex flex-col gap-6">
         <div className="px-2">
-          <BrandLogo href="/app" size="md" showSubtitle={true} />
+          <BrandLogo href="/app" size="md" />
         </div>
 
         <nav className="flex flex-col gap-1">

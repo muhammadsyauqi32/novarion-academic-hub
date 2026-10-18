@@ -6,7 +6,8 @@ import Link from 'next/link';
 interface BrandLogoProps {
   href?: string;
   size?: 'sm' | 'md' | 'lg';
-  showSubtitle?: boolean;
+  showTitle?: boolean;
+  showSubtitle?: boolean; // kept for backwards compatibility
   className?: string;
   inverted?: boolean;
   customSrc?: string;
@@ -22,7 +23,7 @@ const CANDIDATE_SOURCES = [
 export function BrandLogo({
   href = '/',
   size = 'md',
-  showSubtitle = true,
+  showTitle = true,
   className = '',
   inverted = false,
   customSrc,
@@ -84,12 +85,6 @@ export function BrandLogo({
     lg: 'text-xl sm:text-2xl',
   };
 
-  const subtitleSizeClasses = {
-    sm: 'text-[10px] sm:text-xs',
-    md: 'text-[11px] sm:text-xs',
-    lg: 'text-xs sm:text-sm',
-  };
-
   const markSizes = {
     sm: 'w-7 h-7 text-xs',
     md: 'w-8 h-8 text-sm',
@@ -97,8 +92,6 @@ export function BrandLogo({
   };
 
   const textColor = inverted ? 'text-[#FAF9F5]' : 'text-text-primary';
-  const subtitleColor = inverted ? 'text-[#FFAE5D]' : 'text-teal-deep';
-  const separatorColor = inverted ? 'text-[#FAF9F5]/40' : 'text-text-muted/40';
 
   const content = (
     <div className={`inline-flex items-center gap-2.5 sm:gap-3 group select-none ${className}`}>
@@ -118,22 +111,12 @@ export function BrandLogo({
         </div>
       )}
 
-      {/* Brand Title: Novarion - Statistika dan Sains Data 62 */}
-      <div className="flex flex-col justify-center min-w-0">
-        <div className="flex flex-wrap sm:flex-nowrap items-baseline gap-1 sm:gap-1.5 leading-tight">
-          <span className={`font-heading font-black tracking-tight ${textColor} ${titleSizeClasses[size]}`}>
-            Novarion
-          </span>
-          {showSubtitle && (
-            <>
-              <span className={`hidden sm:inline font-bold ${separatorColor}`}>-</span>
-              <span className={`font-semibold tracking-tight ${subtitleColor} ${subtitleSizeClasses[size]} whitespace-nowrap`}>
-                Statistika dan Sains Data 62
-              </span>
-            </>
-          )}
-        </div>
-      </div>
+      {/* Brand Title: Novarion */}
+      {showTitle && (
+        <span className={`font-heading font-black tracking-tight ${textColor} ${titleSizeClasses[size]}`}>
+          Novarion
+        </span>
+      )}
     </div>
   );
 

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Masuk ke Portal Akademik | Novarion',
+  title: 'Masuk',
   description: 'Halaman masuk portal Novarion Academic Hub khusus mahasiswa dan administrator terdaftar.',
   robots: {
     index: false,

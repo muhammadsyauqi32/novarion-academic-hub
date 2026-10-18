@@ -10,7 +10,7 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Workspace Mahasiswa | Novarion Academic Hub',
+  title: 'Academic Hub',
   robots: {
     index: false,
     follow: false,

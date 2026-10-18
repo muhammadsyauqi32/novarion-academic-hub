@@ -10,17 +10,19 @@ import { AchievementsSection } from '@/components/public/AchievementsSection';
 import { AcademicHubCtaSection } from '@/components/public/AcademicHubCtaSection';
 
 export const metadata: Metadata = {
-  title: 'NOVARION · Angkatan 62 Statistika dan Sains Data IPB University',
+  title: {
+    absolute: 'Novarion - Statistika dan Sains Data 62',
+  },
   description:
     'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University (NOVARION). "Kita Satu, Kita Bisa!" - Warta kegiatan, kepengurusan, galeri momen, dan prestasi angkatan.',
   alternates: {
     canonical: 'https://novarion.web.id',
   },
   openGraph: {
-    title: 'NOVARION · Statistika dan Sains Data 62 IPB',
+    title: 'Novarion - Statistika dan Sains Data 62',
     description: 'Portal resmi Angkatan 62 Statistika dan Sains Data IPB University. "Kita Satu, Kita Bisa!"',
     url: 'https://novarion.web.id',
-    siteName: 'NOVARION Academic Hub',
+    siteName: 'Novarion - Statistika dan Sains Data 62',
     locale: 'id_ID',
     type: 'website',
   },

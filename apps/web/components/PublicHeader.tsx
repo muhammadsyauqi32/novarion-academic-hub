@@ -10,13 +10,13 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] border-b border-[#112A24]/10 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <div className="shrink-0">
-          <BrandLogo size="sm" showSubtitle={true} />
+          <BrandLogo size="md" />
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-1.5 2xl:gap-3 text-xs 2xl:text-sm font-sans font-semibold text-[#112A24]/85 shrink-0">
+        <nav className="hidden lg:flex items-center gap-2 xl:gap-5 text-xs xl:text-sm font-sans font-semibold text-[#112A24]/85 shrink-0">
           <a href="#tentang" className="hover:text-[#112A24] hover:bg-[#EAEAB7] px-2 py-1 rounded-xs transition-colors whitespace-nowrap">
             Tentang Novarion
           </a>
@@ -35,7 +35,7 @@ export function PublicHeader() {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden xl:flex items-center gap-3 shrink-0">
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           <Link href="/login">
             <button className="px-3.5 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors flex items-center gap-1.5 border border-[#112A24]/20">
               <span>Masuk Academic Hub</span>
@@ -45,7 +45,7 @@ export function PublicHeader() {
         </div>
 
         {/* Mobile & Tablet Menu Button */}
-        <div className="flex xl:hidden items-center gap-2">
+        <div className="flex lg:hidden items-center gap-2">
           <Link href="/login">
             <button className="px-3 py-1.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors">
               Masuk
@@ -65,7 +65,7 @@ export function PublicHeader() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-b border-[#112A24]/10 bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
+        <div className="lg:hidden border-b border-[#112A24]/10 bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
           <a
             href="#tentang"
             onClick={() => setMobileMenuOpen(false)}
