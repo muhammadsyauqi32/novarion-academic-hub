@@ -62,7 +62,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
   }, [lightboxIndex, showNext, showPrev]);
 
   return (
-    <section id="galeri" className="w-full bg-[#0D1B2A] border-b border-[#FAF9F5]/15 py-16 md:py-24 scroll-mt-16 text-[#FAF9F5]">
+    <section id="galeri" className="w-full bg-[#0D1B2A] border-b border-[#FAF9F5]/10 py-16 md:py-24 scroll-mt-16 text-[#FAF9F5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Editorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -136,7 +136,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
                 <div
                   key={item.photo.id || idx}
                   onClick={() => openLightbox(idx)}
-                  className={`${colSpan} group relative ${aspect} overflow-hidden rounded-xs bg-[#15283C] border-2 border-[#FAF9F5]/20 hover:border-[#FFAE5D] transition-all cursor-pointer`}
+                  className={`${colSpan} group relative ${aspect} overflow-hidden rounded-xs bg-[#15283C] border border-[#FAF9F5]/20 hover:border-[#FFAE5D] transition-all cursor-pointer`}
                 >
                   <Image
                     src={item.photo.imageUrl}
@@ -194,7 +194,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
             </div>
 
             {/* Photo Container */}
-            <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden border-2 border-[#FAF9F5]/30 bg-[#0D1B2A]">
+            <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden border border-[#FAF9F5]/20 bg-[#0D1B2A]">
               <Image
                 src={displayedPhotos[lightboxIndex].photo.imageUrl}
                 alt={displayedPhotos[lightboxIndex].photo.caption || 'Foto Galeri'}

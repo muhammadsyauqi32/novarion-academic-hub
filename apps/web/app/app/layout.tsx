@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { requireAuth } from '@/lib/auth/guards';
 import { StudentSidebar } from '@/components/StudentSidebar';
 import { StudentBottomNav } from '@/components/StudentBottomNav';
+import { BrandLogo } from '@/components/BrandLogo';
 import { ShieldAlert, ArrowRight, Eye } from 'lucide-react';
 import Link from 'next/link';
 
@@ -63,9 +64,7 @@ export default async function StudentLayout({
           } z-30`}
         >
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-deep">
-              Novarion Academic Hub
-            </span>
+            <BrandLogo href="/app" size="sm" showSubtitle={true} />
           </div>
 
           <div className="flex items-center gap-3">

@@ -29,7 +29,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
   };
 
   return (
-    <section id="prestasi" className="w-full bg-[#FFAE5D] border-b border-[#1A1815]/20 py-16 md:py-24 scroll-mt-16 text-[#1A1815]">
+    <section id="prestasi" className="w-full bg-[#FFAE5D] border-b border-[#1A1815]/10 py-16 md:py-24 scroll-mt-16 text-[#1A1815]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Editorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -66,7 +66,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
 
         {filtered.length === 0 ? (
           /* Visually Restrained Clean Empty State (Zero Technical CMS Jargon) */
-          <div className="p-12 sm:p-16 rounded-xs bg-[#FFFDF8] border-2 border-[#1A1815]/30 text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
+          <div className="p-12 sm:p-16 rounded-xs bg-[#FFFDF8] border border-[#1A1815]/15 text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
             <div className="w-12 h-12 rounded-xs bg-[#FFAE5D]/30 border border-[#1A1815]/30 flex items-center justify-center text-[#1A1815]">
               <Trophy className="w-6 h-6" />
             </div>
@@ -83,7 +83,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
           /* Expressive Editorial Roll of Honor Ledger (Sharp Borders, No Generic SaaS Cards) */
           <div className="flex flex-col gap-3">
             {/* Desktop Ledger Header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-2 border-b-2 border-[#1A1815] text-xs font-mono font-black text-[#1A1815] uppercase tracking-wider">
+            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-2 border-b border-[#1A1815]/20 text-xs font-mono font-black text-[#1A1815] uppercase tracking-wider">
               <span className="col-span-2">PREDIKAT</span>
               <span className="col-span-5">KOMPETISI & KARYA</span>
               <span className="col-span-3">PENERIMA APRESIASI</span>
@@ -96,7 +96,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                 <div
                   key={item.id}
                   onClick={() => setSelectedAchievement(item)}
-                  className="p-5 sm:p-6 rounded-xs bg-[#FFFDF8] border-2 border-[#1A1815]/20 hover:border-[#1A1815] transition-all cursor-pointer group shadow-xs flex flex-col md:grid md:grid-cols-12 md:items-center gap-4"
+                  className="p-5 sm:p-6 rounded-xs bg-[#FFFDF8] border border-[#1A1815]/15 hover:border-[#1A1815]/35 transition-all cursor-pointer group shadow-xs flex flex-col md:grid md:grid-cols-12 md:items-center gap-4"
                 >
                   {/* Rank Badge */}
                   <div className="md:col-span-2 flex items-center gap-2">
@@ -146,7 +146,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
           onClick={() => setSelectedAchievement(null)}
         >
           <div
-            className="w-full max-w-2xl bg-[#FFFDF8] border-2 border-[#1A1815] rounded-xs p-6 sm:p-8 shadow-2xl flex flex-col gap-5 text-[#1A1815]"
+            className="w-full max-w-2xl bg-[#FFFDF8] border border-[#1A1815]/20 rounded-xs p-6 sm:p-8 shadow-2xl flex flex-col gap-5 text-[#1A1815]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between border-b border-[#1A1815]/20 pb-4">

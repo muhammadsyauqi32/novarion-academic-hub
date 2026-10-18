@@ -10,10 +10,10 @@ interface HeroSectionProps {
 
 export function HeroSection({ hero }: HeroSectionProps) {
   return (
-    <section id="hero" className="w-full bg-[#EAEAB7] border-b border-[#112A24]/15 pt-8 pb-16 md:pt-12 md:pb-24">
+    <section id="hero" className="w-full bg-[#EAEAB7] border-b border-[#112A24]/10 pt-8 pb-16 md:pt-12 md:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Editorial Masthead Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#112A24]/20 pb-3 mb-8 md:mb-12 text-[11px] font-mono uppercase tracking-wider text-[#112A24]/75">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#112A24]/10 pb-3 mb-8 md:mb-12 text-[11px] font-mono uppercase tracking-wider text-[#112A24]/75">
           <div className="flex items-center gap-3">
             <span className="font-bold text-[#112A24] bg-[#FFAE5D] px-2 py-0.5 rounded-xs">VOL. 62</span>
             <span>/</span>
@@ -43,13 +43,13 @@ export function HeroSection({ hero }: HeroSectionProps) {
                 NOVARION
               </h1>
 
-              <div className="inline-block self-start bg-[#FFAE5D] text-[#112A24] px-3.5 py-1.5 rounded-xs border border-[#112A24]/20 font-heading font-bold text-xl sm:text-2xl tracking-tight">
+              <div className="inline-block self-start bg-[#FFAE5D] text-[#112A24] px-3.5 py-1.5 rounded-xs border border-[#112A24]/15 font-heading font-bold text-xl sm:text-2xl tracking-tight">
                 &ldquo;{COHORT_CONFIG.tagline}&rdquo;
               </div>
             </div>
 
             {/* Documentary Narrative Paragraph */}
-            <div className="p-4 bg-[#FAF9F5] border border-[#112A24]/15 rounded-xs">
+            <div className="p-4 bg-[#FAF9F5] border border-[#112A24]/10 rounded-xs">
               <p className="text-sm sm:text-base text-[#112A24]/90 leading-relaxed font-sans">
                 Sebuah ikhtiar kolektif mahasiswa Statistika dan Sains Data Angkatan 62 IPB University. Menyatukan kilau energi analitis dengan kompas kepemimpinan berintegritas tinggi untuk melangkah bersama menuntaskan tantangan akademik dan kemaslahatan bersama.
               </p>
@@ -118,7 +118,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
 
           {/* Right Column: Authentic Cohort Photograph Frame */}
           <div className="lg:col-span-5 flex flex-col gap-3">
-            <div className="relative border-2 border-[#112A24] bg-[#FAF9F5] p-2.5 rounded-xs shadow-md">
+            <div className="relative border border-[#112A24]/20 bg-[#FAF9F5] p-2.5 rounded-xs shadow-sm">
               {/* Archival Physical Registration Markers */}
               <div className="absolute top-1 left-1 text-[9px] font-mono text-[#112A24] font-black select-none">+</div>
               <div className="absolute top-1 right-1 text-[9px] font-mono text-[#112A24] font-black select-none">+</div>
@@ -126,13 +126,13 @@ export function HeroSection({ hero }: HeroSectionProps) {
               <div className="absolute bottom-1 right-1 text-[9px] font-mono text-[#112A24] font-black select-none">+</div>
 
               {/* Top Frame Label */}
-              <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-[#112A24]/20 text-[10px] font-mono uppercase tracking-wider text-[#112A24]">
+              <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-[#112A24]/10 text-[10px] font-mono uppercase tracking-wider text-[#112A24]">
                 <span className="font-bold">ARSIP RESMI NOVARION 62</span>
                 <span className="bg-[#41C2A1] text-[#112A24] px-1.5 py-0.5 font-bold rounded-xs">TERVERIFIKASI</span>
               </div>
 
               {/* Image Container with Sharp Corners (max 4px / rounded-xs) */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FAF9F5] rounded-xs mt-2 border border-[#112A24]/20">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FAF9F5] rounded-xs mt-2 border border-[#112A24]/10">
                 {hero?.imageUrl ? (
                   <Image
                     src={hero.imageUrl}

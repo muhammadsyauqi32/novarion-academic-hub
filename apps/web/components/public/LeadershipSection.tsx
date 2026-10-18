@@ -21,7 +21,7 @@ export function LeadershipSection() {
   };
 
   return (
-    <section id="pengurus" className="w-full bg-[#FAF9F5] border-b border-[#112A24]/15 py-16 md:py-24 scroll-mt-16">
+    <section id="pengurus" className="w-full bg-[#FAF9F5] border-b border-[#112A24]/10 py-16 md:py-24 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Editorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -42,7 +42,7 @@ export function LeadershipSection() {
 
         {/* Part 1: Pengurus Inti (The Core Cabinet) */}
         <div className="mb-14">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#112A24] font-bold mb-4 pb-2 border-b border-[#112A24]/20">
+          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-[#112A24] font-bold mb-4 pb-2 border-b border-[#112A24]/10">
             <span>KABINET PENGURUS INTI (BPH)</span>
             <span className="text-[11px] text-[#112A24]/60">MANDAT EKSEKUTIF</span>
           </div>
@@ -51,7 +51,7 @@ export function LeadershipSection() {
             {coreLeadership.members.map((member, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-xs bg-[#FFFFFF] border-2 border-[#112A24]/20 hover:border-[#112A24] transition-all flex flex-col justify-between shadow-xs"
+                className="p-5 rounded-xs bg-[#FFFFFF] border border-[#112A24]/15 hover:border-[#112A24]/30 transition-all flex flex-col justify-between shadow-xs"
               >
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between border-b border-[#112A24]/10 pb-2">

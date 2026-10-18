@@ -33,7 +33,7 @@ export function NewsSection({ news }: NewsSectionProps) {
   };
 
   return (
-    <section id="berita" className="w-full bg-[#C9FBD4] border-b border-[#0F2821]/15 py-16 md:py-24 scroll-mt-16">
+    <section id="berita" className="w-full bg-[#C9FBD4] border-b border-[#0F2821]/10 py-16 md:py-24 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Editorial Header & Category Filter */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -70,7 +70,7 @@ export function NewsSection({ news }: NewsSectionProps) {
 
         {news.length === 0 ? (
           /* Visually Restrained Clean Empty State (Zero Technical CMS Jargon) */
-          <div className="p-12 sm:p-16 rounded-xs bg-[#FAF9F5] border-2 border-[#0F2821]/20 text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
+          <div className="p-12 sm:p-16 rounded-xs bg-[#FAF9F5] border border-[#0F2821]/15 text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
             <div className="w-12 h-12 rounded-xs bg-[#41C2A1]/20 border border-[#0F2821]/20 flex items-center justify-center text-[#0F2821]">
               <Newspaper className="w-6 h-6" />
             </div>
@@ -87,7 +87,7 @@ export function NewsSection({ news }: NewsSectionProps) {
           <div className="flex flex-col gap-8">
             {/* Featured Headline Article (Magazine Lead Story Style) */}
             {featured && (
-              <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border-2 border-[#0F2821] shadow-md grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border border-[#0F2821]/15 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {featured.coverImageUrl && (
                   <div className="lg:col-span-5 relative aspect-[16/10] rounded-xs overflow-hidden bg-[#FAF9F5] border border-[#0F2821]/20">
                     <Image
@@ -182,7 +182,7 @@ export function NewsSection({ news }: NewsSectionProps) {
           onClick={() => setSelectedArticle(null)}
         >
           <div
-            className="w-full max-w-3xl max-h-[85vh] overflow-y-auto bg-[#FAF9F5] border-2 border-[#0F2821] rounded-xs p-6 sm:p-10 shadow-2xl flex flex-col gap-6"
+            className="w-full max-w-3xl max-h-[85vh] overflow-y-auto bg-[#FAF9F5] border border-[#0F2821]/20 rounded-xs p-6 sm:p-10 shadow-2xl flex flex-col gap-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between border-b border-[#0F2821]/20 pb-4">

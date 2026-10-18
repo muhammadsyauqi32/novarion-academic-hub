@@ -18,7 +18,7 @@ export function LandingInteractivePreview() {
   const [activeTab, setActiveTab] = useState<'calendar' | 'whatsapp' | 'materials' | 'tasks'>('calendar');
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-2xl border-2 border-border bg-surface shadow-2xl overflow-hidden flex flex-col">
+    <div className="w-full max-w-4xl mx-auto rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden flex flex-col">
       {/* Top browser/window chrome */}
       <div className="px-4 py-3 bg-surface-soft border-b border-border flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import Link from 'next/link';
 interface BrandLogoProps {
   href?: string;
   size?: 'sm' | 'md' | 'lg';
-  showTagline?: boolean;
+  showSubtitle?: boolean;
   className?: string;
   inverted?: boolean;
   customSrc?: string;
@@ -22,7 +22,7 @@ const CANDIDATE_SOURCES = [
 export function BrandLogo({
   href = '/',
   size = 'md',
-  showTagline = false,
+  showSubtitle = true,
   className = '',
   inverted = false,
   customSrc,
@@ -73,15 +73,21 @@ export function BrandLogo({
   }, [customSrc]);
 
   const logoHeightClasses = {
-    sm: 'h-8 max-h-8 w-auto',
-    md: 'h-10 max-h-10 w-auto',
-    lg: 'h-12 sm:h-14 max-h-14 w-auto',
+    sm: 'h-7 sm:h-8 max-h-8 w-auto',
+    md: 'h-8 sm:h-9 max-h-10 w-auto',
+    lg: 'h-10 sm:h-12 max-h-12 w-auto',
   };
 
-  const sizeClasses = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
+  const titleSizeClasses = {
+    sm: 'text-sm sm:text-base',
+    md: 'text-base sm:text-lg',
+    lg: 'text-xl sm:text-2xl',
+  };
+
+  const subtitleSizeClasses = {
+    sm: 'text-[10px] sm:text-xs',
+    md: 'text-[11px] sm:text-xs',
+    lg: 'text-xs sm:text-sm',
   };
 
   const markSizes = {
@@ -91,36 +97,43 @@ export function BrandLogo({
   };
 
   const textColor = inverted ? 'text-[#FAF9F5]' : 'text-text-primary';
-  const taglineColor = inverted ? 'text-[#FAF9F5]/70' : 'text-text-muted';
+  const subtitleColor = inverted ? 'text-[#FFAE5D]' : 'text-teal-deep';
+  const separatorColor = inverted ? 'text-[#FAF9F5]/40' : 'text-text-muted/40';
 
   const content = (
-    <div className={`inline-flex items-center gap-2.5 group ${className}`}>
+    <div className={`inline-flex items-center gap-2.5 sm:gap-3 group select-none ${className}`}>
+      {/* Logo Image or Fallback Gradient Badge */}
       {isLoaded && activeSrc ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={activeSrc}
-          alt="NOVARION Academic Hub"
-          className={`${logoHeightClasses[size]} object-contain select-none transition-transform group-hover:scale-105`}
+          alt="Novarion"
+          className={`${logoHeightClasses[size]} object-contain select-none transition-transform group-hover:scale-105 shrink-0`}
         />
       ) : (
-        <div className="flex items-center gap-2.5">
-          <div
-            className={`${markSizes[size]} bg-gradient-to-br from-[#41C2A1] to-[#176C5B] text-white font-heading font-black rounded-xl flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 tracking-tighter`}
-          >
-            NV
-          </div>
-          <div className="flex flex-col">
-            <span className={`font-heading font-black tracking-tight ${textColor} ${sizeClasses[size]}`}>
-              NOVARION
-            </span>
-            {showTagline && (
-              <span className={`text-[10px] font-semibold -mt-1 tracking-wider uppercase ${taglineColor}`}>
-                Academic Hub
-              </span>
-            )}
-          </div>
+        <div
+          className={`${markSizes[size]} bg-gradient-to-br from-[#41C2A1] to-[#176C5B] text-white font-heading font-black rounded-lg flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 tracking-tighter shrink-0`}
+        >
+          NV
         </div>
       )}
+
+      {/* Brand Title: Novarion - Statistika dan Sains Data 62 */}
+      <div className="flex flex-col justify-center min-w-0">
+        <div className="flex flex-wrap sm:flex-nowrap items-baseline gap-1 sm:gap-1.5 leading-tight">
+          <span className={`font-heading font-black tracking-tight ${textColor} ${titleSizeClasses[size]}`}>
+            Novarion
+          </span>
+          {showSubtitle && (
+            <>
+              <span className={`hidden sm:inline font-bold ${separatorColor}`}>-</span>
+              <span className={`font-semibold tracking-tight ${subtitleColor} ${subtitleSizeClasses[size]} whitespace-nowrap`}>
+                Statistika dan Sains Data 62
+              </span>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 

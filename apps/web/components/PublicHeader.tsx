@@ -9,9 +9,9 @@ export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] border-b border-[#112A24]/15 shadow-xs">
+    <header className="sticky top-0 z-40 w-full bg-[#FAF9F5] border-b border-[#112A24]/10 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <BrandLogo size="md" showTagline={true} />
+        <BrandLogo size="md" showSubtitle={true} />
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-6 text-xs font-mono font-bold text-[#112A24]/80 uppercase tracking-wider">
@@ -35,7 +35,7 @@ export function PublicHeader() {
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
-            <button className="px-4 py-2 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 border border-[#112A24]">
+            <button className="px-4 py-2 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-mono text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 border border-[#112A24]/20">
               <span>Masuk Academic Hub</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -52,7 +52,7 @@ export function PublicHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xs border border-[#112A24]/20 text-[#112A24] hover:bg-[#EAEAB7] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+            className="p-2 rounded-xs border border-[#112A24]/15 text-[#112A24] hover:bg-[#EAEAB7] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
             aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -61,9 +61,9 @@ export function PublicHeader() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer (Sharp Corners) */}
+      {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b-2 border-[#112A24] bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
+        <div className="lg:hidden border-b border-[#112A24]/10 bg-[#FAF9F5] px-4 py-4 flex flex-col gap-2">
           <a
             href="#tentang"
             onClick={() => setMobileMenuOpen(false)}
@@ -99,7 +99,7 @@ export function PublicHeader() {
           >
             Prestasi Angkatan
           </a>
-          <div className="pt-2 border-t border-[#112A24]/15">
+          <div className="pt-2 border-t border-[#112A24]/10">
             <Link
               href="/login"
               onClick={() => setMobileMenuOpen(false)}

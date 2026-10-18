@@ -19,8 +19,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://novarion.web.id'),
   title: {
-    default: 'Novarion — Academic Hub Angkatan Statistika',
-    template: '%s | Novarion Academic Hub',
+    default: 'Novarion - Statistika dan Sains Data 62',
+    template: '%s | Novarion - Statistika dan Sains Data 62',
   },
   description:
     'Satu angkatan, satu ruang. Platform terpadu agenda perkuliahan, kalender akademik, akses file materi, dan pengingat deadline WhatsApp otomatis berbiaya Rp0.',

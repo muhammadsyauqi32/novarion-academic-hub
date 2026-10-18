@@ -5,7 +5,7 @@ export function AboutSection() {
   const { philosophy, values } = COHORT_CONFIG;
 
   return (
-    <section id="tentang" className="w-full bg-[#41C2A1] border-b border-[#112A24]/20 py-16 md:py-24 scroll-mt-16">
+    <section id="tentang" className="w-full bg-[#41C2A1] border-b border-[#112A24]/10 py-16 md:py-24 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Editorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -27,7 +27,7 @@ export function AboutSection() {
         {/* Oversized Typographic Compositions (Color Fields and Spacing, Not Icon Cards) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {/* Nova Composition (Dark Forest Field) */}
-          <div className="relative p-6 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] border-2 border-[#112A24] overflow-hidden flex flex-col justify-between shadow-md">
+          <div className="relative p-6 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] border border-[#112A24]/20 overflow-hidden flex flex-col justify-between shadow-sm">
             <div className="font-mono text-7xl sm:text-9xl font-black text-[#41C2A1]/15 leading-none select-none pointer-events-none mb-4">
               NOVA
             </div>
@@ -54,7 +54,7 @@ export function AboutSection() {
           </div>
 
           {/* Orion Composition (Butter Cream Field) */}
-          <div className="relative p-6 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] border-2 border-[#112A24] overflow-hidden flex flex-col justify-between shadow-md">
+          <div className="relative p-6 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] border border-[#112A24]/20 overflow-hidden flex flex-col justify-between shadow-sm">
             <div className="font-mono text-7xl sm:text-9xl font-black text-[#FFAE5D]/35 leading-none select-none pointer-events-none mb-4">
               ORION
             </div>
@@ -82,7 +82,7 @@ export function AboutSection() {
         </div>
 
         {/* Synthesis Manifest Quote */}
-        <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border-2 border-[#112A24] shadow-sm mb-10">
+        <div className="p-6 sm:p-8 rounded-xs bg-[#FAF9F5] border border-[#112A24]/15 shadow-xs mb-10">
           <div className="flex flex-col gap-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#112A24]/70 font-bold">
               SINTESIS MAKNA KOLEKTIF
