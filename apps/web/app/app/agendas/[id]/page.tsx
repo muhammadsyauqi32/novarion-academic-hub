@@ -6,7 +6,6 @@ import { getDb, agendas, agendaTargets, courses, classSections, studyGroups, pro
 import { eq } from 'drizzle-orm';
 import { formatWIB } from '@novarion/shared';
 import { getStudentAcademicScope } from '@/lib/academics/scoping';
-import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import {
@@ -18,7 +17,6 @@ import {
   Tag,
   Users,
   ShieldCheck,
-  AlertCircle,
 } from 'lucide-react';
 
 interface AgendaDetailPageProps {
@@ -78,7 +76,7 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
 
   const agenda = agendaRows[0];
 
-  // Verifikasi otorisasi data isolation mahasiswa
+  // Data scoping verification
   const isAllowed =
     user.role === 'admin' ||
     agenda.createdBy === user.id ||
@@ -93,69 +91,72 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
   }
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-6">
-      <div className="flex items-center gap-3">
+    <div className="max-w-4xl mx-auto w-full flex flex-col gap-5">
+      <div>
         <Link href="/app/agendas">
-          <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-text-muted hover:text-text-primary">
+          <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-text-muted hover:text-text-primary px-2">
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Daftar Agenda</span>
           </Button>
         </Link>
       </div>
 
-      <Card className="p-6 md:p-8 flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
+      <div className="rounded-card bg-surface border border-border p-6 sm:p-8 flex flex-col gap-6 shadow-xs">
+        {/* Top Badges & Meta */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="primary" size="md">
               {agenda.category}
             </Badge>
-            <Badge variant="neutral" size="sm" className="capitalize">
-              Cakupan: {agenda.scope}
-            </Badge>
+            <span className="text-xs font-mono text-text-muted capitalize">
+              Cakupan {agenda.scope}
+            </span>
             {agenda.status === 'published' ? (
               <Badge variant="success" size="sm">
                 Dipublikasikan
               </Badge>
             ) : (
               <Badge variant="warning" size="sm">
-                Status: {agenda.status}
+                {agenda.status}
               </Badge>
             )}
           </div>
 
-          <div className="text-xs text-text-muted">
+          <div className="text-[11px] font-mono text-text-muted">
             Diposting: {formatWIB(agenda.createdAt)}
           </div>
         </div>
 
+        {/* Title & Author */}
         <div>
-          <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
             {agenda.title}
           </h1>
           {agenda.creatorName && (
-            <p className="text-xs text-text-muted mt-1.5 flex items-center gap-1.5">
+            <p className="text-xs text-text-muted mt-2 flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-teal-deep" />
-              <span>Oleh: {agenda.creatorName}</span>
+              <span>Oleh: <strong className="text-text-primary">{agenda.creatorName}</strong></span>
             </p>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-surface-soft border border-border/60">
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg bg-surface-soft/60 border border-border">
           <div className="flex items-start gap-3">
             <Calendar className="w-4 h-4 text-teal-deep mt-0.5 shrink-0" />
             <div>
-              <span className="text-xs text-text-muted block">Waktu Mulai:</span>
-              <span className="text-sm font-semibold text-text-primary">
+              <span className="text-[11px] text-text-muted block">Waktu Mulai:</span>
+              <span className="text-xs sm:text-sm font-semibold text-text-primary">
                 {agenda.startTime ? formatWIB(agenda.startTime) : 'Langsung / Fleksibel'}
               </span>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <Clock className="w-4 h-4 text-[#FFAE5D] mt-0.5 shrink-0" />
+            <Clock className="w-4 h-4 text-brand-orange mt-0.5 shrink-0" />
             <div>
-              <span className="text-xs text-text-muted block">Batas Waktu (Deadline):</span>
-              <span className="text-sm font-bold text-[#9E5507]">
+              <span className="text-[11px] text-text-muted block">Batas Waktu (Deadline):</span>
+              <span className="text-xs sm:text-sm font-bold text-[#9E5507]">
                 {agenda.deadline ? formatWIB(agenda.deadline) : 'Tidak ada deadline'}
               </span>
             </div>
@@ -165,8 +166,8 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
             <div className="flex items-start gap-3">
               <Tag className="w-4 h-4 text-teal-deep mt-0.5 shrink-0" />
               <div>
-                <span className="text-xs text-text-muted block">Mata Kuliah:</span>
-                <span className="text-sm font-semibold text-text-primary">
+                <span className="text-[11px] text-text-muted block">Mata Kuliah:</span>
+                <span className="text-xs sm:text-sm font-semibold text-text-primary">
                   {agenda.courseCode ? `[${agenda.courseCode}] ` : ''}{agenda.courseName}
                 </span>
               </div>
@@ -177,8 +178,8 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
             <div className="flex items-start gap-3">
               <Users className="w-4 h-4 text-teal-deep mt-0.5 shrink-0" />
               <div>
-                <span className="text-xs text-text-muted block">Target Kelas / Kelompok:</span>
-                <span className="text-sm font-semibold text-text-primary">
+                <span className="text-[11px] text-text-muted block">Target Penerima:</span>
+                <span className="text-xs sm:text-sm font-semibold text-text-primary">
                   {agenda.className ? `Kelas ${agenda.className}` : ''}
                   {agenda.className && agenda.studyGroupName ? ' • ' : ''}
                   {agenda.studyGroupName ? `Kelompok ${agenda.studyGroupName}` : ''}
@@ -188,24 +189,26 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
           )}
         </div>
 
+        {/* Instructions / Description */}
         {agenda.description && (
           <div className="flex flex-col gap-2">
-            <h2 className="font-heading font-bold text-sm text-text-primary uppercase tracking-wider text-xs">
-              Deskripsi & Instruksi
+            <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted">
+              Deskripsi & Petunjuk
             </h2>
-            <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap p-4 rounded-xl bg-surface border border-border">
+            <div className="text-xs sm:text-sm text-text-primary leading-relaxed whitespace-pre-wrap p-4 rounded-lg bg-surface border border-border">
               {agenda.description}
             </div>
           </div>
         )}
 
+        {/* Location or Link */}
         {agenda.locationOrLink && (
           <div className="flex flex-col gap-2">
-            <h2 className="font-heading font-bold text-sm text-text-primary uppercase tracking-wider text-xs">
-              Lokasi / Tautan Referensi
+            <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted">
+              Lokasi / Tautan Pengumpulan
             </h2>
-            <div className="p-4 rounded-xl bg-teal-deep/5 border border-teal-deep/20 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 overflow-hidden text-xs text-text-primary">
+            <div className="p-3.5 rounded-lg bg-surface-soft border border-border flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 overflow-hidden text-xs text-text-primary min-w-0">
                 <MapPin className="w-4 h-4 text-teal-deep shrink-0" />
                 <span className="truncate font-mono">{agenda.locationOrLink}</span>
               </div>
@@ -225,7 +228,7 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
         )}
 
         {agenda.sourceReference && (
-          <p className="text-xs text-text-muted italic">
+          <p className="text-xs text-text-muted italic border-t border-border pt-3">
             Sumber rujukan: {agenda.sourceReference}
           </p>
         )}
@@ -238,7 +241,7 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
             </Button>
           </Link>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

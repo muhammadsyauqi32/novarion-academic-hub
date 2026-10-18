@@ -20,7 +20,19 @@ import {
   Globe,
 } from 'lucide-react';
 
-export const ADMIN_NAV_SECTIONS = [
+export interface AdminNavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+}
+
+export interface AdminNavSection {
+  title: string;
+  items: AdminNavItem[];
+}
+
+export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   {
     title: 'Ikhtisar',
     items: [

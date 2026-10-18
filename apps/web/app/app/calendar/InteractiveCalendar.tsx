@@ -995,11 +995,16 @@ export function InteractiveCalendar({
                   setSelectedEvent(ev);
                   setEditColor(ev.color || '#41C2A1');
                 }}
-                style={ev.color && ev.color.startsWith('#') ? { borderLeft: `4px solid ${ev.color}` } : undefined}
                 className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-soft/50 cursor-pointer transition-colors"
               >
                 <div className="flex flex-col gap-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
+                    {ev.color && ev.color.startsWith('#') && (
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: ev.color }}
+                      />
+                    )}
                     <Badge variant="primary" size="sm">{ev.category}</Badge>
                     {ev.eventType === 'personal' && (
                       <Badge variant="neutral" size="sm" className="bg-purple-500/10 text-purple-700 border-purple-500/30">

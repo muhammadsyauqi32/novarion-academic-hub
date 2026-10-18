@@ -1,11 +1,10 @@
 import React from 'react';
 import { requireAuth } from '@/lib/auth/guards';
-import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
-import { Plus, ListTodo, ShieldAlert, ArrowRight, ShieldCheck, Send, ExternalLink } from 'lucide-react';
+import { Plus, ListTodo, ShieldAlert, ArrowRight, ShieldCheck, Send, ExternalLink, Calendar, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { getDb, agendas, agendaTargets } from '@novarion/db';
+import { getDb, agendas, agendaTargets, courses } from '@novarion/db';
 import { eq, desc } from 'drizzle-orm';
 import { formatWIBShort, formatWIB } from '@novarion/shared';
 import { getStudentAcademicScope } from '@/lib/academics/scoping';
@@ -34,9 +33,12 @@ export default async function AgendasListPage() {
         courseId: agendaTargets.courseId,
         classSectionId: agendaTargets.classSectionId,
         studyGroupId: agendaTargets.studyGroupId,
+        courseCode: courses.code,
+        courseName: courses.name,
       })
       .from(agendas)
       .leftJoin(agendaTargets, eq(agendas.id, agendaTargets.agendaId))
+      .leftJoin(courses, eq(agendaTargets.courseId, courses.id))
       .where(eq(agendas.status, 'published'))
       .orderBy(desc(agendas.deadline))
       .limit(100),
@@ -60,27 +62,28 @@ export default async function AgendasListPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
       {user.role === 'admin' && (
-        <div className="p-4 rounded-xl bg-teal-deep/10 border border-teal-deep/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5 text-teal-deep">
+        <div className="p-3.5 rounded-card bg-teal-deep/10 border border-teal-deep/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-teal-deep">
             <ShieldAlert className="w-4 h-4 shrink-0" />
             <span>
-              Anda login sebagai Administrator. Untuk menambah, menyunting, atau menghapus agenda resmi secara langsung, buka workspace admin.
+              Anda masuk sebagai Admin. Untuk mengelola atau mempublikasikan agenda angkatan secara langsung, buka workspace admin.
             </span>
           </div>
           <Link href="/admin/agendas" className="shrink-0">
             <Button variant="primary" size="sm" className="gap-1.5 text-xs">
-              <span>Buka Kelola Agenda Admin</span>
+              <span>Kelola Agenda Admin</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </div>
       )}
 
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight">
+          <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
             Daftar Agenda Akademik
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -89,7 +92,7 @@ export default async function AgendasListPage() {
         </div>
 
         <Link href="/app/agendas/new">
-          <Button variant="primary" size="sm" className="gap-1.5">
+          <Button variant="primary" size="sm" className="gap-1.5 text-xs">
             {canPublishOfficial ? (
               <>
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -105,18 +108,25 @@ export default async function AgendasListPage() {
         </Link>
       </div>
 
-      <Card className="p-0 overflow-hidden flex flex-col">
-        <div className="p-4 bg-surface-soft border-b border-border flex items-center justify-between">
+      {/* Main List */}
+      <div className="rounded-card bg-surface border border-border overflow-hidden shadow-xs">
+        <div className="px-4 py-3 bg-surface-soft/80 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ListTodo className="w-4 h-4 text-teal-deep" />
             <span className="text-xs font-bold text-text-primary">Agenda Terpublikasi</span>
           </div>
-          <Badge variant="primary" size="sm">{filteredAgendas.length} Agenda Terkait</Badge>
+          <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-surface border border-border text-text-muted">
+            {filteredAgendas.length} Agenda
+          </span>
         </div>
 
         {filteredAgendas.length === 0 ? (
-          <div className="p-12 text-center text-xs text-text-muted">
-            Belum ada agenda terpublikasi yang relevan dengan kelas dan kelompok Anda.
+          <div className="p-12 text-center text-xs text-text-muted flex flex-col items-center gap-2">
+            <Calendar className="w-8 h-8 text-text-muted/40" />
+            <p className="font-bold text-text-primary">Belum Ada Agenda Terpublikasi</p>
+            <p className="max-w-sm">
+              Belum ada agenda yang relevan dengan kelas paralel atau kelompok praktikum Anda.
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -124,38 +134,58 @@ export default async function AgendasListPage() {
               <div
                 key={item.id}
                 className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-soft/40 transition-colors"
-                style={item.color ? { borderLeft: `4px solid ${item.color}` } : undefined}
               >
                 <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="primary" size="sm">{item.category}</Badge>
-                    <span className="text-[11px] text-text-muted capitalize">• Cakupan {item.scope}</span>
+                    <span className="text-[11px] font-mono text-text-muted capitalize">
+                      Cakupan {item.scope}
+                    </span>
+                    {item.courseCode && (
+                      <span className="text-[11px] font-mono font-bold px-1.5 py-0.2 rounded bg-teal-deep/10 text-teal-deep">
+                        {item.courseCode}
+                      </span>
+                    )}
                   </div>
-                  <h3 className="font-heading font-bold text-sm text-text-primary">
+
+                  <h3 className="font-heading font-bold text-sm sm:text-base text-text-primary">
                     {item.title}
                   </h3>
+
                   {item.description && (
                     <p className="text-xs text-text-muted line-clamp-1">{item.description}</p>
                   )}
-                  <p className="text-xs font-semibold text-[#9E5507]">
-                    Batas: {item.deadline ? formatWIB(item.deadline) : 'Tidak ada deadline'}
-                  </p>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted mt-0.5">
+                    {item.deadline && (
+                      <span className="flex items-center gap-1 font-semibold text-[#9E5507]">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Batas: {formatWIB(item.deadline)}</span>
+                      </span>
+                    )}
+                    {item.startTime && (
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>Mulai: {formatWIB(item.startTime)}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
                   {item.locationOrLink && (
                     <a
                       href={item.locationOrLink}
                       target="_blank"
                       rel="noreferrer"
                       className="p-2 rounded-lg text-text-muted hover:text-teal-deep hover:bg-surface-soft transition-colors"
-                      title="Buka Tautan Tugas"
+                      title="Buka Tautan"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   )}
                   <Link href={`/app/agendas/${item.id}`}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="text-xs">
                       Detail
                     </Button>
                   </Link>
@@ -164,7 +194,7 @@ export default async function AgendasListPage() {
             ))}
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
