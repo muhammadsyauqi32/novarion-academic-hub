@@ -48,6 +48,7 @@
   --surface: #FFFFFF;
   --surface-soft: #F1F7F3;
   --border: #E2ECE8;
+  --border-strong: #CADBD4;
   --text-primary: #203B34;
   --text-muted: #63756F;
   --teal-deep: #176C5B;
@@ -57,7 +58,7 @@
 body {
   background-color: var(--canvas);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
