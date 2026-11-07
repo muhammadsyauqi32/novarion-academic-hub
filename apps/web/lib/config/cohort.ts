@@ -26,33 +26,33 @@ export const COHORT_CONFIG = {
   institution: 'IPB University',
   
   philosophy: {
-    title: 'Filosofi Nama NOVARION',
-    summary: 'Nova (cahaya bintang yang bersinar sangat terang) dan Orion (rasi bintang penunjuk arah atau pemimpin).',
+    title: 'Dua Makna Nama NOVARION',
+    summary: 'Nova (bintang yang bersinar terang) dan Orion (rasi bintang penunjuk arah navigasi).',
     nova: {
       term: 'Nova',
-      meaning: 'Cahaya bintang yang mengalami ledakan energi hingga bersinar berkali-kali lipat lebih terang. Melambangkan semangat inovatif, kecerdasan analitis, dan pancaran kontribusi setiap mahasiswa Statistika 62.',
+      meaning: 'Bintang yang memancarkan kilau terang. Melambangkan semangat belajar, ketajaman analisis, dan ketekunan mahasiswa Statistika 62 dalam mengolah data.',
     },
     orion: {
       term: 'Orion',
-      meaning: 'Rasi bintang legendaris yang sejak zaman kuno menjadi kompas penunjuk arah para pelaut dan penjelajah. Melambangkan kepemimpinan, keteguhan prinsip, dan arah gerak bersama menuju masa depan.',
+      meaning: 'Rasi bintang penunjuk arah bagi para pengelana. Melambangkan kebersamaan dan kompas solidaritas agar saling dukung selama masa kuliah di Dramaga.',
     },
-    synthesis: 'Novarion adalah bintang yang bersinar terang dan siap menjadi pemimpin masa depan. Berlandaskan persaudaraan erat, kami melangkah bersama dengan keyakinan bahwa kekuatan data dan kebersamaan mampu menghadirkan dampak nyata bagi almamater dan bangsa.',
+    synthesis: 'Novarion menyatukan semangat belajar di bidang sains data dengan rasa persaudaraan yang erat agar seluruh mahasiswa Angkatan 62 dapat melangkah dan sukses bersama.',
   },
 
   values: [
     {
-      title: 'Kolektivitas & Solidaritas',
-      description: 'Tidak ada yang ditinggalkan di belakang. Setiap langkah, tugas akhir, dan perjuangan akademik ditempuh bersama.',
+      title: 'Solidaritas & Saling Bantu',
+      description: 'Saling berbagi catatan kuliah, belajar bareng, dan memastikan teman seangkatan bisa melewati masa kuliah bersama.',
       accent: '#41C2A1',
     },
     {
-      title: 'Ketajaman Analitis',
-      description: 'Menemukan makna di balik deretan data, menjunjung integritas metodologi, dan berfikir kritis dalam menyelesaikan persoalan nyata.',
+      title: 'Ketelitian Analitis',
+      description: 'Mengolah data secara jujur, cermat memahami metodologi, dan tekun melatih kemampuan komputasi statistik.',
       accent: '#FFAE5D',
     },
     {
-      title: 'Kepemimpinan Visioner',
-      description: 'Menjadi rasi pemandu layaknya Orion, menghadirkan arah baru yang konstruktif dan berdaya guna bagi masyarakat.',
+      title: 'Aktif & Bermanfaat',
+      description: 'Menerapkan ilmu sains data untuk kompetisi akademik, riset mini, dan kegiatan kepedulian mahasiswa.',
       accent: '#EAEAB7',
     },
   ],
@@ -60,48 +60,48 @@ export const COHORT_CONFIG = {
   leadership: [
     {
       divisionName: 'Pengurus Inti',
-      description: 'Pengarah kebijakan dan pemegang mandat koordinasi angkatan.',
+      description: 'Pengurus harian yang mengoordinasikan kegiatan angkatan dan administrasi bersama.',
       members: [
         {
           name: 'Ketua Angkatan',
           role: 'Ketua Angkatan Novarion 62',
           division: 'Pengurus Inti',
           photoUrl: null,
-          bio: 'Mengkoordinasikan arah gerak kolektif dan representasi resmi angkatan.',
+          bio: 'Mengoordinasikan kegiatan angkatan dan menjadi narahubung utama ke departemen dan organisasi kampus.',
         },
         {
           name: 'Wakil Ketua Angkatan',
           role: 'Wakil Ketua Angkatan',
           division: 'Pengurus Inti',
           photoUrl: null,
-          bio: 'Menjaga harmoni internal dan efektivitas koordinasi seluruh divisi kerja.',
+          bio: 'Membantu koordinasi internal antar-divisi dan memastikan agenda angkatan terlaksana dengan lancar.',
         },
         {
           name: 'Sekretaris Angkatan',
           role: 'Sekretaris Umum',
           division: 'Pengurus Inti',
           photoUrl: null,
-          bio: 'Tata kelola persuratan, notulensi rapat akbar, dan inventarisasi data angkatan.',
+          bio: 'Mengelola administrasi surat-menyurat, notulensi musyawarah, dan arsip data angkatan.',
         },
         {
           name: 'Bendahara Angkatan',
           role: 'Bendahara Umum',
           division: 'Pengurus Inti',
           photoUrl: null,
-          bio: 'Pengelolaan kas angkatan, transparansi finansial, dan budgeting agenda bersama.',
+          bio: 'Mengelola uang kas angkatan secara transparan dan mengatur kebutuhan anggaran kegiatan bersama.',
         },
       ],
     },
     {
       divisionName: 'Divisi Akademik & Riset',
-      description: 'Pusat bantuan belajar, repositori modul praktikum, dan kelompok tutor sebaya.',
+      description: 'Mengoordinasikan bank materi kuliah, jadwal responsi sebelum UTS/UAS, dan kelompok belajar praktikum.',
       members: [
         {
           name: 'Koordinator Akademik',
           role: 'Koordinator Divisi',
           division: 'Akademik & Riset',
           photoUrl: null,
-          bio: 'Mengawal sinkronisasi silabus, jadwal responsi, dan repositori materi kuliah.',
+          bio: 'Mengawal sinkronisasi silabus, jadwal responsi, dan repositori bahan kuliah.',
         },
         {
           name: 'Tim Responsi & Bank Soal',
@@ -114,34 +114,34 @@ export const COHORT_CONFIG = {
     },
     {
       divisionName: 'Divisi Komunikasi, Media & Dokumentasi',
-      description: 'Penyalur warta resmi, arsip visual momen angkatan, dan pengelolaan media sosial.',
+      description: 'Mengelola media sosial resmi angkatan, publikasi warta kegiatan, dan dokumentasi foto mahasiswa.',
       members: [
         {
           name: 'Koordinator Media',
           role: 'Koordinator Divisi',
           division: 'Komunikasi & Media',
           photoUrl: null,
-          bio: 'Merancang publikasi visual, yearbook angkatan, dan dokumentasi setiap momentum.',
+          bio: 'Merancang publikasi visual, pengelolaan media sosial, dan dokumentasi setiap kegiatan angkatan.',
         },
         {
           name: 'Tim Dokumentasi & Kreatif',
           role: 'Staff Divisi',
           division: 'Komunikasi & Media',
           photoUrl: null,
-          bio: 'Menghasilkan rekaman visual autentik dari berbagai kegiatan kebersamaan.',
+          bio: 'Mendokumentasikan berbagai kegiatan perkuliahan dan temu bersama angkatan.',
         },
       ],
     },
     {
       divisionName: 'Divisi Kekeluargaan & Sosial',
-      description: 'Menjaga kehangatan antarmahasiswa, perayaan milad, dan aksi solidaritas sosial.',
+      description: 'Menyelenggarakan temu angkatan, ucapan selamat ulang tahun teman seangkatan, dan aksi peduli sesama.',
       members: [
         {
           name: 'Koordinator Kekeluargaan',
           role: 'Koordinator Divisi',
           division: 'Kekeluargaan & Sosial',
           photoUrl: null,
-          bio: 'Merajut kebersamaan, gathering berkala, dan aksi kepedulian sosial sesama angkatan.',
+          bio: 'Merajut kebersamaan, agenda gathering santai, dan aksi kepedulian sosial sesama teman seangkatan.',
         },
       ],
     },

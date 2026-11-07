@@ -13,7 +13,7 @@ import {
 import { CmsClient } from './CmsClient';
 
 export const metadata: Metadata = {
-  title: 'Kelola Website Publik — Novarion Admin',
+  title: 'Kelola Website Publik · Novarion Admin',
 };
 
 export default async function WebsiteCmsPage() {

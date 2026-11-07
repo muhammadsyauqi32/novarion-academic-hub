@@ -8,13 +8,13 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Badge({ className, variant = 'neutral', size = 'md', children, ...props }: BadgeProps) {
-  const base = 'inline-flex items-center font-medium rounded-full select-none';
+  const base = 'inline-flex items-center font-medium rounded-xs select-none';
 
   const variants = {
-    primary: 'bg-brand-primary/20 text-teal-deep border border-brand-primary/40',
-    mint: 'bg-brand-mint-soft text-text-primary border border-brand-primary/30',
-    cream: 'bg-brand-cream text-text-primary border border-[#D5D59A]',
-    orange: 'bg-brand-orange/20 text-[#9E5507] border border-brand-orange/50',
+    primary: 'bg-brand-primary/15 text-teal-deep dark:text-brand-primary border border-brand-primary/30 font-semibold',
+    mint: 'bg-brand-mint-soft/30 text-teal-deep dark:text-brand-primary border border-brand-primary/30',
+    cream: 'bg-brand-cream/40 text-text-primary border border-brand-cream/60',
+    orange: 'bg-brand-orange/20 text-[#9E5507] dark:text-brand-orange border border-brand-orange/40 font-semibold',
     success: 'bg-success-surface text-success-text border border-success-border',
     warning: 'bg-warning-surface text-warning-text border border-warning-border',
     danger: 'bg-danger-surface text-danger-text border border-danger-border',

@@ -1,383 +1,442 @@
-# NOVARION — Product Design System & Redesign Contract
+# NOVARION: Product Design System & Redesign Specification
 
-> **Status:** v1.0 · Implementation-ready baseline with explicitly provisional decisions  
-> **Products:** `https://novarion.web.id` (public cohort landing page) and `https://hub.novarion.web.id` (student dashboard)  
-> **Audience:** Students in one university program cohort; public visitors on the landing page  
-> **Themes:** Light + dark  
-> **Redesign scope:** Full frontend visual/UX rework is allowed; preserve working behavior, data and integrations until a separately approved migration  
-> **Design agents:** Google Antigravity with `design-taste-frontend` + Anti Slop (`antislop`, `antislop-ui`, `antislop-human`, `antislop-layoutmobile`, `antislop-copywriting`)
+> **Version:** v2.1 (Comprehensive Design System Specification)  
+> **Products:** `https://novarion.web.id` (Public Cohort Broadsheet) & `https://hub.novarion.web.id` (Student Academic Workspace)  
+> **Community:** Departemen Statistika dan Sains Data Angkatan 62 IPB University (Bogor, Indonesia)  
+> **Tagline Resmi:** "Kita Satu, Kita Bisa!"  
+> **Themes:** Dual-Theme (Light & Dark) with zero-FOUC synchronization  
+> **Governing Design Skills:** `design-taste-frontend` (tasteskill 2.5), `antislop` (DURING/AFTER filter), and `impeccable` (system polish)  
+> **Codebase Integrity:** 100% preservation of routes, authentication guards, Drizzle ORM schemas, database operations, and WhatsApp background worker logic.
 
-## 0. Source of truth, assumptions and operating rules
+---
 
-### Verified from the project brief
-- Novarion consists of **two related surfaces**: a public program-cohort website (`novarion.web.id`) and a student dashboard (`hub.novarion.web.id`).
-- Primary community is **students**; both light and dark themes must be supported.
-- A full frontend redesign is desired. Existing business logic and production functionality must not regress.
-- No approved brand system, reference site, codebase inventory, screenshots, official logo, content model, or exact features have yet been supplied.
+## 1. Product Vision and Audience
 
-### Not verified / provisional (**P**)
-All design tokens, proposed page sections, information architecture, font choices, colors, layout geometry, component inventory, and product capabilities marked **P** are **proposals**, not statements about the deployed websites. In particular, **do not invent** the cohort's year, statistics, members, courses, events, academic schedule, community slogans, student identities or photographs.
+### 1.1 Vision & Metaphor
+The Novarion digital ecosystem is a unified, tailor-made digital home designed specifically for the Statistika dan Sains Data Angkatan 62 cohort at IPB University. It rejects both the sterility of generic institutional LMS systems and the superficial tropes of commercial SaaS templates.
 
-**Critical first action:** inspect BOTH local applications and capture screenshots before changing code. Compare live and local environments when permitted. Record existing tokens, dependencies, branding, features, routes, data sources and accessibility issues. Update this document's provisional sections with confirmed decisions, including design owner sign-off for major changes.
+The ecosystem manifests across two distinct digital surfaces:
+1. **Public Cohort Broadsheet (`novarion.web.id`):** An expressive, editorial public sanctuary that articulates the cohort's collective identity, data-science heritage, academic achievements, verified warta, and documentary moments.
+2. **Student Academic Workspace (`hub.novarion.web.id`):** A high-density, calm, utilitarian digital workbench built for daily academic execution, deadline triage, course syllabus files, calendar tracking, and peer task management.
 
-**Priority if instructions conflict:** safety and preserved function > observed product requirements > explicit user decisions > this DESIGN.md > Taste aesthetic suggestions. Apply Anti Slop as a quality filter, never as a replacement for product identity. Never let aesthetic references silently override usability or factual accuracy.
+### 1.2 Target Audience & Personas
+- **Mahasiswa Angkatan 62 (Primary Daily Users):** Require rapid deadline clarity (<12h, besok, pekan ini), one-click access to practicum modules and datasets, seamless calendar synchronization, and personal task tracking on mobile and laptop.
+- **Pengurus Angkatan / BPH & Divisi (Cohort Operators):** Need clean administrative tools to publish verified warta, coordinate division agendas, organize photo archives, update honor rolls, and broadcast urgent academic notices via WhatsApp automation.
+- **Dosen & Departemen Statistika (Academic Stakeholders):** Seek a credible, dignified representation of student scholarship, academic integrity, and organizational coordination.
+- **Publik, Calon Mahasiswa & Alumni (External Observers):** Visit the public landing page to understand the culture, energy, and competencies of Angkatan 62.
 
-## 1. Product identity and experience principles
+---
 
-**Novarion is a shared home for a cohort, not an anonymous SaaS template.** The public site communicates who the community is and gives clear paths to verified public resources. The Hub is a practical, focused workspace for students.
+## 2. Brand Personality and Design Principles
 
-**Experience attributes:** communal, credible, youthful without childishness, organized, warm, accessible, and calm. Distinctive details should emerge from the cohort's actual visual identity, language and content—not fake dashboards, inflated metrics, excessive gradients or meaningless badges.
+### 2.1 Brand Personality
+- **Communal & Collegial:** Welcoming, fraternal, grounded in genuine mutual support ("Kita Satu, Kita Bisa!").
+- **Analytically Rigorous:** Methodical, precise, uncluttered, reflecting the intellectual discipline of statistical thinking and data science.
+- **Youthful & Energetic:** Optimistic, dynamic, forward-looking without relying on childish illustrations or gimmicky UI novelties.
+- **Calm & Dignified:** High legibility, restrained motion, generous breathing room, and zero noisy visual distractions.
 
-### Non-negotiable principles
-1. **People and purpose over decoration:** a visitor should understand the cohort and next action rapidly; Hub users should finish tasks without visual friction.
-2. **One family, two personalities:** common identity (logo, semantic palette, typography and interaction language), but different information density and layout rules.
-3. **Hierarchy from content:** purposeful headings, clear groupings, labels, and an evident primary action per view.
-4. **Authenticity:** no fabricated student portraits, academic results, dates, testimonials, social proof or decorative fake product UI.
-5. **Quiet polish:** meaningful transitions and high-quality details; default to no animation rather than gratuitous motion.
-6. **Accessible by default:** contrast, keyboard, reduced motion, labels, error recovery, readable mobile layout.
-7. **Maintainable:** shared tokens, composable components, design QA, and measurable acceptance criteria.
+### 2.2 Declared Style Dials
+Following the `antislop` and `design-taste-frontend` specification:
+- **`novarion.web.id` (Landing Page):** **ENERGY 2 / RHYTHM 2 / MOTION 1**
+  - Moderate visual energy with bold typography, authentic cohort photography, and expressive dual-column compositions.
+  - Visible rhythm across content sections on a continuous canvas.
+  - Restrained motion strictly serving spatial hierarchy.
+- **`hub.novarion.web.id` (Student Hub):** **ENERGY 1 / RHYTHM 1 / MOTION 1**
+  - Minimal visual energy to eliminate fatigue during multi-hour study sessions.
+  - Predictable, calm layout rhythm optimized for information density and data scanning.
+  - Instantaneous transitions (max 120ms) with zero decorative animations.
 
-## 2. Surface-specific design direction
+### 2.3 Core Design Principles
+1. **Purpose Over Decoration (The Purpose Test):** Every color, border, container, and badge must serve an explicit communicative function. Visual techniques without purpose are rejected.
+2. **One Family, Two Personalities:** Both surfaces share the same foundational DNA (brand palette, typography, icons, token architecture) while deploying distinct density and layout rules.
+3. **Evidence Over Claims (C-5 & R-36):** No artificial counters ("10.000+ pengguna"), fabricated quotes, or generic stock illustrations. Only real cohort photography, verified roles, and authentic data.
+4. **Accessible by Default (WCAG 2.2 AA):** Guaranteed 4.5:1 text contrast, visible focus rings, 44x44px touch targets, and full keyboard operability.
+5. **Fold Discipline (Taste House Rule 3):** Desktop hero occupies exact `100dvh` at 1440x900 without fold clipping, eliminating peeking secondary sections.
 
-### A. `novarion.web.id` — Cohort landing page
-**Design direction (P):** contemporary editorial community website. Open, energetic typography; clear introductory message; authentic photos/illustration only when rights and provenance are confirmed; crisp sections with intentional whitespace. Less dashboard UI, more narrative and belonging.
+---
 
-**Potential information architecture (P; validate content before creating sections):**
-- Header: identity, minimal navigation, an obvious entrance to Hub (if intended for public display).
-- Hero: cohort name, one factual concise statement, one primary action, one secondary action when helpful.
-- Community/about: verified description of the cohort/program and its purpose.
-- Activities or highlights: *only if real, current, and approved content exists*.
-- Useful destinations: verified student resources and/or links, role-appropriate.
-- Footer: official links, legal/credit info, contact route if verified.
+## 3. Locked Brand Palette and Semantic Color Tokens
 
-**Avoid:** generic SaaS statistics, 3–6 near-identical feature cards per section, huge empty hero with abstract blobs, unverified membership counts, faux terminal screenshots, placeholder testimonials, decorative 3D with no community relevance.
+### 3.1 Locked Brand Palette (Mandatory Constraint)
+The four exact HEX colors from the existing brand identity are preserved:
 
-**Geometry (P):** desktop content max-width `1200px`; side gutters `clamp(20px, 4vw, 64px)`; generous but content-dependent vertical spacing; sections are *not required* to occupy one screen if it harms readability. Header can be sticky only when it does not obscure anchor targets.
+| Color Name | Exact HEX | Visual Role & Constraint |
+| :--- | :--- | :--- |
+| **Primary Mint** | `#41C2A1` | Core cohort identity, primary buttons, brand crest accent, and key focus moments. **Text on Mint MUST be dark (`#112A24`), never white.** |
+| **Soft Mint** | `#C9FBD4` | Gentle success highlights, active pill backgrounds, and verified badge surfaces. |
+| **Warm Cream** | `#EAEAB7` | Editorial warm highlights, Nova philosophy container accents, and subtle secondary cards. |
+| **Warm Orange** | `#FFAE5D` | Tagline emphasis (`"Kita Satu, Kita Bisa!"`), deadline urgency (<24h), and honor badge highlights. |
 
-### B. `hub.novarion.web.id` — Student dashboard
-**Design direction (P):** efficient student workspace; calm, systematic, information-forward. Shared Novarion identity but denser and more utilitarian than the landing page.
-
-**Information architecture:** **DO NOT assume features**. Inventory implemented modules, top tasks and navigation before deciding sidebar/top-nav. Examples of possible patterns, *not authorized feature requests*: task lists, schedules, resources, announcements, profile/settings.
-
-**Interaction priorities:**
-- Locate the user's top tasks in the first viewport without decorative clutter.
-- Clear active navigation, breadcrumbs when hierarchy warrants, and consistent page titles.
-- Use tables for dense comparison, lists for feeds/tasks, cards only where distinct grouping improves comprehension.
-- Filters, sorting, pagination, search and data states must be complete *where those controls already exist or are approved*.
-- Critical actions provide feedback and error recovery; destructive actions require appropriate confirmation.
-- Sensitive student data never appears on public pages or in shared screenshots.
-
-**Geometry (P):** app main area max-width `1440px` where practical; desktop rail `240px` expanded, `64px` collapsed only if useful; mobile navigation must be explicitly designed, not simply a shrunken desktop sidebar. Do not impose these widths if existing app workflows need another arrangement.
-
-### Cross-surface bridge
-- Cohesive shared identity; public site may be expressive, Hub should be restrained.
-- Hub link must go to the correct origin; authentication/authorization remain unchanged.
-- Use the same shared color semantics, font family and interaction states when feasible.
-- Do not merge two deployments or rewrite cross-origin auth/session settings as part of visual redesign.
-
-## 3. Design tokens — initial system (**P**, verify before locking)
-
-The following is a starting **proposal**, intentionally neutral with a restrained blue-teal accent. If the real Novarion brand has an established color/logo, prefer its accessible adaptation. Tokens should be implemented as CSS custom properties (or mapped 1:1 to the project's design token system). Do **not** hardcode these values across components.
-
-### 3.1 Colors — semantic, accessible-first
-
-| Token | Light | Dark | Usage |
-|---|---|---|---|
-| `--bg` | `#F8FAFC` | `#0B1118` | Application/page canvas |
-| `--surface` | `#FFFFFF` | `#121C27` | Main panels and interactive surfaces |
-| `--surface-subtle` | `#F0F4F7` | `#192633` | Secondary surface |
-| `--text` | `#17212D` | `#EDF4F8` | Primary content |
-| `--text-muted` | `#526273` | `#AABCCA` | Secondary information |
-| `--border` | `#D9E2E8` | `#30414F` | Dividers and outlines |
-| `--brand` | `#155E75` | `#67D3E4` | Accent in text, active controls, emphasis |
-| `--brand-foreground` | `#FFFFFF` | `#09212C` | Text on brand-filled surfaces |
-| `--focus` | `#167D9C` | `#83E2F0` | Focus indication |
-| `--success` | `#176A48` | `#6EE7AD` | Success state; not color-only |
-| `--warning` | `#8A5500` | `#F6CD72` | Caution state |
-| `--danger` | `#B42336` | `#FF8C98` | Error/destructive state |
-
-**Color guidance:** keep most surfaces neutral; brand color signifies identity and action. Never use warning/success/destructive colors as mere decoration. Test every real foreground/background pairing against WCAG thresholds, including hover, disabled, selected and data visualization. Do not assume this draft table passes every possible pairing. For filled action buttons on dark themes, always pair with the specified foreground token.
-
-### 3.2 Type (P)
-- Suggested primary family: `Inter`, with `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif` fallback. Prefer existing licensed/locally provisioned font if more brand-appropriate.
-- Suggested editorial accent for landing headings: **none initially**; introduce a second typeface only with explicit visual direction and tested multilingual glyph coverage.
-- Body: `16px / 1.55` standard; dense Hub data can use `14px / 1.5` where legible.
-- Type scale: `12, 14, 16, 18, 22, 28, 36, 48, 64` px; use `clamp()` for fluid display sizes on landing.
-- Suggested weights: 400 regular, 500 medium, 600 semibold, 700 bold. Avoid mixed random font weights.
-- Headings: concise, sentence case, controlled line length; responsive wrapping tested with long Indonesian text.
-- Content text max line length `65–75ch` where appropriate; do not constrain dense tables or dashboards to editorial line widths.
-- Use tabular numerals in dates, counters and numerical tables.
-
-### 3.3 Spacing, radius, borders, shadows (P)
-- Spacing base `4px`. Allowed scale: `4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64 / 80 / 96` px.
-- Landing section padding: `clamp(56px, 8vw, 112px)` with actual content determining final dimensions.
-- Hub layout gap: usually `16–24px`; control-to-label gap `4–8px`.
-- Radius: `6px` small controls, `10px` input/button, `14px` panels; full-pill only for chips with appropriate meaning.
-- Borders: `1px` semantic border, not every card by default.
-- Shadows: none on routine Hub panels unless elevation conveys a layer; low-contrast elevation for popovers/dialogs only.
-- Container geometry: consistent alignments across header, hero and major content; avoid arbitrarily alternating margins.
-
-### 3.4 CSS token reference (P)
+### 3.2 Semantic Color Token Architecture
+To guarantee WCAG 2.2 AA compliance, neutral and functional semantic tokens are paired with the locked brand palette across CSS custom properties in `globals.css`:
 
 ```css
-:root {
-  color-scheme: light;
-  --bg: #F8FAFC;
-  --surface: #FFFFFF;
-  --surface-subtle: #F0F4F7;
-  --text: #17212D;
-  --text-muted: #526273;
-  --border: #D9E2E8;
-  --brand: #155E75;
-  --brand-foreground: #FFFFFF;
-  --focus: #167D9C;
-  --success: #176A48;
-  --warning: #8A5500;
-  --danger: #B42336;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  --space-24: 96px;
-}
-[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0B1118;
-  --surface: #121C27;
-  --surface-subtle: #192633;
-  --text: #EDF4F8;
-  --text-muted: #AABCCA;
-  --border: #30414F;
-  --brand: #67D3E4;
-  --brand-foreground: #09212C;
-  --focus: #83E2F0;
-  --success: #6EE7AD;
-  --warning: #F6CD72;
-  --danger: #FF8C98;
-}
+/* Color Token Hierarchy */
+Canvas (Ground) ──> Surface (Cards) ──> Surface Soft (Inputs/Tabs) ──> Surface Hover
+Border (Subtle 1px) ──> Border Strong (Inputs/Dividers) ──> Focus Ring (2px solid)
+Text Primary (High Contrast) ──> Text Muted (Secondary/Metadata) ──> Brand Foreground
 ```
 
-**Implementation note:** if the existing stack uses Tailwind/shadcn/theme providers, map tokens into its native semantic layer rather than adding a competing theme system. `data-theme` is an illustrative selector, not a required migration. If both apps live in separate repositories, keep the canonical token values synchronized with a shared source or documented versioning.
+| Token Variable | Semantic Role | Light Hex | Dark Hex | Contrast vs Canvas |
+| :--- | :--- | :--- | :--- | :--- |
+| `--canvas` | Page and document ground | `#FAF9F5` | `#0C1815` | Baseline (1.0:1) |
+| `--surface` | Primary cards, panels, modals | `#FFFFFF` | `#112420` | Surface layer |
+| `--surface-soft` | Inputs, inactive filter tabs, wells | `#F1F6F4` | `#173831` | Soft contrast |
+| `--surface-hover` | Table row hover, list item hover | `#E8F1ED` | `#1F453D` | Interactive hover |
+| `--border` | Card borders, subtle section dividers | `#DFEAE5` | `#1D4139` | 1.3:1 (Non-text) |
+| `--border-strong`| Active form borders, focus outlines | `#CADBD4` | `#2D6054` | 2.1:1 (Non-text) |
+| `--text-primary` | Main titles, headings, body prose | `#112A24` | `#EDF6F3` | **14.4:1 / 16.7:1 (PASS AA/AAA)** |
+| `--text-muted`   | Metadata, timestamps, captions | `#5A7169` | `#A5C2B9` | **5.08:1 / 8.53:1 (PASS AA)** |
+| `--brand-primary`| Primary mint accent | `#41C2A1` | `#41C2A1` | Accent identity |
+| `--brand-foreground` | Text on brand mint buttons/badges | `#112A24` | `#112A24` | **6.85:1 (PASS AA)** |
+| `--teal-deep`    | Dark teal action buttons, active tabs | `#176C5B` | `#5EDEC0` | **6.05:1 / 11.1:1 (PASS AA)** |
+| `--brand-orange` | Urgency, tagline, honor badges | `#FFAE5D` | `#FFAE5D` | **9.5:1 / 10.8:1 (PASS AA)** |
+| `--brand-cream`  | Light cream container accent | `#EAEAB7` | `#242D20` | Editorial accent |
+| `--brand-navy`   | Deep midnight forest footer ground | `#0A1311` | `#070D0B` | Inverted surface |
 
-## 4. Responsive contract
+### 3.3 Functional Status Tokens
 
-**Test widths:** `390`, `768`, `1024`, `1440` CSS pixels at minimum, plus `320`px stress test. These are QA test sizes, **not** automatic media-query breakpoints. Choose CSS breakpoints according to actual content failure, not device names.
+| Status | Text Token | Text Light | Text Dark | Surface Light | Surface Dark | Usage |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Danger** | `--danger-text` | `#B42318` | `#FF8C98` | `#FEF3F2` | `#2A1416` | Deadlines <12 Jam, destructive actions, login errors |
+| **Warning**| `--warning-text`| `#B54708` | `#F6CD72` | `#FFFAEB` | `#2B200E` | Deadlines H-1 (Besok), pending approvals |
+| **Success**| `--success-text`| `#027A48` | `#6EE7AD` | `#ECFDF3` | `#10241A` | Selesai tasks, verified warta, active sessions |
+| **Info**   | `--info-text`   | `#176C5B` | `#5EDEC0` | `#F1F6F4` | `#173831` | General academic notices, whitelist alerts |
 
-| Context | Landing | Hub |
-|---|---|---|
-| Narrow/mobile | One dominant reading column; navigation opens a proper menu; real content visible without sideways scrolling | Content-first workspace, explicit mobile navigation, controls and data tables with intentional adaptations |
-| Tablet | Adapt composition (not just scale); typography remains readable | Evaluate navigation compression and tables; preserve task completion |
-| Desktop | Deliberate editorial composition and aligned sections | Efficient density, clear hierarchy, usable whitespace |
+---
 
-Rules:
-- No unintentional horizontal viewport scroll, including at 320px. A legitimately wide data table may scroll **within its labeled container**.
-- Touch targets at least `24 × 24` CSS px per WCAG 2.2 AA minimum (with exceptions), preferably `44 × 44` for primary touch interactions.
-- Every form remains usable at 200% zoom and with browser text resizing; avoid fixed-height content containers that clip text.
-- Respect safe areas for fixed mobile navigation; dialogs must fit viewport and support internal scroll.
-- Audit long names, lengthy Indonesian copy, invalid user inputs and zero-data views.
+## 4. Light and Dark Theme Specifications
 
-## 5. Component contracts and interaction states
+### 4.1 Theme Architecture & Zero-FOUC Synchronization
+- Both themes are implemented via pure CSS custom properties in `apps/web/app/globals.css`.
+- The dark theme is activated when `html` contains class `.dark` or attribute `[data-theme="dark"]`.
+- To completely eliminate Flash of Unstyled Content (FOUC), an inline synchronous script is injected in `apps/web/app/layout.tsx` before any CSS render tree evaluates:
+  ```javascript
+  (function() {
+    try {
+      var d = document.documentElement;
+      var t = localStorage.getItem('novarion_theme');
+      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        d.classList.add('dark');
+        d.setAttribute('data-theme', 'dark');
+      } else {
+        d.classList.remove('dark');
+        d.setAttribute('data-theme', 'light');
+      }
+    } catch(e) {}
+  })();
+  ```
+- **Cross-Subdomain Persistence:** Whenever the theme toggle is clicked, the selected mode is saved to both `localStorage` and a root-domain HTTP cookie:
+  `document.cookie = 'novarion_theme=' + theme + '; path=/; domain=.novarion.web.id; max-age=31536000; SameSite=Lax';`
+  This guarantees that navigating between `novarion.web.id` and `hub.novarion.web.id` preserves the user's preferred theme instantly.
 
-### Core shared components
-- **Navigation:** visible active state; meaningful accessible names; keyboard reachable; menu closes predictably; no hidden destinations.
-- **Buttons:** primary / secondary / quiet / destructive variants only when semantic purpose is distinct. Label actions clearly (`Masuk ke Hub`, `Simpan perubahan`, etc.), no generic `Click here`.
-- **Inputs:** always paired with visible labels; helpful examples and validation; required indication; errors linked to fields; no placeholder-only labels.
-- **Links:** differentiate by context, underline in editorial text when appropriate; external destination indicators only where they add value.
-- **Alerts/toasts:** clear status and next step; avoid ephemeral only-channel feedback for serious errors; use polite live-region announcements where required.
-- **Dialogs:** focus moves in and returns to initiator; Escape and explicit close provided unless action semantics require otherwise; destructive confirmations specify consequences.
-- **Tabs/filters:** semantic roles and visible selected state; URL sync when needed for persistent navigation.
-- **Cards:** containers for a *meaningful unit*, not a default for every text item. Limit nesting.
-- **Icons:** convey recognisable action or meaning; use a consistent icon family, stroke and size; not random decorative sparkles.
-- **Images:** verify ownership, licensing, attribution and accuracy. Provide informative alt text, decorative images use empty alt. Optimize responsibly.
+### 4.2 Theme Color Balance Rules
+- **Light Theme (`#FAF9F5` Canvas):** Grounded in warm paper tones. Surfaces use pure white (`#FFFFFF`) cards with soft 1px border dividers (`#DFEAE5`). Text uses high-contrast forest black (`#112A24`).
+- **Dark Theme (`#0C1815` Canvas):** A deep, nocturnal forest atmosphere (not harsh OLED black `#000000` which strains the eyes). Surfaces use rich dark forest `#112420` with `#1D4139` borders. Text uses luminous bone-white `#EDF6F3`.
 
-### Mandatory states (where relevant)
-Each interactive or data-bearing component must explicitly handle **default, hover, focus-visible, active/pressed, selected, disabled, loading, empty, error and success**. Not every state applies to every component; document exceptions.
+---
 
-- **Loading:** skeletons only when structurally helpful; avoid fake progress percentages; maintain page stability.
-- **Empty:** explain why it is empty and one useful next step; no invented activity.
-- **Error:** state what failed in plain Indonesian, how to retry, and whether work was retained.
-- **Success:** confirm action succinctly; do not overwrite unsaved input unexpectedly.
-- **Disabled:** explain why when user is likely to be confused.
-- **Form submission:** prevent unintended duplicate submissions; preserve user inputs on recoverable failure.
+## 5. Typography Scale and Font Pairing
 
-### Hub-specific data patterns
-- Numbers and dates follow Indonesian locale where applicable (`id-ID`), while data models and APIs keep existing formats.
-- Tables need useful column headings, accessible sort feedback, empty state, overflow strategy and readable mobile treatment.
-- Never use color alone to indicate status; pair text/icon.
-- Avoid decorative analytics cards unless metrics are real, authorized and useful.
-- Do not expose unauthorized student personal data or leak protected resources in previews.
+### 5.1 Font Family Pairing
+- **Headings & Display (`font-heading`):** `Space Grotesk`, fallback `system-ui, sans-serif`.
+  - Analytical, geometric, bold, and modern; reflects the precision of mathematics, data models, and statistical logic.
+  - Usage: Hero titles, section titles, card headers, modal headers.
+- **Body & Interface (`font-sans`):** `Plus Jakarta Sans`, fallback `Inter, system-ui, sans-serif`.
+  - Humanist grotesque with open counters and tall x-height; highly legible in Indonesian sentence structures, academic abstracts, and data tables.
+  - Usage: Prose, navigation links, table cells, form inputs, button labels.
+- **Editorial Brand Moments (`font-serif` / `@font-face`):** `Enrika` (local font loaded in `globals.css`).
+  - Usage: Large editorial typographic backdrop watermarks (`NOVA`, `ORION`) on the public landing page.
+- **Tabular Figures & Code (`font-mono`):** `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`.
+  - Mandatory CSS setting: `font-variant-numeric: tabular-nums`.
+  - Usage: NIM, course codes (e.g., `STK211`), dates, timestamps, room numbers, and coordinate labels.
 
-## 6. Accessibility baseline — WCAG 2.2 AA target
+### 5.2 Type Size Scale
 
-- Text normal contrast ≥ `4.5:1`; large text ≥ `3:1`; meaningful UI component boundaries and indicators ≥ `3:1` where applicable.
-- Keyboard-only operation across navigation, forms, overlays and all critical actions. Visible `:focus-visible` indicator.
-- Use semantic headings (one logical `h1` per page), lists, buttons and links with correct accessible names.
-- Respect `prefers-reduced-motion`; never require animation to understand a feature.
-- Image alternatives appropriate to content; captions/transcripts for meaningful media where applicable.
-- Error identification, accessible instructions and screen-reader announcements for dynamic updates.
-- Skip link for navigation-heavy pages; logical focus and reading order.
-- Test with automated a11y tools **and** manual keyboard flows; automated PASS alone is insufficient.
+| Token Class | Desktop Size | Mobile Size | Line Height | Letter Spacing | Font & Weight | Usage |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `text-display-2xl` | `clamp(3rem, 7vw, 5.5rem)` | `2.5rem (40px)` | `0.95` | `-0.04em` | Space Grotesk Black (`900`) | Hero brand title `NOVARION` |
+| `text-display-xl`  | `2.5rem – 3rem (40-48px)` | `2rem (32px)` | `1.1` | `-0.03em` | Space Grotesk Bold (`800`) | Main section titles (`Tentang`, `Warta`) |
+| `text-heading-lg`  | `1.5rem – 1.75rem (24-28px)`| `1.375rem (22px)`| `1.2` | `-0.02em` | Space Grotesk Bold (`700`) | Hub page titles, modal headers |
+| `text-heading-md`  | `1.125rem – 1.25rem (18-20px)`| `1.125rem (18px)`| `1.3` | `-0.01em` | Space Grotesk Semibold (`600`) | Dashboard card titles, article headlines |
+| `text-heading-sm`  | `0.9375rem – 1rem (15-16px)` | `0.9375rem (15px)`| `1.4` | `0em` | Plus Jakarta Sans Bold (`700`) | Table subheaders, task titles |
+| `text-body-base`   | `0.9375rem – 1rem (15-16px)` | `0.9375rem (15px)`| `1.55`| `0em` | Plus Jakarta Sans Regular (`400`)| Editorial paragraphs, descriptions |
+| `text-body-sm`     | `0.8125rem – 0.875rem (13-14px)`| `0.8125rem (13px)`| `1.5` | `0em` | Plus Jakarta Sans Regular (`400`)| Hub table rows, task details, forms |
+| `text-caption`     | `0.6875rem – 0.75rem (11-12px)` | `0.6875rem (11px)`| `1.4` | `0.02em` | Plus Jakarta Sans Medium (`500`)| Timestamps, metadata, status badges |
 
-## 7. Motion and visual effects
+---
 
-- Motion communicates change of state, not status or “futurism.”
-- Suggested durations (P): hover `120–180ms`, panel transitions `180–260ms`, dialogs `180–240ms`. Prefer `transform`/`opacity`; avoid layout thrashing.
-- Disable nonessential motion for reduced-motion preferences.
-- No parallax, shader, cursor tracking, scroll hijacking, WebGL or rotating effects by default. For public landing only, propose a measured effect if it supports real brand storytelling, has an accessible fallback and is explicitly approved.
-- Hub must remain fast and stable under constrained networks and low-power devices.
+## 6. Layout, Grids, Breakpoints, and Spacing
 
-## 8. Content, voice and imagery
+### 6.1 Spacing Scale (4px Baseline)
+Spacing follows an intentional 4px geometric progression:
+`space-1` (4px), `space-2` (8px), `space-3` (12px), `space-4` (16px), `space-5` (20px), `space-6` (24px), `space-8` (32px), `space-10` (40px), `space-12` (48px), `space-16` (64px), `space-24` (96px).
 
-**Primary language (P):** Bahasa Indonesia. Secondary language or bilingual UI only if actual audience/content requirements demand it.
+### 6.2 Breakpoint Specifications
 
-**Tone:** collegial, clear, concise, human, inclusive; friendly without forced slang or hype. Use accurate academic/cohort terms as confirmed by maintainers.
+| Viewport Name | Min Width | Max Container | Layout Structure | Navigation Pattern |
+| :--- | :--- | :--- | :--- | :--- |
+| **Mobile Compact** | `320px – 639px` | `100%` (`px-4`) | Single column vertical stack | 4-point bottom bar (`56px` height) + modal drawer |
+| **Tablet Portrait**| `640px – 767px` | `600px` (`px-6`) | 1 to 2 column adaptive grid | Bottom bar + compact header |
+| **Tablet Landscape**| `768px – 1023px`| `720px` (`px-6`) | 2 column balanced grid | Floating pill nav / Mini sidebar |
+| **Desktop Standard**| `1024px – 1279px`| `1024px` (`px-8`)| Persistent 240px rail + content grid | Fixed 240px sidebar (Hub) / Floating pill (Landing) |
+| **Desktop Wide**    | `1280px+` | `1280px` (`max-w-7xl`)| 240px rail + 3 column dashboard | Full sidebar (Hub) / Full floating pill (Landing) |
 
-**Do:** specific labels and factual messages, e.g. `Lihat informasi angkatan`, `Masuk ke Hub`, `Belum ada informasi yang ditampilkan` (when true).
+### 6.3 Taste House Rules for Layout
+1. **Single Continuous Canvas:** The background is uniform across the entire document. Sections are never styled with alternating full-bleed rainbow background fills.
+2. **Equal Edge Margins:** Left and right content container gutters must be strictly identical at all viewports (`px-4 sm:px-6 lg:px-8`).
+3. **Hero Viewport Calibration (Taste House Rule 3):** On desktop viewports (≥1024px), the hero section is calibrated to exact `100dvh` (`h-screen lg:h-screen`). The subsequent section heading must never peek across the fold.
 
-**Do not:** `Next-generation student ecosystem`, vague “revolutionary platform”, fabricated metrics (`10.000+ pengguna`), fake testimonials, generic “empowering the future” copy, AI-stock student portraits presented as real people, or lorem ipsum in shipped screens.
+---
 
-**Photography/art (P):** favor authorized real cohort documentation and official program assets. Any curated stock or illustration must be clearly appropriate, licensed, credited as required, and not represented as factual documentation of Novarion.
+## 7. Component Design Rules
 
-## 9. Architecture and engineering constraints
+### 7.1 Component Architecture & Hierarchy
+Components follow the atomic composition model without excessive nesting. Box-in-a-box nesting is restricted to a maximum of **2 levels** (e.g., Page Container -> Card Surface -> Nested Element).
 
-- Perform a repo and dependency inventory before touching files. Follow existing framework conventions; do not switch React/Next/Vue/Tailwind/etc. merely for aesthetics.
-- Create or adapt a canonical token layer and reusable shared primitives; avoid duplicate button/card/nav implementations per page.
-- Preserve route semantics, APIs, backend, database schemas, session/auth, analytics, SEO metadata, redirects, environment variables and deployment configuration unless separately approved.
-- Keep public and private content boundaries explicit between domains. No sample passwords, secrets or realistic student records in screenshots/source.
-- Maintain crawlability, semantic page titles, and metadata on public pages; prevent accidental exposure/indexing of private Hub routes as appropriate.
-- No dependency addition without rationale, bundle impact and maintenance consideration.
-- Prefer progressive enhancement and resilient fallbacks; fonts/images must not block essential content.
-- Maintain existing test suite; add regression coverage for changes to navigation and key user journeys.
+### 7.2 Corner Radius Scale
+- `rounded-xs` (`4px`): Badges, category pills, code snippets, status indicator tags.
+- `rounded-input` (`8px`): Form inputs, standard action buttons, select triggers.
+- `rounded-card` (`12px`): Dashboard widgets, news cards, gallery frames, table containers.
+- `rounded-modal` (`16px`): Modal dialogs, bottom sheets, mobile navigation drawers.
+- `rounded-full` (`9999px`): Status indicator dots, avatars, theme toggle pill.
 
-## 10. Taste Skill × Anti Slop orchestration
+### 7.3 Shared UI Primitives
 
-### Roles
-- **`design-taste-frontend` = Design author:** derive an intentional visual concept; typography, page compositions, authentic assets, controlled interactions, consistent systems. Its one-screen-per-section starter defaults are **not mandatory** for Novarion; adapt to actual content, especially Hub.
-- **Anti Slop core + `antislop-ui` = Design critic / release filter:** reject unmotivated clichés, invented content, excessive decoration, low-quality composition. Use official Delivery Gate.
-- **`antislop-copywriting` = Copy QA:** fact checks and rejects vague generated prose.
-- **`antislop-human` = Usability/a11y QA:** readable contrast, focus, states, navigation.
-- **`antislop-layoutmobile` = Responsive QA:** mobile and cross-breakpoint reflow.
-- **`antislop-code` (optional) = Comment hygiene:** do not allow it to remove valuable explanations.
+#### A. Button (`Button.tsx`)
+Interactive buttons must provide clear visual feedback across all states:
+- `primary`: Background `--brand-primary` (`#41C2A1`), Text `--brand-foreground` (`#112A24`, 6.85:1 contrast). Hover: `brightness-95`.
+- `dark` / `accent`: Background `--teal-deep` (`#176C5B` Light / `#5EDEC0` Dark), Text `#FFFFFF` (Light) / `#0C1815` (Dark).
+- `secondary`: Background `--surface-soft`, Text `--text-primary`, Border `1px solid var(--border)`.
+- `outline`: Transparent background, Border `1px solid var(--border)`, Text `--text-primary`.
+- `danger`: Background `--danger-surface`, Border `1px solid var(--danger-border)`, Text `--danger-text`.
+- `ghost`: Transparent background, Text `--text-muted`, Hover: `--surface-soft`.
 
-### Invocation protocol
-1. **Anti Slop AFTER** on the **existing site**: inventory and audit; no edits. Rank issues by severity, frequency, confidence and effort.
-2. **Taste Skill**: produce **two design-direction proposals** sharing one identity but with appropriate distinctions for landing vs Hub. Include type, palette, screen sketches and tradeoffs. Mark unsupported decisions provisional.
-3. **Owner checkpoint:** approve direction and update this `DESIGN.md` with exact decisions. Do not begin mass refactor before sign-off.
-4. **Implementation:** Taste guides redesign incrementally, while Anti Slop runs in **DURING** for proposed changes. If a filter flags a problem, resolve it without contradicting the signed-off direction unless an explicit accessibility/functional issue requires it.
-5. **Review:** Anti Slop AFTER audit of the completed slice; run its Delivery Gate, browser QA and functional regressions.
-6. **Iterate:** move to next slice only when the current slice's acceptance criteria are met.
+#### B. Badge (`Badge.tsx`)
+Badges always pair an icon, a semantic border, and semantic text:
+- `danger`: Critical deadlines (<12 Jam) and overdue tasks.
+- `warning`: Tomorrow deadlines (H-1) and pending approvals.
+- `mint`: Standard deadlines (2–3 hari) and active categories.
+- `neutral`: General metadata, semester badges, and course codes.
 
-**Conflict rule:** Treat Anti Slop findings as concrete review feedback and Taste recommendations as design options. Neither should invent features or override user constraints. If recommendations conflict, choose the option with better task usability and evidence, log the decision and ask for approval only when product identity/requirements change.
+#### C. Card (`Card.tsx`)
+- Background `--surface`, Border `1px solid var(--border)`, Radius `rounded-card` (`12px`).
+- Default elevation is flat; hover lift adds `-translate-y-0.5` with subtle ambient shadow: `0 4px 12px rgba(17, 42, 36, 0.06)` (Light) / `0 4px 12px rgba(0, 0, 0, 0.35)` (Dark).
 
-## 11. Redesign workflow (mandatory gates)
+#### D. Input (`Input.tsx`)
+- Height: `40px` (desktop), `44px` (mobile touch target).
+- Label: Always explicitly connected with `htmlFor`.
+- Border: `1px solid var(--border)`, transitioning to `2px solid var(--teal-deep)` on focus.
 
-### Gate 0 — Protect existing product
-- Create branch/backup and clean baseline commit before UI changes.
-- Record deploy URLs/environments, routes, authenticated and unauthenticated flows, component inventory, screenshots and test results.
-- Determine whether both surfaces are one repository/monorepo or separate repositories. Do not assume.
-- Verify ownership of logos, existing assets and fonts.
+---
 
-### Gate 1 — Audit (no code edits)
-Deliver `AUDIT.md` or equivalent with:
-- URL/route, screenshot reference, observed issue, impact, category, severity (`P0` blocker / `P1` major / `P2` polish), recommendation and evidence.
-- Explicit IA, content, auth and API inventory; flag unknowns.
-- Baselines: responsiveness, keyboard navigation, contrast, load/performance, lint/build/tests.
-- A prioritized sequence of pages/components; **do not fake test results**.
+## 8. Navigation and Information Architecture
 
-### Gate 2 — Design proposal (approval required)
-- Present two coherent directions for both surfaces. Include token mapping and mobile treatment.
-- Compare tradeoffs for student use, content reality, readability, build complexity.
-- Update this `DESIGN.md`: replace approved provisional values and list unresolved items.
-- Obtain user approval of the chosen direction before broad implementation.
+### 8.1 Public Landing Page (`novarion.web.id`)
+- **Two-State Header (`PublicHeader.tsx`):**
+  - **Hero State (Top of Page):** Full viewport-width navigation bar (`100vw`, `bg-[#0A1311] border-b border-white/10`) with a flat, intentional dark background integrated with the hero section. Displays the official Novarion crest (`/logo.png`), plain text `Statistika dan Sains Data` context, section links, theme toggle, and primary CTA without decorative dots, sparkles, or badges.
+  - **Scrolled State (`scrollY > 64px`):** Smoothly transitions into a compact centered container (`max-w-4xl`, `rounded-card`) with a solid surface background (`bg-surface border border-border shadow-md`) and zero glassmorphism or decorative glow.
+  - **In-page Anchors:** `Tentang`, `Pengurus`, `Kabar`, `Galeri`, `Prestasi`.
+  - **Primary High-Contrast CTA:** "Masuk ke Hub" linking directly to `https://hub.novarion.web.id/login`.
+- **Mobile Navigation:** Touch-friendly menu button opening a solid, accessible dropdown panel with clear active states.
 
-### Gate 3 — Prototype slice
-- First implement shared foundations (tokens, theme plumbing, typography, primitives) in the existing stack, then one representative public section and one high-traffic Hub page **that actually exists**.
-- Preserve old behavior and feature parity; show before/after screenshots.
-- Check mobile, keyboard, all common states and performance.
+### 8.2 Student Academic Hub (`hub.novarion.web.id`)
+- **Desktop Sidebar (240px persistent rail):**
+  - Cohort mark + user identity pill at top.
+  - Primary module navigation:
+    1. **Dashboard (`/app`):** Overview, deadline radar, quick actions.
+    2. **Kalender (`/app/calendar`):** Interactive academic schedule, exam timetables, deadlines.
+    3. **Agenda Angkatan (`/app/agendas`):** Official cohort events and meetings.
+    4. **Tugas Kuliah (`/app/tasks`):** Personal academic task tracker.
+    5. **Materi & Modul (`/app/materials`):** Lecture slides, practicum datasets, past exams.
+    6. **Knowledge Hub (`/app/knowledge`):** Course FAQs, academic guides, tutor repository.
+    7. **Pengumpulan (`/app/submissions`):** Practicum reports and assignment dropboxes.
+    8. **Akun Saya (`/app/account`):** Profile settings, parallel class, password management.
+  - Active link state: `bg-teal-deep/10 text-teal-deep border-l-4 border-teal-deep font-semibold`.
+  - Bottom controls: Theme toggle, verified role indicator (`Mahasiswa` / `Pengurus`), logout button.
+- **Mobile Bottom Navigation (4-point bar):**
+  - Fixed at screen bottom (`56px` height, tap targets ≥ 44x44px).
+  - 4 core shortcuts: `Beranda`, `Kalender`, `Tugas`, `Materi`.
+  - Secondary menu trigger: `Lainnya` opens a modal sheet displaying remaining modules (`Knowledge`, `Submissions`, `Akun`, `Tema`, `Keluar`).
 
-### Gate 4 — Incremental rollout
-- Landing: header/navigation → hero → verified content sections → footer → responsive polish.
-- Hub: navigation/shell → high-frequency screens → forms/tables → error/empty/loading states → preferences/settings as applicable.
-- Migrate route-by-route or feature-flag when warranted; no big-bang rewrite by default.
-- Cross-check shared tokens and interaction consistency across domains.
+---
 
-### Gate 5 — Release quality bar
-All must be satisfied or documented as an explicit blocker:
-- Existing critical journeys still pass (auth, navigation, authorized data access, saves, etc. **where present**).
-- No severe contrast, keyboard, label, focus trap, overflow or responsive regressions.
-- No fake content, undefined placeholders, broken images or invalid links.
-- Theme toggling works in both themes; verified preference persistence and no flash of wrong theme **if supported by project requirements**.
-- Build/lint/tests are run and results recorded. Performance benchmarked against baseline, with regressions investigated.
-- Anti Slop Delivery Gate shows PASS or documented owner-approved exception for a subjective rule; accessibility and functional blockers cannot be waived by aesthetics alone.
-- Real browser screenshots at `390`, `768`, `1024`, `1440`, with long-content and reduced-motion checks.
+## 9. Responsive and Mobile-First Guidelines
 
-## 12. Definition of Done (per page)
+### 9.1 Mobile Usability Mandates
+1. **Zero Sideways Spill (R-03):** No element may cause horizontal scrolling on the root window. Data tables wider than the viewport must be housed in an explicitly scrollable container with visual scroll gradient masks.
+2. **Minimum Touch Targets (R-03 & R-39):** Every button, checkbox, link, and interactive icon must provide at least `44 × 44` CSS px tap area on touch screens.
+3. **Form Resilience:** Mobile text inputs must use minimum `16px` font size to prevent iOS Safari auto-zoom on focus.
+4. **Bottom Sheet Overlays:** Modals on mobile adapt into bottom sheets with safe-area padding (`pb-safe`) for home indicator bars.
 
-- [ ] Primary user task and page audience documented.
-- [ ] Uses shared tokens and approved design direction.
-- [ ] Hierarchy and alignment verified against screenshots.
-- [ ] All applicable states implemented (loading/empty/error/etc.).
-- [ ] Accessible labels, focus, contrast, semantics and keyboard flow checked.
-- [ ] Responsive at 320/390/768/1024/1440; no accidental overflow.
-- [ ] Works with realistic/authorized content; long strings tested.
-- [ ] Existing data/API/auth behavior preserved.
-- [ ] Build, lint and applicable tests run; results reported honestly.
-- [ ] Anti Slop Delivery Gate findings resolved or documented.
-- [ ] Before/after comparison, touched files and residual issues recorded.
+---
 
-## 13. Decisions awaiting verification
+## 10. Interaction States and Motion
 
-| ID | Pending decision | Provisional default | How to verify |
-|---|---|---|---|
-| D-01 | Official Novarion brand colors/logo | Blue-teal + neutral tokens above | Inspect official assets, existing site and owner input |
-| D-02 | Font licensing and brand typography | Inter/system | Inspect current fonts; compare 2 approved typographic options |
-| D-03 | Landing sections & factual copy | Only verified content | Inventory current site and cohort materials |
-| D-04 | Hub modules and user roles | Preserve existing IA/features | Route/data/auth inventory with user flows |
-| D-05 | App technology and shared component strategy | Keep existing stack | Inspect both repositories and manifests |
-| D-06 | Theme synchronization across domains | Independent preference unless existing SSO/shared preference | Inspect auth/storage/CSP and UX expectations |
-| D-07 | Assets/photos and permissions | No fabricated imagery | Confirm licenses and cohort photo permissions |
-| D-08 | Layout navigation (Hub) | Current proven pattern first | Observe primary tasks and navigation depth |
-| D-09 | Mobile-first priorities | Core student tasks and CTA | Usage analytics or representative student testing |
-| D-10 | Motion personality | Minimal by default | Design direction approval and reduced-motion QA |
-| D-11 | Public/private SEO and metadata | Preserve existing access policies | Inspect deployment/robots/auth requirements |
-| D-12 | Performance targets | No deterioration from measured baseline | Capture real-device/Lighthouse metrics |
+### 10.1 Mandatory State Coverage
+Every interactive component must provide complete visual handling across eight states:
+1. **Default:** Stable resting contrast and clear label.
+2. **Hover:** Cursor pointer feedback, subtle background color shift, or `-translate-y-0.5` lift (max 160ms).
+3. **Focus-Visible:** Prominent 2px focus ring: `outline: 2px solid var(--teal-deep)` with `outline-offset: 2px`.
+4. **Active/Pressed:** Tactile feedback via `active:scale-[0.98]`.
+5. **Disabled:** Visual attenuation via `opacity: 0.5`, `cursor: not-allowed`, with tooltips explaining reason.
+6. **Loading:** Disabled pointer events with animated SVG spinner; button text preserved or changed to "Memproses...".
+7. **Empty:** Clear explanation of why the dataset is empty, paired with a single primary action to create/populate data.
+8. **Error:** High-contrast text paired with an alert icon; input border highlighted with `--danger-text`; actionable recovery guidance.
 
-**Do not silently convert provisional into approved.** Record decision, rationale, date and owner after verification.
+### 10.2 Motion Policy
+- Transitions are brief and purposeful: `120ms – 160ms` for hover states, `180ms – 220ms` for sheet/modal entrances.
+- **Reduced Motion Guard:** Every animation is wrapped in `@media (prefers-reduced-motion: reduce)`, disabling translations and forcing instantaneous rendering.
+- **Forbidden Effects:** No infinite looping pulse rings, no mouse-following orbs, no full-page parallax scroll-hijacking, and no scroll-delayed opacity fade-ins that hide content from users or search crawlers.
 
-## 14. Antigravity kickoff prompt
+---
 
-Copy this into a **new Antigravity agent conversation**, with the existing workspace opened and Taste + Anti Slop installed:
+## 11. Accessibility, WCAG 2.2 AA Targets
 
-```text
-Read DESIGN.md in full and treat it as the product design contract for BOTH Novarion surfaces: novarion.web.id (public cohort landing) and hub.novarion.web.id (student dashboard).
+### 11.1 Contrast Targets
+- **Normal Text (<18px):** Minimum 4.5:1 contrast against its background.
+  - Light mode: `#112A24` on `#FAF9F5` = **14.4:1** (PASS AAA).
+  - Dark mode: `#EDF6F3` on `#0C1815` = **16.7:1** (PASS AAA).
+- **Large Text (≥18px bold or ≥24px regular):** Minimum 3.0:1 contrast.
+- **Button Contrast:** Dark text `#112A24` on Primary Mint `#41C2A1` = **6.85:1** (PASS AA). White text on `#41C2A1` is strictly forbidden (2.22:1 FAIL).
+- **Non-Text Indicators:** Form borders, icons, and focus rings maintain ≥ 3.0:1 contrast against adjacent surfaces.
 
-Use design-taste-frontend as the design author and Anti Slop (core/UI/human/layoutmobile/copywriting) as the quality filter. Start in Anti Slop AFTER mode for the existing sites.
+### 11.2 Screen Reader & Keyboard Requirements
+- All interactive controls have accessible names via visible text or `aria-label`.
+- Expanded states on dropdowns and drawers are communicated via `aria-expanded`.
+- Keyboard navigation provides full Tab order traversal, visible focus outlines, and `Escape` key dismissal on dialogs and lightboxes.
 
-PHASE 1 ONLY — NO CODE CHANGES:
-1. Inventory the actual repository/repositories, framework, routes, assets, styles, authenticated user journeys, APIs, theme handling, and deployed/local behavior.
-2. Inspect the real UI in a browser and capture baseline screenshots for representative desktop/mobile views of BOTH surfaces. If an origin or private route is inaccessible, say so and inspect the local project; do not guess.
-3. Compare each page to DESIGN.md, explicitly distinguishing confirmed observations from provisional assumptions.
-4. Produce prioritized AUDIT.md and two cohesive visual directions (public landing and Hub are related but not identical).
-5. Propose concrete updates to DESIGN.md (approved tokens, typography, layout, references) and a safe incremental implementation plan.
-6. STOP and wait for my approval before a major redesign or any code changes.
+---
 
-AFTER I APPROVE:
-- Protect a baseline commit, implement shared foundations, redesign one representative route at a time, preserve all business logic and backend behavior.
-- Use Taste during implementation and Anti Slop DURING as a release-quality filter.
-- Verify real browser screenshots at 390/768/1024/1440, keyboard, dark/light, states, tests/build, and Anti Slop Delivery Gate.
-- Give me before/after screenshots, actual test results and a concise list of changed files. Never claim tests you did not run.
+## 12. Copywriting and Editorial Guidelines
+
+### 12.1 Language & Voice
+- **Language:** Bahasa Indonesia. Professional, collegial, warm, and academically credible.
+- **Tone:** Direct, honest, concise. Speaks as a real student community, not a commercial enterprise.
+- **Ban on Generic AI Buzzwords (R-16):** Words like *revolusioner, seamless, game-changer, unlock, elevate, empowering the future, ekosistem mutakhir* are strictly forbidden. Use plain factual language.
+- **Hard Ban on Em Dashes (R-02):** The character `—` is STRICTLY FORBIDDEN in all UI headings, copy, badges, buttons, and metadata. Use commas, colons, parentheses, or mid-dots (`·`).
+
+### 12.2 Separation of Verified Content from Sample Copy
+- **Verified Official Content:**
+  - Entity: Departemen Statistika dan Sains Data Angkatan 62 IPB University.
+  - Slogan: "Kita Satu, Kita Bisa!"
+  - Crest: Official department crest.
+  - Photo: Genuine cohort photograph at FMIPA IPB (`/foto_angkatan.jpeg`).
+- **Sample Mock Content:** Any placeholder news article or event must be clearly grounded in realistic academic scenarios (e.g., "Workshop Analisis Data Eksploratif", "Rapat Koordinasi Akademik") rather than fabricated global awards or exaggerated statistics.
+
+---
+
+## 13. Anti-Slop Visual and Content Restrictions
+
+| Anti-Slop Rule | Prohibition | Required Alternative |
+| :--- | :--- | :--- |
+| **R-01 (Palette Default)** | No generic blue-to-purple or neon gradients | Use locked brand palette (`#41C2A1`, `#FFAE5D`, `#EAEAB7`) |
+| **R-02 (Em Dash Ban)** | Never use `—` in UI text, labels, or badges | Use colons, commas, periods, or mid-dots (`·`) |
+| **R-03 (Mobile Integrity)**| No horizontal window scrolling; no tap targets < 44px | Scrollable data containers; 44x44px minimum touch targets |
+| **R-10 (Glassmorphism)** | No full-page blurred glass layers on all elements | Dose cap: at most 1 floating nav element; cards stay solid |
+| **R-12 (Flat Default)**  | No heavy floating drop-shadows across all cards | Matte flat surfaces with 1px semantic borders |
+| **R-13 (Glow Cap)**      | No simultaneous glow on badges, cards, and icons | Zero decorative glow; matte high-contrast surfaces |
+| **R-16 (Buzzword Ban)**  | No empty corporate jargon (*seamless, revolusioner*) | Plain, factual Indonesian prose |
+| **R-17/R-36 (Honesty)**   | No fabricated student counts or fake testimonials | Real cohort data or honest empty states |
+| **R-23 (Authentic Media)**| No generic AI-generated faces or stock vector art | Authentic cohort photos (`/foto_angkatan.jpeg`) |
+| **R-38 (Honest Roles)**   | No fake monogram initial circles ("KE", "WA") | Dignified structural coordination cards with role titles |
+| **R-39 (System Pointers)**| No novelty custom cursor circles | Standard system pointer arrows and text carets |
+
+---
+
+## 14. Skill Responsibilities and Conflict Resolution
+
+### 14.1 Skill Specialization
+1. **`antislop` (Core Filter):** Acts as the primary quality gate. Enforces the Purpose Test, eliminates AI tells, and runs the Delivery Gate.
+2. **`design-taste-frontend` (Visual Engine):** Governs layout geometry, desktop 100dvh hero fit, equal margins, restrained hover micro-animations, and broadsheet visual hierarchy.
+3. **`impeccable` (Design System Polish):** Refines typography tokens, component state completeness, information hierarchy, and WCAG AA contrast mathematics.
+
+### 14.2 Conflict Resolution Hierarchy
+If instructions or skill recommendations conflict, resolve in this strict order:
+```
+1. Safety & Preserved Codebase Logic (Auth, Drizzle schemas, APIs, Worker jobs)
+   ▼
+2. Explicit User Instructions & Verified Cohort Identity (Angkatan 62, locked 4 HEX colors)
+   ▼
+3. antislop Core Hard Bans (R-02 no em dashes, R-16 no buzzwords, R-36 no fake metrics)
+   ▼
+4. impeccable UX Polish & WCAG 2.2 AA Contrast Standards
+   ▼
+5. design-taste-frontend Aesthetic Suggestions
 ```
 
 ---
 
-**Maintainer reminder:** This document is deliberately concrete yet adaptable. It is a starting contract, not proof of the currently deployed Novarion visual identity. Refine it from observed product evidence before broad implementation.
+## 15. Step-by-Step Redesign Implementation Workflow
+
+1. **Phase 1: Design Tokens & Public Landing Page (`novarion.web.id`) — [COMPLETED & VERIFIED]**
+   - Implemented CSS variables and dark mode tokens in `globals.css` and `tailwind.config.ts`.
+   - Built zero-FOUC theme sync with `ThemeToggle.tsx`.
+   - Refactored `HeroSection`, `AboutSection`, `LeadershipSection`, `NewsSection`, `GallerySection`, `AchievementsSection`, `AcademicHubCtaSection`, `PublicHeader`, `PublicFooter`, and `privacy/page.tsx`.
+   - Verified 0 type errors, 0 lint warnings, 0 browser console errors, and 100% test pass.
+2. **Phase 2: Authentication & Student Dashboard Gateway (`hub.novarion.web.id`)**
+   - Refactor `/login` card: high-contrast inputs, clear whitelist notices, and error alerts.
+   - Refactor Student Workspace Layout (`apps/web/app/app/layout.tsx`): 240px desktop rail and 4-point mobile bottom bar.
+   - Refactor Dashboard Home (`apps/web/app/app/page.tsx`): Viewport 1 deadline radar (<12h danger, Besok warning, Mendatang neutral), active semester badge, and quick action bar.
+3. **Phase 3: Academic Workflow Modules**
+   - Refactor Interactive Calendar (`/app/calendar`): Month/Week/Agenda toggle, exam date highlights.
+   - Refactor Personal Tasks (`/app/tasks`): Interactive checklist, filter by course, deadline sort.
+   - Refactor Materials Repository (`/app/materials`): Course folder navigation, verified download buttons.
+   - Refactor Knowledge Hub (`/app/knowledge`): Searchable FAQ, academic guide cards.
+4. **Phase 4: Submissions, Account & Mobile Polish**
+   - Refactor Submissions (`/app/submissions`) and Account Settings (`/app/account`).
+   - Run responsive browser verification at 320px, 390px, 768px, 1024px, and 1440px in both themes.
+   - Capture before/after visual proof and execute final quality gates.
+
+---
+
+## 16. Visual QA and Acceptance Criteria
+
+Before declaring any page or slice complete, the following checklist must be satisfied:
+
+- [ ] **Token Integrity:** Uses semantic tokens from `globals.css` (no hardcoded ad-hoc hex values).
+- [ ] **Contrast Verification:** Text contrast ≥ 4.5:1; non-text indicators ≥ 3.0:1.
+- [ ] **Mint Button Rule:** Text on `#41C2A1` uses dark `#112A24`, never white.
+- [ ] **Dual-Theme Verification:** Inspected in both Light and Dark themes without broken text or inverted contrast.
+- [ ] **Fold Discipline:** Desktop hero (at 1440x900) occupies exact `100dvh` without fold cut-offs.
+- [ ] **Mobile Responsiveness:** Zero horizontal scrolling across 320px, 390px, 768px, and 1440px.
+- [ ] **Touch Targets:** All interactive buttons and inputs measure at least 44x44 CSS px on touch screens.
+- [ ] **Component State Completeness:** Implements default, hover, active, focus-visible, disabled, loading, empty, and error states.
+- [ ] **Copywriting Compliance:** Zero em dashes (`—`), no buzzwords, no fabricated metrics.
+- [ ] **Automated Quality Gates:** `npm run typecheck`, `npm run lint`, and `npm run test` pass with 0 errors.
+
+---
+
+## 17. Provisional Decisions Register
+
+Decisions are classified as either **Confirmed & Locked** (backed by verified codebase implementation) or **Provisional** (requiring project inspection during implementation):
+
+### 17.1 Confirmed & Locked Decisions (D-01 to D-12)
+
+| ID | Decision Topic | Confirmed Implementation | Verification Source | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **D-01** | Brand Palette | Locked 4 HEX: `#41C2A1`, `#C9FBD4`, `#EAEAB7`, `#FFAE5D`. Dark text on mint. | Existing site assets & WCAG test | **LOCKED** |
+| **D-02** | Typography | Space Grotesk (Headings) + Plus Jakarta Sans (Body) + Enrika (Serif Accent). | Google Fonts & `@font-face` | **LOCKED** |
+| **D-03** | Factual Identity | Statistika dan Sains Data Angkatan 62 IPB University. Slogan: "Kita Satu, Kita Bisa!" | Cohort records & CMS schema | **LOCKED** |
+| **D-04** | Core Modules | 8 Hub modules (Dashboard, Calendar, Agendas, Tasks, Materials, Knowledge, Submissions, Account). | App router directory tree | **LOCKED** |
+| **D-05** | Tech Architecture | Next.js 14 App Router, Tailwind CSS, Supabase SSR/Auth, Drizzle ORM. | Root `package.json` | **LOCKED** |
+| **D-06** | Theme Sync | Root cookie `novarion_theme` on `.novarion.web.id` + inline FOUC script. | `middleware.ts` & `layout.tsx` | **LOCKED** |
+| **D-07** | Authentic Assets | Crest: `/logo.png`. Cohort photo: `/foto_angkatan.jpeg`. | `public/` directory | **LOCKED** |
+| **D-08** | Navigation Geometry| 240px persistent desktop sidebar; 4-point mobile bottom bar (56px height). | UX audit & mobile tests | **LOCKED** |
+| **D-09** | Mobile Priorities | Viewport 1 deadline radar (<12h danger, Besok warning, Mendatang neutral). | Student task workflow audit | **LOCKED** |
+| **D-10** | Motion Limits | Max 160ms transitions; full `prefers-reduced-motion` override; no scroll-delayed opacity. | `globals.css` & `Reveal.tsx` | **LOCKED** |
+| **D-11** | SEO Indexing | Public routes indexed; Hub routes (`/app/*`, `/admin/*`) set to `noindex, nofollow`. | App router metadata | **LOCKED** |
+| **D-12** | Continuous Canvas | Single continuous ground (`#FAF9F5` light / `#0C1815` dark). No rainbow alternating strips. | Landing page refactor | **LOCKED** |
+
+### 17.2 Provisional Decisions Requiring Inspection (P-01 to P-08)
+
+| ID | Topic | Provisional Proposal | Inspection Requirement | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **P-01** | Task Default Sort | Order tasks strictly by nearest deadline (`scheduledFor` asc). | Inspect `tasks.ts` server action query ordering | **PROVISIONAL** |
+| **P-02** | Calendar View Toggle | Default to Month view on desktop (≥1024px) and 7-Day Agenda list on mobile (<768px). | Inspect `InteractiveCalendar.tsx` state model | **PROVISIONAL** |
+| **P-03** | Materials File Preview | Direct PDF modal preview vs external download link. | Inspect Supabase Storage signed URL handling | **PROVISIONAL** |
+| **P-04** | Knowledge Category Filter | Filter chips for Mata Kuliah, Praktikum, Software, and Prosedur Akademik. | Inspect Drizzle schema for `knowledgeArticles` | **PROVISIONAL** |
+| **P-05** | Submission Status Labels | "Belum Dikirim", "Menunggu Review", "Terverifikasi". | Inspect `submissions` table status enum | **PROVISIONAL** |
+| **P-06** | WhatsApp Reminder Notice | Display last automated broadcast status badge inside student dashboard. | Inspect worker job execution log tables | **PROVISIONAL** |
+| **P-07** | Admin CSV Error Display | Row-by-row error modal with specific column failure markers. | Inspect `csv-imports.ts` parser response | **PROVISIONAL** |
+| **P-08** | Avatar Customization | Restrict avatars to official cohort color monogram or optional uploaded photo. | Inspect Supabase Auth profile update schema | **PROVISIONAL** |

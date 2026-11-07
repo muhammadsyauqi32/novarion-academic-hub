@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,39 +11,40 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          primary: '#41C2A1',
-          'mint-soft': '#C9FBD4',
-          cream: '#EAEAB7',
-          orange: '#FFAE5D',
-          navy: '#0D1B2A',
+          primary: 'var(--brand-primary, #41C2A1)',
+          'mint-soft': 'var(--brand-mint-soft, #C9FBD4)',
+          cream: 'var(--brand-cream, #EAEAB7)',
+          orange: 'var(--brand-orange, #FFAE5D)',
+          navy: 'var(--brand-navy, #0D1B2A)',
+          foreground: 'var(--brand-foreground, #112A24)',
         },
-        canvas: '#F8FBF9',
+        canvas: 'var(--canvas, #FAF9F5)',
         surface: {
-          DEFAULT: '#FFFFFF',
-          soft: '#F1F7F3',
-          hover: '#EBF4F0',
+          DEFAULT: 'var(--surface, #FFFFFF)',
+          soft: 'var(--surface-soft, #F1F6F4)',
+          hover: 'var(--surface-hover, #E8F1ED)',
         },
         border: {
-          DEFAULT: '#E2ECE8',
-          strong: '#CADBD4',
+          DEFAULT: 'var(--border, #DFEAE5)',
+          strong: 'var(--border-strong, #CADBD4)',
         },
-        'text-primary': '#203B34',
-        'text-muted': '#63756F',
-        'teal-deep': '#176C5B',
+        'text-primary': 'var(--text-primary, #112A24)',
+        'text-muted': 'var(--text-muted, #5A7169)',
+        'teal-deep': 'var(--teal-deep, #176C5B)',
         danger: {
-          surface: '#FEF3F2',
-          border: '#FECDCA',
-          text: '#B42318',
+          surface: 'var(--danger-surface, #FEF3F2)',
+          border: 'var(--danger-border, #FECDCA)',
+          text: 'var(--danger-text, #B42318)',
         },
         warning: {
-          surface: '#FFFAEB',
-          border: '#FEDF89',
-          text: '#B54708',
+          surface: 'var(--warning-surface, #FFFAEB)',
+          border: 'var(--warning-border, #FEDF89)',
+          text: 'var(--warning-text, #B54708)',
         },
         success: {
-          surface: '#ECFDF3',
-          border: '#A6F4C5',
-          text: '#027A48',
+          surface: 'var(--success-surface, #ECFDF3)',
+          border: 'var(--success-border, #A6F4C5)',
+          text: 'var(--success-text, #027A48)',
         },
       },
       fontFamily: {
@@ -55,7 +57,7 @@ const config: Config = {
         sharp: '0px',
         card: '12px',
         input: '8px',
-        modal: '14px',
+        modal: '16px',
       },
     },
   },

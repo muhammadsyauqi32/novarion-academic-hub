@@ -34,7 +34,19 @@ export function useFilterAnimation<T>({
   // Stored bounding rects for FLIP
   const firstRectsRef = useRef<Map<string, DOMRect>>(new Map());
   // Pending transition timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Guard to prevent re-triggering animations on initial component mount
+  const isInitialMountRef = useRef(true);
+
+  // Keep getItemId in a ref to avoid infinite dependency loops if passed inline
+  const getItemIdRef = useRef(getItemId);
+  getItemIdRef.current = getItemId;
+
+  const currentFilterFnRef = useRef(filterFn);
+  currentFilterFnRef.current = filterFn;
+
+  const currentItemsRef = useRef(items);
+  currentItemsRef.current = items;
 
   // Function to register an element ref
   const registerItemRef = useCallback(
@@ -58,29 +70,30 @@ export function useFilterAnimation<T>({
     }));
   });
 
-  // Keep track of current filter signature
-  const currentFilterFnRef = useRef(filterFn);
-  currentFilterFnRef.current = filterFn;
-
-  const currentItemsRef = useRef(items);
-  currentItemsRef.current = items;
-
   // Triggered whenever the filter changes
   useEffect(() => {
+    // Skip on initial mount since useState already initialized matching items
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      return;
+    }
+
+    const getId = (item: T) => getItemIdRef.current(item);
+
     // Check reduced motion
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const nextMatching = currentItemsRef.current.filter(currentFilterFnRef.current);
-    const nextMatchingIds = new Set(nextMatching.map(getItemId));
+    const nextMatchingIds = new Set(nextMatching.map(getId));
 
     if (prefersReducedMotion) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       setDisplayedItems(
         nextMatching.map((data) => ({
           data,
-          id: getItemId(data),
+          id: getId(data),
           isExiting: false,
           isEntering: false,
         }))
@@ -105,6 +118,16 @@ export function useFilterAnimation<T>({
 
     // 2. Mark exiting items that no longer match
     setDisplayedItems((prev) => {
+      // Check if current items already match exactly
+      const currentNonExiting = prev.filter((i) => !i.isExiting).map((i) => i.id);
+      const isAlreadyIdentical =
+        currentNonExiting.length === nextMatching.length &&
+        currentNonExiting.every((id, idx) => id === getId(nextMatching[idx]));
+
+      if (isAlreadyIdentical) {
+        return prev;
+      }
+
       const updated = prev.map((item) => {
         if (!nextMatchingIds.has(item.id)) {
           return { ...item, isExiting: true, isEntering: false };
@@ -115,10 +138,9 @@ export function useFilterAnimation<T>({
       // If no items are exiting, proceed directly to new layout
       const hasExiting = updated.some((item) => item.isExiting);
       if (!hasExiting) {
-        // Immediately assemble next items with entering flag for new ones
         const currentIds = new Set(prev.map((p) => p.id));
         return nextMatching.map((data) => {
-          const id = getItemId(data);
+          const id = getId(data);
           return {
             data,
             id,
@@ -133,7 +155,6 @@ export function useFilterAnimation<T>({
 
     // 3. After exit transition (180ms), swap in the new matching set
     timeoutRef.current = setTimeout(() => {
-      // Re-capture positions right before layout changes to guarantee smooth FLIP
       const intermediateRects = new Map<string, DOMRect>();
       itemElementsRef.current.forEach((el, id) => {
         if (el && document.body.contains(el) && nextMatchingIds.has(id)) {
@@ -147,7 +168,7 @@ export function useFilterAnimation<T>({
       setDisplayedItems((prev) => {
         const prevIds = new Set(prev.filter((p) => !p.isExiting).map((p) => p.id));
         return nextMatching.map((data) => {
-          const id = getItemId(data);
+          const id = getId(data);
           return {
             data,
             id,
@@ -163,7 +184,7 @@ export function useFilterAnimation<T>({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [filterFn, items, getItemId]);
+  }, [filterFn, items]);
 
   // 4. FLIP Execution in useLayoutEffect when DOM updates
   useLayoutEffect(() => {
@@ -183,7 +204,6 @@ export function useFilterAnimation<T>({
       const firstRect = firstRects.get(item.id);
 
       if (item.isEntering) {
-        // Newly entering item: start at opacity 0 and slightly shifted down
         el.style.opacity = '0';
         el.style.transform = 'translateY(10px)';
         el.style.transition = 'none';
@@ -198,20 +218,16 @@ export function useFilterAnimation<T>({
           });
         });
       } else if (!item.isExiting && firstRect) {
-        // Surviving item: apply FLIP invert and play
         const lastRect = el.getBoundingClientRect();
         const deltaX = firstRect.left - lastRect.left;
         const deltaY = firstRect.top - lastRect.top;
 
         if (Math.abs(deltaX) > 0.5 || Math.abs(deltaY) > 0.5) {
-          // Invert
           el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
           el.style.transition = 'none';
 
-          // Force reflow
           void el.offsetHeight;
 
-          // Play
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               el.style.transition =
@@ -223,7 +239,6 @@ export function useFilterAnimation<T>({
       }
     });
 
-    // Reset firstRects after applying
     firstRectsRef.current = new Map();
   }, [displayedItems]);
 

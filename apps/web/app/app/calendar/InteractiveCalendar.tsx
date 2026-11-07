@@ -353,24 +353,24 @@ export function InteractiveCalendar({
   // Minimal, refined category badge style
   const getCategoryStyles = (category: string, eventType: string) => {
     if (eventType === 'personal') {
-      return 'bg-purple-50 text-purple-700 border-purple-200';
+      return 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/50';
     }
     if (eventType === 'proposal') {
-      return 'bg-amber-50 text-amber-800 border-amber-200';
+      return 'bg-warning-surface text-warning-text border-warning-border';
     }
 
     switch (category) {
       case 'tugas':
-        return 'bg-orange-50 text-[#9E5507] border-orange-200';
+        return 'bg-brand-orange/15 text-[#9E5507] dark:text-brand-orange border-brand-orange/30';
       case 'praktikum':
-        return 'bg-teal-50 text-teal-deep border-teal-200';
+        return 'bg-brand-primary/15 text-teal-deep dark:text-brand-primary border-brand-primary/30';
       case 'ujian':
       case 'kuis':
-        return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'bg-danger-surface text-danger-text border-danger-border';
       case 'kuliah':
         return 'bg-surface-soft text-text-primary border-border';
       default:
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+        return 'bg-success-surface text-success-text border-success-border';
     }
   };
 
@@ -507,7 +507,7 @@ export function InteractiveCalendar({
               onClick={() => setViewMode('month')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 viewMode === 'month'
-                  ? 'bg-teal-deep text-white shadow-2xs font-bold'
+                  ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs font-bold'
                   : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
               }`}
             >
@@ -518,7 +518,7 @@ export function InteractiveCalendar({
               onClick={() => setViewMode('week')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 viewMode === 'week'
-                  ? 'bg-teal-deep text-white shadow-2xs font-bold'
+                  ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs font-bold'
                   : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
               }`}
             >
@@ -529,7 +529,7 @@ export function InteractiveCalendar({
               onClick={() => setViewMode('day')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 viewMode === 'day'
-                  ? 'bg-teal-deep text-white shadow-2xs font-bold'
+                  ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs font-bold'
                   : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
               }`}
             >
@@ -540,7 +540,7 @@ export function InteractiveCalendar({
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 viewMode === 'list'
-                  ? 'bg-teal-deep text-white shadow-2xs font-bold'
+                  ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs font-bold'
                   : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
               }`}
             >
@@ -634,7 +634,7 @@ export function InteractiveCalendar({
                 onClick={() => setEventTypeFilter(t.key as any)}
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                   eventTypeFilter === t.key
-                    ? 'bg-teal-deep text-white shadow-2xs'
+                    ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
                     : 'bg-surface-soft text-text-muted hover:text-text-primary border border-border/60'
                 }`}
               >
@@ -713,7 +713,7 @@ export function InteractiveCalendar({
                     <span
                       className={`text-xs font-heading font-bold ${
                         cell.isToday
-                          ? 'w-6 h-6 rounded-full bg-teal-deep text-white flex items-center justify-center shadow-2xs'
+                          ? 'w-6 h-6 rounded-full bg-teal-deep text-white dark:text-[#0C1815] flex items-center justify-center shadow-2xs'
                           : cell.isCurrentMonth
                           ? 'text-text-primary group-hover:text-teal-deep'
                           : 'text-text-muted'
@@ -845,12 +845,12 @@ export function InteractiveCalendar({
                               {ev.title}
                             </h4>
                             {ev.eventType === 'personal' && (
-                              <span className="inline-flex items-center gap-1 text-[10px] text-purple-700 mt-1 font-medium">
+                              <span className="inline-flex items-center gap-1 text-[10px] text-purple-700 dark:text-purple-300 mt-1 font-medium">
                                 <Lock className="w-2.5 h-2.5" /> Pribadi
                               </span>
                             )}
                             {ev.eventType === 'proposal' && (
-                              <span className="inline-flex items-center gap-1 text-[10px] text-amber-800 mt-1 font-medium">
+                              <span className="inline-flex items-center gap-1 text-[10px] text-warning-text mt-1 font-medium">
                                 <Clock className="w-2.5 h-2.5" /> Menunggu Review
                               </span>
                             )}
@@ -923,7 +923,7 @@ export function InteractiveCalendar({
                         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
                         <span className="text-[11px] font-mono font-bold uppercase">{ev.category}</span>
                         {ev.eventType === 'personal' && (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-purple-300">
                             <Lock className="w-3 h-3" /> Catatan Pribadi
                           </span>
                         )}
@@ -933,7 +933,7 @@ export function InteractiveCalendar({
                           </span>
                         )}
                         {ev.eventType === 'proposal' && (
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-warning-text">
                             <Clock className="w-3 h-3" /> Menunggu Persetujuan
                           </span>
                         )}
@@ -1003,12 +1003,12 @@ export function InteractiveCalendar({
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: dotColor }} />
                       <Badge variant="primary" size="sm">{ev.category}</Badge>
                       {ev.eventType === 'personal' && (
-                        <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 flex items-center gap-1">
+                        <span className="text-[10px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/50 flex items-center gap-1">
                           <Lock className="w-2.5 h-2.5" /> Pribadi
                         </span>
                       )}
                       {ev.eventType === 'proposal' && (
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
+                        <span className="text-[10px] font-bold text-warning-text bg-warning-surface px-2 py-0.5 rounded border border-warning-border flex items-center gap-1">
                           <Clock className="w-2.5 h-2.5" /> Pengajuan
                         </span>
                       )}
@@ -1032,7 +1032,7 @@ export function InteractiveCalendar({
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-left sm:text-right font-mono">
                       <span className="text-[10px] text-text-muted block font-sans">Batas Waktu / Jadwal:</span>
-                      <span className="text-xs font-bold text-[#9E5507]">
+                      <span className="text-xs font-bold text-[#9E5507] dark:text-brand-orange">
                         {ev.startTime && ev.deadline
                           ? `${formatWIBShort(ev.startTime)} – ${formatWIBShort(ev.deadline)}`
                           : ev.deadline
@@ -1059,17 +1059,17 @@ export function InteractiveCalendar({
               <div className="flex items-center gap-2">
                 <Badge variant="primary" size="sm">{selectedEvent.category}</Badge>
                 {selectedEvent.eventType === 'personal' && (
-                  <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 flex items-center gap-1">
+                  <span className="text-[10px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800/50 flex items-center gap-1">
                     <Lock className="w-2.5 h-2.5" /> Catatan Pribadi
                   </span>
                 )}
                 {selectedEvent.eventType === 'official' && (
-                  <span className="text-[10px] font-bold text-teal-deep bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
+                  <span className="text-[10px] font-bold text-success-text bg-success-surface px-2 py-0.5 rounded border border-success-border flex items-center gap-1">
                     <ShieldCheck className="w-2.5 h-2.5" /> Resmi Angkatan
                   </span>
                 )}
                 {selectedEvent.eventType === 'proposal' && (
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
+                  <span className="text-[10px] font-bold text-warning-text bg-warning-surface px-2 py-0.5 rounded border border-warning-border flex items-center gap-1">
                     <Clock className="w-2.5 h-2.5" /> Menunggu Persetujuan
                   </span>
                 )}
@@ -1273,12 +1273,12 @@ export function InteractiveCalendar({
                     )}
 
                     {selectedEvent.startTime && selectedEvent.deadline ? (
-                      <p className="text-xs font-bold text-[#9E5507] flex items-center gap-1.5 mt-2 font-mono">
+                      <p className="text-xs font-bold text-[#9E5507] dark:text-brand-orange flex items-center gap-1.5 mt-2 font-mono">
                         <Clock className="w-4 h-4 shrink-0" />
                         <span>Jadwal: {formatWIB(selectedEvent.startTime)} – {formatWIB(selectedEvent.deadline)}</span>
                       </p>
                     ) : selectedEvent.deadline ? (
-                      <p className="text-xs font-bold text-[#9E5507] flex items-center gap-1.5 mt-2 font-mono">
+                      <p className="text-xs font-bold text-[#9E5507] dark:text-brand-orange flex items-center gap-1.5 mt-2 font-mono">
                         <Clock className="w-4 h-4 shrink-0" />
                         <span>Batas Waktu: {formatWIB(selectedEvent.deadline)}</span>
                       </p>
@@ -1310,8 +1310,8 @@ export function InteractiveCalendar({
                   )}
 
                   {selectedEvent.eventType === 'personal' && (
-                    <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs flex items-center gap-2">
-                      <Lock className="w-4 h-4 shrink-0 text-purple-600" />
+                    <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 text-purple-800 dark:text-purple-200 text-xs flex items-center gap-2">
+                      <Lock className="w-4 h-4 shrink-0 text-purple-600 dark:text-purple-400" />
                       <span>Catatan pribadi ini hanya dapat dilihat oleh Anda dan tidak dibagikan ke angkatan.</span>
                     </div>
                   )}
@@ -1446,8 +1446,8 @@ export function InteractiveCalendar({
               </div>
 
               {creationType === 'personal' && (
-                <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 flex items-start gap-2.5 text-xs text-purple-800">
-                  <Lock className="w-4 h-4 shrink-0 mt-0.5 text-purple-600" />
+                <div className="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 flex items-start gap-2.5 text-xs text-purple-800 dark:text-purple-200">
+                  <Lock className="w-4 h-4 shrink-0 mt-0.5 text-purple-600 dark:text-purple-400" />
                   <span>
                     Agenda pribadi hanya terlihat oleh Anda dan langsung tersimpan tanpa membutuhkan verifikasi admin.
                   </span>
@@ -1455,8 +1455,8 @@ export function InteractiveCalendar({
               )}
 
               {creationType === 'official' && (
-                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-teal-deep">
-                  <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-teal-deep" />
+                <div className="p-3 rounded-lg bg-success-surface border border-success-border flex items-start gap-2.5 text-xs text-success-text">
+                  <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-success-text" />
                   <span>
                     Agenda resmi akan langsung dipublikasikan ke kalender seluruh angkatan dan dijadwalkan pengingat WhatsApp.
                   </span>
@@ -1464,8 +1464,8 @@ export function InteractiveCalendar({
               )}
 
               {creationType === 'proposal' && (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-800">
-                  <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+                <div className="p-3 rounded-lg bg-warning-surface border border-warning-border flex items-start gap-2.5 text-xs text-warning-text">
+                  <Info className="w-4 h-4 shrink-0 mt-0.5 text-warning-text" />
                   <span>
                     Pengajuan agenda akan diverifikasi oleh admin angkatan sebelum dipublikasikan ke seluruh mahasiswa.
                   </span>

@@ -105,7 +105,7 @@ export function BrandLogo({
         />
       ) : (
         <div
-          className={`${markSizes[size]} bg-gradient-to-br from-[#41C2A1] to-[#176C5B] text-white font-heading font-black rounded-lg flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 tracking-tighter shrink-0`}
+          className={`${markSizes[size]} bg-brand-primary text-brand-foreground font-heading font-black rounded-lg flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 tracking-tighter shrink-0`}
         >
           NV
         </div>

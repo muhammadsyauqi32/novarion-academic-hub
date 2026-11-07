@@ -2,99 +2,104 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { ArrowUpRight, MapPin } from 'lucide-react';
 import { CMSHero } from '@novarion/shared';
 import { COHORT_CONFIG } from '@/lib/config/cohort';
-import { Reveal } from './Reveal';
+import { getHubLoginUrl } from '@/lib/links';
 
 interface HeroSectionProps {
   hero: CMSHero | null;
 }
 
 export function HeroSection({ hero }: HeroSectionProps) {
-  // Use CMS uploaded hero image if present, or fallback to real uploaded cohort photo
   const photoUrl = hero?.imageUrl || '/foto_angkatan.jpeg';
-  const hasPhoto = Boolean(photoUrl);
+  const hubLoginUrl = getHubLoginUrl();
 
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[92vh] flex flex-col justify-between pt-24 pb-14 md:pt-32 md:pb-20 scroll-mt-0 overflow-hidden bg-[#112A24]"
+      className="relative w-full min-h-screen flex flex-col justify-between pt-24 pb-8 md:pt-28 md:pb-10 scroll-mt-0 overflow-hidden bg-[#0A1311] text-[#FAF9F5] border-b border-white/10"
     >
-      {/* Full-Bleed Cohort Photograph Background */}
-      {hasPhoto ? (
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={photoUrl}
-            alt={hero?.title || 'Foto Angkatan Novarion 62 Statistika IPB'}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-            style={{
-              objectPosition: `${hero?.focalPointX || '50%'} ${hero?.focalPointY || '50%'}`,
-            }}
-          />
-          {/* Subtle dual-tone gradient scrim ensuring high contrast & readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#112A24] via-[#112A24]/70 to-[#112A24]/40" />
-        </div>
-      ) : (
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#112A24] via-[#163830] to-[#112A24] flex items-center justify-center">
-          <div className="text-center px-4 text-[#FAF9F5]/40 text-xs font-mono">
-            Foto resmi angkatan belum diunggah via CMS. Silakan unggah foto angkatan di CMS.
-          </div>
-        </div>
-      )}
+      {/* Background Layer: Authentic Cohort Photograph with Contrast Scrim */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={photoUrl}
+          alt={hero?.title || 'Foto Bersama Mahasiswa Novarion 62 Statistika dan Sains Data IPB'}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center scale-[1.01]"
+          style={{
+            objectPosition: `${hero?.focalPointX || '50%'} ${hero?.focalPointY || '45%'}`,
+          }}
+        />
+        {/* Contrast Scrim: Preserves authentic photo visibility while guaranteeing AAA text readability */}
+        <div className="absolute inset-0 bg-[#0A1311]/75 backdrop-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1311] via-transparent to-[#0A1311]/60" />
+      </div>
 
-      {/* Main Content Container (No Nested Boxes) */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between flex-1 gap-8 text-[#FAF9F5]">
-        {/* Cohort Identity Bar */}
-        <Reveal yOffset={12}>
-          <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
-            <div className="flex items-center gap-3">
-              <span className="font-bold text-sm sm:text-base tracking-tight text-[#FAF9F5]">
-                {COHORT_CONFIG.program}
-              </span>
-              <span className="font-semibold text-xs opacity-85">
-                Angkatan {COHORT_CONFIG.cohortNumber}
-              </span>
-            </div>
-            <div className="hidden sm:flex items-center gap-4 text-xs opacity-85">
-              <span>{COHORT_CONFIG.institution}</span>
-              <span className="flex items-center gap-1 font-semibold">
-                <MapPin className="w-3.5 h-3.5 text-[#FFAE5D]" />
-                <span>Dramaga, Bogor</span>
-              </span>
-            </div>
-          </div>
-        </Reveal>
+      {/* Hero Foreground Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col justify-between flex-1 gap-10">
+        <div className="max-w-3xl my-auto py-8 sm:py-12 flex flex-col gap-5">
+          <span className="text-xs font-mono font-bold tracking-wider uppercase text-[#C9FBD4]">
+            Statistika dan Sains Data / IPB University Angkatan 62
+          </span>
 
-        {/* Central Typographic Composition (Flat, Confident, Zero Box-Within-Box) */}
-        <div className="flex flex-col gap-5 max-w-4xl my-auto py-8 md:py-16">
-          <Reveal delayMs={100} yOffset={16}>
-            <div className="flex flex-col gap-3">
-              <h1 className="font-heading font-black text-6xl sm:text-8xl lg:text-9xl tracking-tighter leading-[0.92] text-[#FAF9F5]">
-                NOVARION
-              </h1>
-
-              <div className="font-heading font-bold text-2xl sm:text-4xl tracking-tight text-[#FFAE5D]">
-                &ldquo;{COHORT_CONFIG.tagline}&rdquo;
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Documentary Narrative (Plain text without enclosing box) */}
-          <Reveal delayMs={180} yOffset={16}>
-            <p className="text-base sm:text-lg max-w-2xl leading-relaxed font-sans text-[#FAF9F5]/90">
-              Sebuah ikhtiar kolektif mahasiswa Statistika dan Sains Data Angkatan 62 IPB University. Menyatukan kilau energi analitis dengan kompas kepemimpinan berintegritas tinggi untuk melangkah bersama menuntaskan tantangan akademik dan kemaslahatan bersama.
+          <div className="flex flex-col gap-2">
+            <h1 className="font-heading font-black text-5xl sm:text-7xl lg:text-[6rem] tracking-tighter leading-[0.92] text-[#FAF9F5]">
+              {COHORT_CONFIG.name}
+            </h1>
+            <p className="font-heading font-bold text-xl sm:text-2xl md:text-3xl tracking-tight text-[#FFAE5D]">
+              &ldquo;{COHORT_CONFIG.tagline}&rdquo;
             </p>
-          </Reveal>
+          </div>
+
+          <p className="text-base sm:text-lg leading-relaxed font-sans text-[#FAF9F5]/90 max-w-2xl">
+            Website resmi mahasiswa Statistika dan Sains Data Angkatan 62 IPB University. Wadah informasi perkuliahan di Dramaga, bank materi dan tugas, dokumentasi kegiatan, serta kabar seputar angkatan.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            <a
+              href={hubLoginUrl}
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-input bg-brand-primary text-brand-foreground font-sans text-xs sm:text-sm font-bold hover:bg-[#C9FBD4] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-teal-deep"
+            >
+              Buka Academic Hub
+            </a>
+
+            <a
+              href="#tentang"
+              className="inline-flex items-center justify-center px-5 py-3.5 rounded-input bg-white/[0.08] hover:bg-white/[0.14] text-[#FAF9F5] border border-white/20 font-sans text-xs sm:text-sm font-semibold transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-teal-deep"
+            >
+              Tentang Novarion
+            </a>
+          </div>
         </div>
 
-        {/* Bottom Editorial Caption */}
-        <div className="flex items-center justify-between text-xs opacity-75 pt-4">
-          <span>Departemen Statistika dan Sains Data</span>
-          <span className="font-semibold">SSMI IPB University</span>
+        {/* Bottom Metadata Ledger */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs font-sans text-[#FAF9F5]/75">
+          <div>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[#C9FBD4] block">
+              Program Studi
+            </span>
+            <span className="font-semibold text-[#FAF9F5] mt-0.5 block">
+              S1 Statistika dan Sains Data (Angkatan 62)
+            </span>
+          </div>
+          <div>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[#EAEAB7] block">
+              Fakultas &amp; Departemen
+            </span>
+            <span className="font-semibold text-[#FAF9F5] mt-0.5 block">
+              Departemen Statistika dan Sains Data, FMIPA IPB
+            </span>
+          </div>
+          <div>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-[#FFAE5D] block">
+              Lokasi Kampus
+            </span>
+            <span className="font-semibold text-[#FAF9F5] mt-0.5 block">
+              Kampus IPB Dramaga, Bogor
+            </span>
+          </div>
         </div>
       </div>
     </section>

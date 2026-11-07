@@ -20,14 +20,14 @@ export function PublicFooter() {
   const getSocialIcon = (platform: string) => {
     switch (platform) {
       case 'instagram':
-        return <Instagram className="w-4 h-4 shrink-0 text-[#FFAE5D]" />;
+        return <Instagram className="w-4 h-4 shrink-0 text-brand-orange" />;
       case 'linkedin':
-        return <Linkedin className="w-4 h-4 shrink-0 text-[#FFAE5D]" />;
+        return <Linkedin className="w-4 h-4 shrink-0 text-brand-orange" />;
       case 'youtube':
-        return <Youtube className="w-4 h-4 shrink-0 text-[#FFAE5D]" />;
+        return <Youtube className="w-4 h-4 shrink-0 text-brand-orange" />;
       default:
         return (
-          <span className="w-4 h-4 shrink-0 font-mono text-xs font-bold text-[#FFAE5D] flex items-center justify-center">
+          <span className="w-4 h-4 shrink-0 font-mono text-xs font-bold text-brand-orange flex items-center justify-center">
             #
           </span>
         );
@@ -35,7 +35,7 @@ export function PublicFooter() {
   };
 
   return (
-    <footer className="w-full bg-[#0D1B2A] py-16 md:py-20 text-[#FAF9F5]">
+    <footer className="w-full bg-[#0A1311] py-16 md:py-20 text-[#FAF9F5] border-t border-white/10 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-12 md:gap-16">
         {/* Editorial Multi-Column Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
@@ -50,41 +50,41 @@ export function PublicFooter() {
                 Statistika dan Sains Data Angkatan 62
               </span>
             </div>
-            <p className="text-xs font-mono font-bold text-[#FFAE5D] tracking-wide">
+            <p className="text-xs font-mono font-bold text-brand-orange tracking-wide">
               &ldquo;Kita Satu, Kita Bisa!&rdquo;
             </p>
             <p className="text-xs text-[#FAF9F5]/70 font-sans leading-relaxed max-w-xs mt-1">
-              Arsip visual, warta dokumentasi, dan portal akademik terpadu keluarga besar Mahasiswa Statistika dan Sains Data Angkatan 62 IPB University.
+              Website angkatan mahasiswa Statistika dan Sains Data Angkatan 62 IPB University. Memuat info kegiatan, materi kuliah, dan dokumentasi angkatan.
             </p>
           </div>
 
-          {/* Column 2: Jelajahi (Strictly Vertical Navigation) */}
+          {/* Column 2: Jelajahi */}
           <div className="flex flex-col items-start gap-3">
-            <h3 className="font-heading font-black text-sm uppercase tracking-wider text-[#FFAE5D]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-orange">
               Jelajahi
             </h3>
-            <nav className="flex flex-col gap-2.5 text-xs font-sans font-medium text-[#FAF9F5]/80">
-              <a href="#tentang" className="hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]">
+            <nav className="flex flex-col gap-2.5 text-xs font-sans font-medium text-[#FAF9F5]/80" aria-label="Navigasi footer">
+              <a href="#tentang" className="hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep">
                 Tentang
               </a>
-              <a href="#pengurus" className="hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]">
+              <a href="#pengurus" className="hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep">
                 Pengurus
               </a>
-              <a href="#berita" className="hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]">
-                Berita
+              <a href="#berita" className="hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep">
+                Kabar Angkatan
               </a>
-              <a href="#galeri" className="hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]">
-                Galeri
+              <a href="#galeri" className="hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep">
+                Galeri Momen
               </a>
-              <a href="#prestasi" className="hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]">
-                Prestasi
+              <a href="#prestasi" className="hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep">
+                Lembar Kehormatan
               </a>
             </nav>
           </div>
 
           {/* Column 3: Media Sosial */}
           <div className="flex flex-col items-start gap-3">
-            <h3 className="font-heading font-black text-sm uppercase tracking-wider text-[#FFAE5D]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-orange">
               Media Sosial
             </h3>
             {activeSocials.length > 0 ? (
@@ -95,12 +95,12 @@ export function PublicFooter() {
                     href={social.url!}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 text-[#FAF9F5]/80 hover:text-[#FFAE5D] transition-colors"
+                    className="group inline-flex items-center gap-2 text-[#FAF9F5]/80 hover:text-brand-orange transition-colors"
                   >
                     {getSocialIcon(social.platform)}
                     <span className="font-medium">{social.name}</span>
                     {social.handle && (
-                      <span className="text-[11px] font-mono text-[#FAF9F5]/50 group-hover:text-[#FFAE5D]/75 transition-colors">
+                      <span className="text-[11px] font-mono text-[#FAF9F5]/50 group-hover:text-brand-orange/75 transition-colors">
                         {social.handle}
                       </span>
                     )}
@@ -112,8 +112,8 @@ export function PublicFooter() {
                 <p className="text-xs text-[#FAF9F5]/70 font-sans leading-relaxed max-w-xs">
                   Kanal komunikasi resmi angkatan dikelola oleh Divisi Komunikasi &amp; Media. Tautan terverifikasi akan dipublikasikan di sini.
                 </p>
-                <span className="text-[11px] font-mono text-[#41C2A1]">
-                  IPB University · Angkatan 62
+                <span className="text-[11px] font-mono text-brand-primary">
+                  IPB University / Angkatan 62
                 </span>
               </div>
             )}
@@ -121,15 +121,15 @@ export function PublicFooter() {
 
           {/* Column 4: Academic Hub & Akses Mahasiswa */}
           <div className="flex flex-col items-start gap-3">
-            <h3 className="font-heading font-black text-sm uppercase tracking-wider text-[#41C2A1]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-brand-primary">
               Academic Hub
             </h3>
             <p className="text-xs text-[#FAF9F5]/70 font-sans leading-relaxed max-w-xs">
-              Portal akademik mandiri untuk silabus mata kuliah, bank latihan soal, kalender evaluasi, dan repositori belajar Statistika 62.
+              Portal belajar untuk mengecek jadwal kuliah, mengunduh bahan praktikum, dan mengelola tenggat tugas.
             </p>
             <a
               href={hubLoginUrl}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#41C2A1] hover:text-[#C9FBD4] transition-colors group mt-1"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-primary hover:text-brand-mint-soft transition-colors group mt-1"
             >
               <span>Masuk ke Academic Hub</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -140,34 +140,34 @@ export function PublicFooter() {
                 Departemen Statistika dan Sains Data
               </span>
               <span className="text-[11px] text-[#FAF9F5]/50 font-sans">
-                SSMI IPB University
+                FMIPA IPB University
               </span>
 
               {/* Back to Top */}
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#FAF9F5]/70 hover:text-[#FFAE5D] transition-colors focus-visible:outline-2 focus-visible:outline-[#FFAE5D]"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#FAF9F5]/70 hover:text-brand-orange transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep"
                 aria-label="Kembali ke atas halaman"
               >
-                <ArrowUp className="w-3.5 h-3.5 text-[#FFAE5D]" />
+                <ArrowUp className="w-3.5 h-3.5 text-brand-orange" />
                 <span>Kembali ke atas</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Footer Area (Clean and Editorial, No Dividers) */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#FAF9F5]/60">
-          <p>© {new Date().getFullYear()} NOVARION 62 · IPB UNIVERSITY</p>
+        {/* Bottom Strip */}
+        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#FAF9F5]/60">
+          <p>© {new Date().getFullYear()} NOVARION 62 / IPB UNIVERSITY</p>
 
           <p className="text-[11px] text-[#FAF9F5]/50 font-sans text-center">
-            Dirancang dengan dedikasi untuk keluarga besar Novarion 62
+            Dikelola bersama untuk angkatan Novarion 62
           </p>
 
           <Link
             href="/privacy"
-            className="hover:text-[#FFAE5D] transition-colors font-sans"
+            className="hover:text-brand-orange transition-colors font-sans text-xs"
           >
             Kebijakan Privasi
           </Link>

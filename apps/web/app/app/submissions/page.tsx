@@ -95,7 +95,7 @@ export default async function SubmissionsPage() {
 
                   <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted mt-0.5">
                     {item.deadline && (
-                      <span className="flex items-center gap-1 font-mono text-[#9E5507]">
+                      <span className="flex items-center gap-1 font-mono text-[#9E5507] dark:text-brand-orange">
                         <Clock className="w-3.5 h-3.5" />
                         <span>Batas: {formatWIBShort(new Date(item.deadline))}</span>
                       </span>

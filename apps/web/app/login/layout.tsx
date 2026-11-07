@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: 'Masuk',
@@ -21,19 +22,22 @@ export default function LoginLayout({
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col justify-between">
-      {/* Minimal Top Header - Tanpa menu navbar publik (Tentang, Pengurus, dll.) */}
-      <header className="w-full px-6 py-4 flex items-center justify-between border-b border-border/40 bg-surface/50 backdrop-blur-sm">
+      {/* Minimal Top Header */}
+      <header className="w-full px-4 sm:px-6 py-3 flex items-center justify-between border-b border-border/60 bg-surface/80 backdrop-blur-sm">
         <Link
           href={mainSiteUrl}
-          className="inline-flex items-center gap-2 text-xs font-medium text-text-muted hover:text-text-primary transition-colors py-1.5 px-3 rounded-lg hover:bg-surface-soft"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors min-h-[40px] px-3 rounded-input hover:bg-surface-soft"
           title="Kembali ke Beranda"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Kembali ke Beranda</span>
         </Link>
-        <span className="text-[11px] font-mono text-text-muted/60 uppercase tracking-widest hidden sm:inline">
-          Academic Hub · Angkatan 62
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-mono font-medium text-text-muted uppercase tracking-wider hidden sm:inline">
+            Academic Hub · Angkatan 62
+          </span>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Main Content: Form Login Mandiri */}
@@ -42,7 +46,7 @@ export default function LoginLayout({
       </main>
 
       {/* Footer Minimalist */}
-      <footer className="w-full py-4 text-center text-xs text-text-muted/70 border-t border-border/40">
+      <footer className="w-full py-4 text-center text-xs text-text-muted border-t border-border/60">
         © {new Date().getFullYear()} Novarion · Statistika dan Sains Data IPB University
       </footer>
     </div>

@@ -36,10 +36,15 @@ export function GallerySection({ albums }: GallerySectionProps) {
     [albums, selectedAlbumId]
   );
 
+  const getItemId = useCallback(
+    (item: { photo: CMSAlbumPhoto; albumTitle: string }) => item.photo.id || item.photo.imageUrl,
+    []
+  );
+
   const { displayedItems, registerItemRef } = useFilterAnimation({
     items: allPhotos,
     filterFn,
-    getItemId: (item) => item.photo.id || item.photo.imageUrl,
+    getItemId,
   });
 
   const activePhotos = useMemo(
@@ -79,36 +84,50 @@ export function GallerySection({ albums }: GallerySectionProps) {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (lightboxIndex !== null) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
   }, [lightboxIndex, showNext, showPrev]);
 
   return (
-    <section id="galeri" className="w-full bg-[#0D1B2A] py-16 md:py-24 scroll-mt-20 text-[#FAF9F5]">
+    <section id="galeri" className="w-full bg-canvas py-16 md:py-24 scroll-mt-16 transition-colors duration-200 border-b border-border/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Horizontally Centered Section Header */}
+        {/* Section Header */}
         <Reveal yOffset={16}>
-          <div className="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center gap-3">
-            <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#FAF9F5] tracking-tight leading-tight">
-              Galeri dan Dokumentasi
-            </h2>
-            <p className="text-sm sm:text-base text-[#FAF9F5]/75 max-w-xl mx-auto leading-relaxed font-sans font-medium">
-              Arsip visual dan rekaman momen kebersamaan Angkatan 62.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-border">
+            <div className="max-w-2xl">
+              <h2 className="font-heading font-black text-3xl sm:text-4xl text-text-primary tracking-tight leading-tight">
+                Rekam Jejak Kebersamaan di Kampus dan Lapangan.
+              </h2>
+              <p className="text-sm sm:text-base text-text-muted mt-2 leading-relaxed font-sans">
+                Kompilasi momen perkuliahan di Dramaga, sesi praktikum komputasi statistik, hingga temu akrab keluarga besar Angkatan 62.
+              </p>
+            </div>
 
-            {/* Album Selector Tabs (Clean buttons, smooth color transition, no borders) */}
+            {/* Album Selector Tabs */}
             {albums.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3" role="group" aria-label="Pilihan album galeri">
+              <div
+                className="flex flex-wrap items-center gap-1.5 shrink-0"
+                role="group"
+                aria-label="Pilihan album galeri"
+              >
                 <button
                   type="button"
                   aria-pressed={selectedAlbumId === 'all'}
                   onClick={() => setSelectedAlbumId('all')}
-                  className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
+                  className={`text-xs font-sans px-3 py-1.5 rounded-input transition-all duration-150 focus-visible:outline-2 focus-visible:outline-teal-deep ${
                     selectedAlbumId === 'all'
-                      ? 'bg-[#FFAE5D] text-[#0D1B2A]'
-                      : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
+                      ? 'bg-teal-deep text-white dark:text-[#0C1815] font-bold shadow-xs'
+                      : 'bg-surface text-text-muted hover:text-text-primary border border-border hover:bg-surface-soft font-medium'
                   }`}
                 >
-                  Semua Album ({allPhotos.length})
+                  Semua ({allPhotos.length})
                 </button>
                 {albums.map((alb) => {
                   const isSelected = selectedAlbumId === alb.id;
@@ -118,10 +137,10 @@ export function GallerySection({ albums }: GallerySectionProps) {
                       type="button"
                       aria-pressed={isSelected}
                       onClick={() => setSelectedAlbumId(alb.id)}
-                      className={`text-xs font-mono font-bold px-3.5 py-1.5 rounded-xs transition-colors duration-200 shadow-2xs ${
+                      className={`text-xs font-sans px-3 py-1.5 rounded-input transition-all duration-150 focus-visible:outline-2 focus-visible:outline-teal-deep ${
                         isSelected
-                          ? 'bg-[#FFAE5D] text-[#0D1B2A]'
-                          : 'bg-[#15283C] text-[#FAF9F5] hover:bg-[#FFAE5D] hover:text-[#0D1B2A]'
+                          ? 'bg-teal-deep text-white dark:text-[#0C1815] font-bold shadow-xs'
+                          : 'bg-surface text-text-muted hover:text-text-primary border border-border hover:bg-surface-soft font-medium'
                       }`}
                     >
                       {alb.title} ({alb.photos?.length || 0})
@@ -134,26 +153,32 @@ export function GallerySection({ albums }: GallerySectionProps) {
         </Reveal>
 
         {displayedItems.length === 0 ? (
-          /* Visually Restrained Clean Empty State */
+          /* Editorial Empty State */
           <Reveal yOffset={16}>
-            <div className="p-12 sm:p-16 rounded-xs bg-[#15283C] text-center max-w-lg mx-auto flex flex-col items-center gap-4 shadow-sm">
-              <div className="w-12 h-12 rounded-xs bg-[#41C2A1]/20 flex items-center justify-center text-[#41C2A1] shadow-2xs">
-                <Camera className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <h3 className="font-heading font-black text-lg text-[#FAF9F5]">
-                  Belum Ada Foto dalam Album Ini
-                </h3>
-                <p className="text-xs text-[#FAF9F5]/70 leading-relaxed font-sans">
-                  Arsip visual kegiatan angkatan akan didokumentasikan di sini sebagai rekam jejak memori kebersamaan Statistika 62.
-                </p>
-              </div>
+            <div className="py-16 px-6 text-center max-w-lg mx-auto flex flex-col items-center gap-3 border border-border rounded-card bg-surface-soft">
+              <Camera className="w-8 h-8 text-text-muted/60" />
+              <h3 className="font-heading font-bold text-lg text-text-primary">
+                Belum Ada Foto dalam Album Ini
+              </h3>
+              <p className="text-xs sm:text-sm text-text-muted leading-relaxed font-sans">
+                Dokumentasi foto kegiatan kuliah, praktikum, dan kumpul angkatan sedang dikurasi oleh Divisi Media.
+              </p>
             </div>
           </Reveal>
         ) : (
-          /* Clean Editorial Photography Grid (Always reflows from leftmost position with smooth FLIP transitions) */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch justify-start">
-            {displayedItems.map(({ data: item, id, isExiting }) => {
+          /* Editorial Photo Mosaic Grid */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-5 items-stretch">
+            {displayedItems.map(({ data: item, id, isExiting }, idx) => {
+              // Create an asymmetric visual rhythm: first item is featured wide (7 cols on lg), next is 5 cols, etc.
+              const colSpanClass =
+                idx % 4 === 0
+                  ? 'lg:col-span-7 aspect-[16/10]'
+                  : idx % 4 === 1
+                  ? 'lg:col-span-5 aspect-[16/10]'
+                  : idx % 4 === 2
+                  ? 'lg:col-span-5 aspect-[16/10]'
+                  : 'lg:col-span-7 aspect-[16/10]';
+
               return (
                 <div
                   key={id}
@@ -164,7 +189,7 @@ export function GallerySection({ albums }: GallerySectionProps) {
                     transform: isExiting ? 'translateY(-8px) scale(0.96)' : undefined,
                     pointerEvents: isExiting ? 'none' : 'auto',
                   }}
-                  className="w-full flex"
+                  className={`w-full flex ${colSpanClass.split(' ')[0]}`}
                 >
                   <div
                     onClick={() => openLightbox(id)}
@@ -177,23 +202,23 @@ export function GallerySection({ albums }: GallerySectionProps) {
                         openLightbox(id);
                       }
                     }}
-                    className="group relative aspect-[4/3] w-full overflow-hidden rounded-xs bg-[#15283C] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#FFAE5D]"
+                    className={`group relative w-full overflow-hidden rounded-card bg-surface-soft border border-border shadow-xs hover:border-border-strong hover:-translate-y-0.5 transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-teal-deep ${colSpanClass.split(' ')[1]}`}
                   >
                     <Image
                       src={item.photo.imageUrl}
                       alt={item.photo.caption || item.albumTitle}
                       fill
-                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-102 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 700px"
                     />
 
-                    {/* Caption Strip */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-[#0D1B2A] via-[#0D1B2A]/75 to-transparent flex flex-col justify-end">
-                      <span className="text-[10px] font-mono font-bold text-[#FFAE5D] uppercase tracking-wider">
+                    {/* Editorial Caption Bar */}
+                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex flex-col justify-end text-white">
+                      <span className="text-[10px] font-mono font-bold text-brand-orange uppercase tracking-wider">
                         {item.albumTitle}
                       </span>
                       {item.photo.caption && (
-                        <p className="text-xs font-semibold text-[#FAF9F5] line-clamp-1 mt-0.5">
+                        <p className="text-xs font-medium text-white/95 line-clamp-1 mt-0.5">
                           {item.photo.caption}
                         </p>
                       )}
@@ -209,66 +234,80 @@ export function GallerySection({ albums }: GallerySectionProps) {
       {/* Lightbox Viewer */}
       {lightboxIndex !== null && activePhotos[lightboxIndex] && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0D1B2A]/95 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-150"
           onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Penampil foto ukuran penuh"
         >
           <div
             className="relative w-full max-w-5xl flex flex-col items-center gap-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Toolbar */}
-            <div className="w-full flex items-center justify-between text-xs font-mono text-[#FAF9F5]/80 px-2">
-              <span className="font-bold text-[#FFAE5D]">
+            <div className="w-full flex items-center justify-between text-xs font-mono text-white/80 px-2">
+              <span className="font-bold text-brand-orange">
                 Foto {lightboxIndex + 1} dari {activePhotos.length}
               </span>
               <button
+                type="button"
                 onClick={closeLightbox}
-                className="p-2 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors"
-                aria-label="Tutup"
+                className="p-2 rounded-input hover:bg-white/10 text-white transition-colors focus-visible:outline-2 focus-visible:outline-teal-deep"
+                aria-label="Tutup penampil foto"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Photo Container */}
-            <div className="relative w-full aspect-[16/10] max-h-[75vh] rounded-xs overflow-hidden bg-[#0D1B2A] shadow-2xl">
+            {/* Main Stage with Nav Arrows */}
+            <div className="relative aspect-[16/10] w-full max-h-[70vh] rounded-card overflow-hidden bg-black/40 flex items-center justify-center border border-white/10">
               <Image
                 src={activePhotos[lightboxIndex].photo.imageUrl}
-                alt={activePhotos[lightboxIndex].photo.caption || 'Foto Galeri'}
+                alt={activePhotos[lightboxIndex].photo.caption || activePhotos[lightboxIndex].albumTitle}
                 fill
                 className="object-contain"
-                sizes="100vw"
+                sizes="(max-width: 1280px) 100vw, 1200px"
               />
+
+              {activePhotos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showPrev();
+                    }}
+                    className="absolute left-3 p-2.5 rounded-full bg-black/60 hover:bg-black/80 text-white transition-all backdrop-blur-xs focus-visible:outline-2 focus-visible:outline-teal-deep"
+                    aria-label="Foto sebelumnya"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showNext();
+                    }}
+                    className="absolute right-3 p-2.5 rounded-full bg-black/60 hover:bg-black/80 text-white transition-all backdrop-blur-xs focus-visible:outline-2 focus-visible:outline-teal-deep"
+                    aria-label="Foto berikutnya"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Navigation & Caption */}
-            <div className="w-full flex items-center justify-between px-2 text-xs font-mono">
-              <button
-                onClick={showPrev}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors bg-[#15283C]"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Sebelumnya</span>
-              </button>
-
-              <div className="text-center max-w-md px-4">
-                <span className="font-bold text-[#FFAE5D] block">
-                  {activePhotos[lightboxIndex].albumTitle}
-                </span>
-                {activePhotos[lightboxIndex].photo.caption && (
-                  <p className="text-xs text-[#FAF9F5]/90 mt-0.5">
-                    {activePhotos[lightboxIndex].photo.caption}
-                  </p>
-                )}
-              </div>
-
-              <button
-                onClick={showNext}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xs hover:bg-[#FFAE5D] hover:text-[#0D1B2A] text-[#FAF9F5] transition-colors bg-[#15283C]"
-              >
-                <span>Selanjutnya</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
+            {/* Bottom Caption */}
+            <div className="text-center px-4 max-w-xl">
+              <span className="text-[11px] font-mono text-brand-orange uppercase tracking-wider block mb-1">
+                Album: {activePhotos[lightboxIndex].albumTitle}
+              </span>
+              {activePhotos[lightboxIndex].photo.caption && (
+                <p className="text-sm text-white/90 font-sans">
+                  {activePhotos[lightboxIndex].photo.caption}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -276,4 +315,3 @@ export function GallerySection({ albums }: GallerySectionProps) {
     </section>
   );
 }
-

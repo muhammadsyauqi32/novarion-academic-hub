@@ -230,7 +230,7 @@ export function AdminAgendasClient({ initialAgendas }: AdminAgendasClientProps) 
                       <Badge variant="primary" size="sm">{a.category}</Badge>
                     </td>
                     <td className="py-3 px-4 capitalize text-text-muted">{a.scope.replace('_', ' ')}</td>
-                    <td className="py-3 px-4 font-semibold text-[#9E5507]">
+                    <td className="py-3 px-4 font-semibold text-[#9E5507] dark:text-brand-orange">
                       {a.deadline ? formatWIBShort(a.deadline) : '-'}
                     </td>
                     <td className="py-3 px-4">
@@ -437,7 +437,7 @@ export function AdminAgendasClient({ initialAgendas }: AdminAgendasClientProps) 
                   <td className="py-2 px-3 text-[11px] text-text-muted capitalize">
                     {r.scope} {r.courseCode ? `(${r.courseCode})` : ''}
                   </td>
-                  <td className="py-2 px-3 font-mono text-[11px] text-[#9E5507]">
+                  <td className="py-2 px-3 font-mono text-[11px] text-[#9E5507] dark:text-brand-orange">
                     {formatWIB(new Date(r.deadline))}
                   </td>
                   <td className="py-2 px-3">

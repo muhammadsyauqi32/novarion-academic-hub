@@ -3,21 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  Calendar, 
-  CheckSquare, 
-  FolderDown, 
-  MoreHorizontal, 
+import {
+  Home,
+  Calendar,
+  CheckSquare,
+  FolderDown,
+  MoreHorizontal,
   ListTodo,
-  BookOpen, 
-  Send, 
-  User, 
+  BookOpen,
+  Send,
+  User,
   ShieldAlert,
   X,
-  LogOut
+  LogOut,
 } from 'lucide-react';
 import { UserRole } from '@novarion/shared';
+import { ThemeToggle } from './ThemeToggle';
 
 interface StudentBottomNavProps {
   userRole?: UserRole;
@@ -62,8 +63,8 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
     <>
       {/* Drawer Menu Lainnya (Accessible Sheet) */}
       {isMoreOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex flex-col justify-end transition-opacity"
+        <div
+          className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex flex-col justify-end transition-opacity"
           onClick={() => setIsMoreOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -71,7 +72,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
         >
           <div
             ref={sheetRef}
-            className="w-full bg-surface rounded-t-2xl p-5 border-t border-border shadow-xl flex flex-col gap-4 animate-in slide-in-from-bottom duration-200"
+            className="w-full bg-surface rounded-t-modal p-5 border-t border-border shadow-xl flex flex-col gap-4 animate-in slide-in-from-bottom duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-2 border-b border-border/70">
@@ -79,21 +80,24 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
                 <span className="w-8 h-1 bg-border rounded-full" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted">Navigasi Lainnya</h4>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsMoreOpen(false)}
-                className="p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-soft"
-                aria-label="Tutup Menu"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+                <button
+                  type="button"
+                  onClick={() => setIsMoreOpen(false)}
+                  className="p-2 rounded-input text-text-muted hover:text-text-primary hover:bg-surface-soft"
+                  aria-label="Tutup Menu"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-2.5">
               <Link
                 href="/app/agendas"
                 onClick={() => setIsMoreOpen(false)}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-soft text-text-primary text-xs font-medium hover:bg-border/40 transition-colors"
+                className="flex items-center gap-2.5 p-3 min-h-[44px] rounded-card bg-surface-soft text-text-primary text-xs font-semibold hover:bg-surface-hover border border-border transition-colors"
               >
                 <ListTodo className="w-4 h-4 text-teal-deep shrink-0" />
                 <span className="truncate">Semua Agenda</span>
@@ -101,7 +105,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
               <Link
                 href="/app/knowledge"
                 onClick={() => setIsMoreOpen(false)}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-soft text-text-primary text-xs font-medium hover:bg-border/40 transition-colors"
+                className="flex items-center gap-2.5 p-3 min-h-[44px] rounded-card bg-surface-soft text-text-primary text-xs font-semibold hover:bg-surface-hover border border-border transition-colors"
               >
                 <BookOpen className="w-4 h-4 text-teal-deep shrink-0" />
                 <span className="truncate">Knowledge Hub</span>
@@ -109,7 +113,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
               <Link
                 href="/app/submissions"
                 onClick={() => setIsMoreOpen(false)}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-soft text-text-primary text-xs font-medium hover:bg-border/40 transition-colors"
+                className="flex items-center gap-2.5 p-3 min-h-[44px] rounded-card bg-surface-soft text-text-primary text-xs font-semibold hover:bg-surface-hover border border-border transition-colors"
               >
                 <Send className="w-4 h-4 text-teal-deep shrink-0" />
                 <span className="truncate">Pengajuan Saya</span>
@@ -117,16 +121,16 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
               <Link
                 href="/app/account"
                 onClick={() => setIsMoreOpen(false)}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-surface-soft text-text-primary text-xs font-medium hover:bg-border/40 transition-colors"
+                className="flex items-center gap-2.5 p-3 min-h-[44px] rounded-card bg-surface-soft text-text-primary text-xs font-semibold hover:bg-surface-hover border border-border transition-colors"
               >
                 <User className="w-4 h-4 text-teal-deep shrink-0" />
-                <span className="truncate">Akun & Profil</span>
+                <span className="truncate">Akun &amp; Profil</span>
               </Link>
               {userRole === 'admin' && (
                 <Link
                   href="/admin"
                   onClick={() => setIsMoreOpen(false)}
-                  className="col-span-2 flex items-center justify-between p-3 rounded-xl bg-teal-deep text-white text-xs font-semibold"
+                  className="col-span-2 flex items-center justify-between p-3 min-h-[44px] rounded-card bg-teal-deep text-white dark:text-[#0C1815] text-xs font-bold"
                 >
                   <div className="flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 shrink-0" />
@@ -141,7 +145,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
               <form action="/auth/signout" method="post" className="w-full">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-danger-text hover:bg-danger-surface rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 min-h-[44px] text-xs font-semibold text-danger-text bg-danger-surface border border-danger-border rounded-input transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Keluar dari Akun</span>
@@ -153,7 +157,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
       )}
 
       {/* 4 Titik Prioritas Bottom Navigation */}
-      <nav 
+      <nav
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur-md border-t border-border flex items-center justify-around h-16 px-1 select-none pb-[env(safe-area-inset-bottom)]"
         aria-label="Navigasi Bawah Mahasiswa"
       >
@@ -167,7 +171,8 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-w-[56px] h-12 rounded-lg transition-colors ${
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex flex-col items-center justify-center min-w-[56px] min-h-[44px] rounded-input transition-colors ${
                 isActive ? 'text-teal-deep font-bold' : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -180,7 +185,7 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
         <button
           type="button"
           onClick={() => setIsMoreOpen(!isMoreOpen)}
-          className={`flex flex-col items-center justify-center min-w-[56px] h-12 rounded-lg transition-colors ${
+          className={`flex flex-col items-center justify-center min-w-[56px] min-h-[44px] rounded-input transition-colors ${
             isMoreOpen ? 'text-teal-deep font-bold' : 'text-text-muted hover:text-text-primary'
           }`}
           aria-expanded={isMoreOpen}

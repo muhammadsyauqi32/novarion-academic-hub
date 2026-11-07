@@ -158,7 +158,7 @@ export default async function AgendasListPage() {
 
                   <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted mt-0.5">
                     {item.deadline && (
-                      <span className="flex items-center gap-1 font-semibold text-[#9E5507]">
+                      <span className="flex items-center gap-1 font-semibold text-[#9E5507] dark:text-brand-orange">
                         <Clock className="w-3.5 h-3.5" />
                         <span>Batas: {formatWIB(item.deadline)}</span>
                       </span>

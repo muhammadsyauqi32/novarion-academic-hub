@@ -155,7 +155,7 @@ export function KnowledgeHubClient({ initialItems }: KnowledgeHubClientProps) {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs transition-colors shrink-0 ${
                 isSelected
-                  ? 'bg-teal-deep text-white font-bold'
+                  ? 'bg-teal-deep text-white dark:text-[#0C1815] font-bold'
                   : 'bg-surface text-text-muted hover:text-text-primary border border-border font-medium'
               }`}
             >

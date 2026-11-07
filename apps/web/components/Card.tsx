@@ -8,10 +8,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Card({ className, variant = 'default', children, ...props }: CardProps) {
   const variants = {
-    default: 'bg-surface border border-border shadow-[0_1px_3px_rgba(0,0,0,0.02)]',
+    default: 'bg-surface border border-border shadow-2xs',
     soft: 'bg-surface-soft border border-border',
     mint: 'bg-brand-mint-soft/20 border border-brand-primary/30',
-    cream: 'bg-brand-cream/20 border border-[#D5D59A]/40',
+    cream: 'bg-brand-cream/20 dark:bg-surface-soft border border-[#D5D59A]/40 dark:border-border',
     flat: 'bg-surface border border-border',
   };
 

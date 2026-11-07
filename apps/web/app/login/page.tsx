@@ -57,7 +57,9 @@ export default function LoginPage() {
 
       if (!result.success) {
         if (navigationTimerRef.current) clearTimeout(navigationTimerRef.current);
-        setErrorMessage(result.error || 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.');
+        setErrorMessage(
+          result.error || 'NIM atau kata sandi tidak valid. Hubungi Admin Angkatan jika mengalami kendala.'
+        );
         setIsLoading(false);
         return;
       }
@@ -84,19 +86,19 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md my-auto">
-      <Card className="shadow-xl border-border/80 p-8 flex flex-col gap-6">
+      <Card className="shadow-sm border-border p-6 sm:p-8 flex flex-col gap-6">
         <div className="flex flex-col items-center text-center gap-2">
           <BrandLogo size="lg" />
-          <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight mt-3">
-            Selamat Datang
+          <h1 className="font-heading font-extrabold text-2xl text-text-primary tracking-tight mt-2">
+            Masuk ke Academic Hub
           </h1>
-          <p className="text-xs text-text-muted max-w-xs">
-            Masuk menggunakan NIM dan kata sandi Anda untuk mengakses kalender akademik dan materi kuliah.
+          <p className="text-xs text-text-muted max-w-xs leading-relaxed">
+            Gunakan Nomor Induk Mahasiswa (NIM) dan kata sandi akun untuk mengakses kalender kuliah, bank modul, dan daftar tugas.
           </p>
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 rounded-xl bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text animate-fadeIn">
+          <div className="p-3.5 rounded-input bg-danger-surface border border-danger-border flex items-start gap-2.5 text-xs text-danger-text animate-fadeIn">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
@@ -113,6 +115,7 @@ export default function LoginPage() {
               autoComplete="username"
               required
               disabled={isLoading}
+              className="font-mono"
             />
           </div>
 
@@ -127,12 +130,13 @@ export default function LoginPage() {
               autoComplete="current-password"
               required
               disabled={isLoading}
+              className="pr-10"
             />
             <button
               type="button"
               tabIndex={-1}
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-[29px] text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+              className="absolute right-2.5 top-[27px] p-1.5 text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
               aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
               disabled={isLoading}
             >
@@ -144,7 +148,7 @@ export default function LoginPage() {
             variant="primary"
             size="lg"
             type="submit"
-            className="w-full font-bold gap-2 mt-2"
+            className="w-full font-bold gap-2 mt-1"
             isLoading={isLoading}
             disabled={isLoading || !nim.trim() || !password}
           >
@@ -153,23 +157,23 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="p-3.5 rounded-xl bg-surface-soft border border-border flex items-start gap-2.5 text-xs text-text-muted">
+        <div className="p-3.5 rounded-input bg-surface-soft border border-border flex items-start gap-2.5 text-xs text-text-muted">
           <Info className="w-4 h-4 text-teal-deep shrink-0 mt-0.5" />
-          <div className="flex flex-col gap-1">
-            <span className="font-semibold text-text-primary">Akses Terbatas Whitelist</span>
-            <span>
-              Hanya mahasiswa dan pengurus yang NIM-nya telah didaftarkan dalam whitelist angkatan yang dapat masuk.
+          <div className="flex flex-col gap-0.5">
+            <span className="font-semibold text-text-primary">Khusus Mahasiswa Terdaftar</span>
+            <span className="leading-relaxed">
+              Akses dibuka bagi mahasiswa dan pengurus Statistika 62 IPB yang NIM-nya telah terverifikasi pada daftar angkatan.
             </span>
           </div>
         </div>
 
         <div className="text-center pt-2 border-t border-border/60">
-          <p className="text-[11px] text-text-muted">
+          <p className="text-[11px] text-text-muted leading-relaxed">
             Belum memiliki kata sandi atau lupa akses? Hubungi{' '}
-            <span className="text-teal-deep font-semibold underline cursor-pointer">
-              Admin Angkatan
+            <span className="text-teal-deep font-semibold">
+              BPH / Admin Angkatan
             </span>{' '}
-            untuk verifikasi NIM dan penerbitan akses baru.
+            untuk reset kata sandi sementara.
           </p>
         </div>
       </Card>

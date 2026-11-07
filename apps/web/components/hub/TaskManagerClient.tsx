@@ -112,7 +112,16 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
     );
   });
 
-  const pendingTasks = filteredTasks.filter((t) => t.status !== 'done');
+  const pendingTasks = filteredTasks
+    .filter((t) => t.status !== 'done')
+    .sort((a, b) => {
+      if (a.deadline && b.deadline) {
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      }
+      if (a.deadline) return -1;
+      if (b.deadline) return 1;
+      return 0;
+    });
   const completedTasks = filteredTasks.filter((t) => t.status === 'done');
 
   return (
@@ -174,7 +183,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
               onClick={() => setShowExtendedForm(!showExtendedForm)}
               className="text-text-muted hover:text-text-primary text-[11px] font-medium"
             >
-              {showExtendedForm ? '— Sembunyikan catatan tambahan' : '+ Tambah catatan / instruksi'}
+              {showExtendedForm ? '- Sembunyikan catatan tambahan' : '+ Tambah catatan / instruksi'}
             </button>
           </div>
 
@@ -249,7 +258,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
                       </p>
                     )}
                     {t.deadline && (
-                      <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[#9E5507] font-medium font-mono">
+                      <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[#9E5507] dark:text-brand-orange font-medium font-mono">
                         <Clock className="w-3 h-3 shrink-0" />
                         <span>Batas: {formatWIBShort(new Date(t.deadline))}</span>
                       </div>
@@ -297,7 +306,7 @@ export function TaskManagerClient({ initialTasks }: TaskManagerClientProps) {
                     <button
                       type="button"
                       onClick={() => handleToggle(t.id, t.status)}
-                      className="w-4 h-4 rounded bg-teal-deep border border-teal-deep text-white flex items-center justify-center shrink-0 transition-colors"
+                      className="w-4 h-4 rounded bg-teal-deep border border-teal-deep text-white dark:text-[#0C1815] flex items-center justify-center shrink-0 transition-colors"
                       aria-label="Tandai belum selesai"
                     >
                       <Check className="w-3 h-3 stroke-[3]" />

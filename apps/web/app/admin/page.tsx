@@ -109,9 +109,9 @@ export default async function AdminDashboardPage() {
       {(pendingAgendas.length > 0 || failedJobsCount > 0 || waConn?.status !== 'connected') && (
         <div className="flex flex-col gap-2.5">
           {pendingAgendas.length > 0 && (
-            <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-amber-900">
-                <AlertCircle className="w-4 h-4 shrink-0 text-amber-700" />
+            <div className="p-3.5 rounded-lg bg-warning-surface border border-warning-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-text-primary">
+                <AlertCircle className="w-4 h-4 shrink-0 text-warning-text" />
                 <span>
                   <strong>{pendingAgendas.length} Pengajuan Agenda Mahasiswa</strong> menunggu verifikasi dan persetujuan pengurus.
                 </span>
@@ -298,7 +298,7 @@ export default async function AdminDashboardPage() {
                         {item.deadline && (
                           <>
                             <span>•</span>
-                            <span className="font-mono text-[#9E5507]">
+                            <span className="font-mono text-[#9E5507] dark:text-brand-orange">
                               Batas: {formatWIBShort(new Date(item.deadline))}
                             </span>
                           </>

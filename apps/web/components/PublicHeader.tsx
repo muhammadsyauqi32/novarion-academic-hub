@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { BrandLogo } from './BrandLogo';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
+import { Menu, X } from 'lucide-react';
 import { getHubLoginUrl } from '@/lib/links';
 
 interface NavItem {
@@ -14,7 +15,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'tentang', label: 'Tentang' },
   { id: 'pengurus', label: 'Pengurus' },
-  { id: 'berita', label: 'Berita' },
+  { id: 'berita', label: 'Kabar' },
   { id: 'galeri', label: 'Galeri' },
   { id: 'prestasi', label: 'Prestasi' },
 ];
@@ -25,24 +26,19 @@ export function PublicHeader() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  // On non-landing pages (e.g. /privacy), start in solid/compact state immediately
-  const [isScrolledPastHero, setIsScrolledPastHero] = useState(!isLandingPage);
+  const [isScrolled, setIsScrolled] = useState(!isLandingPage);
 
-  // Scroll listener tracking when hero leaves/enters viewport on landing page
   useEffect(() => {
     if (!isLandingPage) {
-      setIsScrolledPastHero(true);
+      setIsScrolled(true);
       return;
     }
 
     const handleScroll = () => {
-      const heroEl = document.getElementById('hero');
-      const threshold = heroEl
-        ? heroEl.offsetTop + heroEl.offsetHeight - 80
-        : 350;
-      setIsScrolledPastHero((prev) => {
-        if (!prev && window.scrollY > threshold) return true;
-        if (prev && window.scrollY < threshold - 40) return false;
+      const y = window.scrollY;
+      setIsScrolled((prev) => {
+        if (!prev && y > 64) return true;
+        if (prev && y < 32) return false;
         return prev;
       });
     };
@@ -57,7 +53,6 @@ export function PublicHeader() {
     };
   }, [isLandingPage]);
 
-  // Active section tracking via IntersectionObserver
   useEffect(() => {
     if (!isLandingPage) return;
 
@@ -69,13 +64,11 @@ export function PublicHeader() {
         ratios[entry.target.id] = entry.isIntersecting ? entry.intersectionRatio : 0;
       });
 
-      // If hero is in view or user is near top of page, no nav link is active
       if (window.scrollY < 200 || (ratios['hero'] && ratios['hero'] > 0.35)) {
         setActiveSection(null);
         return;
       }
 
-      // Pick the section currently most visible in viewport
       let maxRatio = 0;
       let winningSection: string | null = null;
       for (const item of NAV_ITEMS) {
@@ -110,85 +103,40 @@ export function PublicHeader() {
   };
 
   const hubLoginUrl = getHubLoginUrl();
-  const isCompact = isScrolledPastHero;
+  const isCompact = isScrolled;
 
   return (
     <header
       aria-label="Navigasi Utama"
-      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-300 ease-out motion-reduce:transition-none flex items-center justify-between gap-3 sm:gap-6 backdrop-blur-md rounded-card top-3 w-[94%] sm:w-[88%] md:w-[780px] lg:w-[860px] max-w-4xl px-4 sm:px-5 py-2.5 ${
+      data-navbar-state={isCompact ? 'compact' : 'hero-full'}
+      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-300 ease-out motion-reduce:transition-none ${
         isCompact
-          ? 'bg-[#FAF9F5]/95 shadow-md text-[#112A24] border border-[#112A24]/10'
-          : 'bg-[#0D1B2A]/60 shadow-xs text-[#FAF9F5] border border-white/15'
+          ? 'top-3 w-[94%] sm:w-[90%] md:w-[780px] lg:w-[840px] max-w-4xl rounded-card px-4 sm:px-5 py-2.5 bg-surface text-text-primary border border-border shadow-md'
+          : 'top-0 w-full max-w-none rounded-none px-4 sm:px-6 lg:px-8 py-4 bg-[#0A1311] text-[#FAF9F5] border-b border-white/10'
       }`}
     >
-      {/* Brand Logo with Smooth Appearance */}
-      <div className="shrink-0 transition-transform duration-200">
-        <BrandLogo size="sm" inverted={!isCompact} />
-      </div>
-
-      {/* Desktop 1-word Navigation Links with Active Tracking */}
-      <nav
-        className="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-sans shrink-0"
-        aria-label="Tautan Bagian"
+      <div
+        className={`w-full flex items-center justify-between gap-3 transition-all duration-300 ${
+          isCompact ? 'max-w-none' : 'max-w-7xl mx-auto'
+        }`}
       >
-        {NAV_ITEMS.map((item) => {
-          const isActive = activeSection === item.id;
-          return (
-            <a
-              key={item.id}
-              href={`/#${item.id}`}
-              onClick={() => handleNavClick(item.id)}
-              aria-current={isActive ? 'location' : undefined}
-              className={`px-3 py-1.5 rounded-xs transition-colors duration-200 whitespace-nowrap ${
-                isCompact
-                  ? isActive
-                    ? 'bg-[#EAEAB7] text-[#112A24] font-bold'
-                    : 'text-[#112A24]/80 font-medium hover:text-[#112A24] hover:bg-[#EAEAB7]/60'
-                  : isActive
-                  ? 'bg-[#FAF9F5]/25 text-[#FAF9F5] font-bold'
-                  : 'text-[#FAF9F5]/90 font-medium hover:text-[#FFAE5D] hover:bg-[#FAF9F5]/10'
-              }`}
-            >
-              {item.label}
-            </a>
-          );
-        })}
-      </nav>
+        <div className="flex items-center gap-3 shrink-0">
+          <BrandLogo size="sm" inverted={!isCompact} />
+          <div
+            className={`hidden lg:flex items-center pl-3 border-l border-white/15 transition-all duration-200 ${
+              isCompact ? 'opacity-0 w-0 overflow-hidden pl-0 border-l-0' : 'opacity-100'
+            }`}
+          >
+            <span className="text-xs font-sans text-[#FAF9F5]/75">
+              Statistika dan Sains Data
+            </span>
+          </div>
+        </div>
 
-      {/* CTA Button and Mobile Menu Toggle */}
-      <div className="flex items-center gap-2 shrink-0">
-        <a
-          href={hubLoginUrl}
-          className={`px-3.5 py-1.5 rounded-xs font-sans text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shrink-0 ${
-            isCompact
-              ? 'bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24]'
-              : 'bg-[#FAF9F5] text-[#112A24] hover:bg-[#FFAE5D] hover:text-[#112A24] shadow-xs'
-          }`}
+        <nav
+          className="hidden md:flex items-center gap-1 text-xs font-sans shrink-0"
+          aria-label="Tautan Bagian"
         >
-          <span className="hidden sm:inline">Academic Hub</span>
-          <span className="sm:hidden">Masuk</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </a>
-
-        {/* Mobile Toggle Button */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={`p-1.5 rounded-xs md:hidden transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center ${
-            isCompact
-              ? 'text-[#112A24] hover:bg-[#EAEAB7]'
-              : 'text-[#FAF9F5] hover:bg-[#FAF9F5]/10'
-          }`}
-          aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu Drawer (Attached cleanly to single navbar container) */}
-      {mobileMenuOpen && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 md:hidden bg-[#FAF9F5] rounded-xs px-4 py-4 flex flex-col gap-1.5 shadow-lg border border-[#112A24]/10 text-[#112A24]">
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;
             return (
@@ -197,21 +145,88 @@ export function PublicHeader() {
                 href={`/#${item.id}`}
                 onClick={() => handleNavClick(item.id)}
                 aria-current={isActive ? 'location' : undefined}
-                className={`py-2 px-3 rounded-xs text-sm font-sans transition-colors ${
-                  isActive
-                    ? 'bg-[#EAEAB7] text-[#112A24] font-bold'
-                    : 'text-[#112A24]/85 font-medium hover:bg-[#EAEAB7]/60'
+                className={`px-3 py-1.5 rounded-input transition-colors duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-teal-deep ${
+                  isCompact
+                    ? isActive
+                      ? 'bg-surface-soft text-teal-deep dark:text-brand-primary font-bold'
+                      : 'text-text-muted font-medium hover:text-text-primary hover:bg-surface-soft'
+                    : isActive
+                    ? 'bg-white/10 text-[#FAF9F5] font-bold'
+                    : 'text-[#FAF9F5]/80 font-medium hover:text-[#FAF9F5] hover:bg-white/[0.06]'
                 }`}
               >
                 {item.label}
               </a>
             );
           })}
-          <div className="pt-2 mt-1">
+        </nav>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <ThemeToggle
+            className={
+              isCompact
+                ? 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
+                : 'text-[#FAF9F5]/85 hover:text-[#FAF9F5] hover:bg-white/10'
+            }
+          />
+
+          <a
+            href={hubLoginUrl}
+            className={`px-3.5 sm:px-4 py-1.5 rounded-input font-sans text-xs font-bold transition-colors duration-150 inline-flex items-center justify-center shrink-0 focus-visible:outline-2 focus-visible:outline-teal-deep ${
+              isCompact
+                ? 'bg-teal-deep text-white dark:bg-brand-primary dark:text-brand-foreground hover:opacity-95'
+                : 'bg-brand-primary text-brand-foreground hover:bg-[#C9FBD4]'
+            }`}
+          >
+            <span className="hidden sm:inline">Masuk ke Hub</span>
+            <span className="sm:hidden">Masuk</span>
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`p-2 rounded-input md:hidden transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-teal-deep ${
+              isCompact
+                ? 'text-text-primary hover:bg-surface-soft'
+                : 'text-[#FAF9F5] hover:bg-white/10'
+            }`}
+            aria-label={mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {mobileMenuOpen && (
+        <div
+          className={`md:hidden bg-surface rounded-card p-4 flex flex-col gap-1 shadow-lg border border-border text-text-primary ${
+            isCompact ? 'mt-3' : 'mt-4 mx-auto max-w-lg'
+          }`}
+        >
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <a
+                key={item.id}
+                href={`/#${item.id}`}
+                onClick={() => handleNavClick(item.id)}
+                aria-current={isActive ? 'location' : undefined}
+                className={`px-3.5 py-2.5 rounded-input text-sm font-sans transition-colors flex items-center justify-between ${
+                  isActive
+                    ? 'bg-surface-soft text-teal-deep dark:text-brand-primary font-bold'
+                    : 'text-text-primary hover:bg-surface-soft font-medium'
+                }`}
+              >
+                <span>{item.label}</span>
+              </a>
+            );
+          })}
+          <div className="pt-2.5 mt-1 border-t border-border">
             <a
               href={hubLoginUrl}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full block py-2.5 rounded-xs bg-[#112A24] text-[#EAEAB7] hover:bg-[#FFAE5D] hover:text-[#112A24] font-sans text-xs font-bold transition-colors text-center"
+              className="w-full py-2.5 rounded-input bg-brand-primary text-brand-foreground font-sans text-xs font-bold flex items-center justify-center"
             >
               Masuk ke Academic Hub
             </a>

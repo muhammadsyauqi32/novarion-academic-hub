@@ -8,7 +8,7 @@ import { getDb, courses, classSections } from '@novarion/db';
 import { PermissionsClient } from './PermissionsClient';
 
 export const metadata: Metadata = {
-  title: 'Role & Permission — Novarion Admin',
+  title: 'Role & Permission · Novarion Admin',
 };
 
 export default async function PermissionsPage() {

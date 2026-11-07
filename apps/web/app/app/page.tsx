@@ -156,7 +156,7 @@ export default async function StudentDashboardPage() {
             </span>
             <span className="text-xs font-mono text-text-muted">NIM {user.nim}</span>
             {canPublishOfficial && (
-              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-brand-orange/15 text-[#9E5507] flex items-center gap-1 border border-brand-orange/20">
+              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-brand-orange/15 text-[#9E5507] dark:text-brand-orange flex items-center gap-1 border border-brand-orange/20">
                 <ShieldCheck className="w-3.5 h-3.5" /> Delegasi Agenda
               </span>
             )}

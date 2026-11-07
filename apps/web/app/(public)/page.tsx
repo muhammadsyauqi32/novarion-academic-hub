@@ -37,7 +37,7 @@ export default async function LandingPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
-    name: 'NOVARION · Statistika dan Sains Data 62 IPB',
+    name: 'NOVARION - Statistika dan Sains Data 62 IPB',
     alternateName: 'Novarion Academic Hub',
     url: 'https://novarion.web.id',
     description:
@@ -52,32 +52,32 @@ export default async function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#FAF9F5] text-text-primary">
+    <div className="flex flex-col w-full min-h-screen bg-canvas text-text-primary transition-colors duration-200">
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Section 1: Hero / Butter Cream (#EAEAB7) with Warm Orange (#FFAE5D) Accent */}
+      {/* Section 1: Hero · Full Screen 100dvh on Desktop with Authentic Photography */}
       <HeroSection hero={hero} />
 
-      {/* Section 2: Tentang Novarion / Saturated Mint (#41C2A1) */}
+      {/* Section 2: Tentang Novarion · Filosofi Nova & Orion serta 3 Pilar Nilai */}
       <AboutSection />
 
-      {/* Section 3: Struktur Pengurus / Neutral Off-White (#FAF9F5) with Brand Details */}
+      {/* Section 3: Struktur Pengurus · Orkestrasi Peran & Divisi Angkatan */}
       <LeadershipSection />
 
-      {/* Section 4: Berita & Dinamika / Soft Green (#C9FBD4) */}
+      {/* Section 4: Berita & Kegiatan · Warta & Catatan Dokumenter */}
       <NewsSection news={news} />
 
-      {/* Section 5: Galeri Visual / Deep Neutral (#0D1B2A) with Large Photos */}
+      {/* Section 5: Galeri Visual · Arsip Momen & Dokumentasi Terverifikasi */}
       <GallerySection albums={albums} />
 
-      {/* Section 6: Prestasi Angkatan / Warm Orange (#FFAE5D) */}
+      {/* Section 6: Prestasi Angkatan · Lembar Kehormatan Sains Data */}
       <AchievementsSection achievements={achievements} />
 
-      {/* Section 7: Academic Hub Gateway / Mint & Cream */}
+      {/* Section 7: Academic Hub Gateway · Pintu Masuk Workspace Mahasiswa */}
       <AcademicHubCtaSection />
     </div>
   );

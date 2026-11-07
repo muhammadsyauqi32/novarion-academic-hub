@@ -103,7 +103,7 @@ export function DashboardTaskList({ initialTasks }: DashboardTaskListProps) {
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah</span>
           </button>
-          <span className="text-text-muted/40">•</span>
+          <span className="text-border-strong">/</span>
           <Link
             href="/app/tasks"
             className="text-[11px] font-semibold text-text-muted hover:text-text-primary transition-colors flex items-center gap-0.5"
@@ -143,7 +143,7 @@ export function DashboardTaskList({ initialTasks }: DashboardTaskListProps) {
               <button
                 type="submit"
                 disabled={!newTitle.trim()}
-                className="px-3 py-1 text-[11px] font-semibold bg-teal-deep text-white rounded-input hover:bg-teal-deep/90 disabled:opacity-50"
+                className="px-3 py-1 text-[11px] font-semibold bg-teal-deep text-white dark:text-[#0C1815] rounded-input hover:brightness-110 disabled:opacity-50"
               >
                 Simpan
               </button>
@@ -179,7 +179,7 @@ export function DashboardTaskList({ initialTasks }: DashboardTaskListProps) {
                     onClick={() => handleToggle(t.id, t.status)}
                     className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
                       isDone
-                        ? 'bg-teal-deep border-teal-deep text-white'
+                        ? 'bg-teal-deep border-teal-deep text-white dark:text-[#0C1815]'
                         : 'border-border hover:border-teal-deep bg-surface'
                     }`}
                     aria-label={isDone ? 'Tandai belum selesai' : 'Tandai selesai'}

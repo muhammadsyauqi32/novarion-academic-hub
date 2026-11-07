@@ -9,7 +9,7 @@ export function TopProgressBar() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const timersRef = useRef<NodeJS.Timeout[]>([]);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => {
     timersRef.current.forEach(clearTimeout);
@@ -19,14 +19,17 @@ export function TopProgressBar() {
   // Selesaikan dan sembunyikan progress bar ketika route selesai berganti
   useEffect(() => {
     clearTimers();
-    if (loading || progress > 0) {
-      setProgress(100);
-      const doneTimer = setTimeout(() => {
-        setLoading(false);
-        setProgress(0);
-      }, 250);
-      timersRef.current.push(doneTimer);
-    }
+    setProgress((prev) => {
+      if (prev > 0) {
+        const doneTimer = setTimeout(() => {
+          setLoading(false);
+          setProgress(0);
+        }, 250);
+        timersRef.current.push(doneTimer);
+        return 100;
+      }
+      return 0;
+    });
 
     return () => clearTimers();
   }, [pathname, searchParams]);
@@ -92,7 +95,7 @@ export function TopProgressBar() {
               }, 200);
             }, 8000);
 
-            timersRef.current.push(interval as any, safetyTimer);
+            timersRef.current.push(interval, safetyTimer);
           }
         } catch {
           // Abaikan URL invalid

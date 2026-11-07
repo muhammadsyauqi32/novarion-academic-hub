@@ -76,7 +76,7 @@ export default async function AdminSubmissionsPage() {
                     {item.description}
                   </p>
                 )}
-                <p className="text-xs font-semibold text-[#9E5507] mt-2">
+                <p className="text-xs font-semibold text-[#9E5507] dark:text-brand-orange mt-2">
                   Batas Waktu: {item.deadline ? formatWIB(item.deadline) : 'Tidak ada deadline'}
                 </p>
               </div>

@@ -156,7 +156,7 @@ export default async function AgendaDetailPage({ params }: AgendaDetailPageProps
             <Clock className="w-4 h-4 text-brand-orange mt-0.5 shrink-0" />
             <div>
               <span className="text-[11px] text-text-muted block">Batas Waktu (Deadline):</span>
-              <span className="text-xs sm:text-sm font-bold text-[#9E5507]">
+              <span className="text-xs sm:text-sm font-bold text-[#9E5507] dark:text-brand-orange">
                 {agenda.deadline ? formatWIB(agenda.deadline) : 'Tidak ada deadline'}
               </span>
             </div>

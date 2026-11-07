@@ -36,7 +36,7 @@ export function LandingInteractivePreview() {
             onClick={() => setActiveTab('calendar')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'calendar'
-                ? 'bg-teal-deep text-white shadow-xs'
+                ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-xs'
                 : 'text-text-muted hover:text-text-primary'
             }`}
           >
@@ -48,7 +48,7 @@ export function LandingInteractivePreview() {
             onClick={() => setActiveTab('whatsapp')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'whatsapp'
-                ? 'bg-teal-deep text-white shadow-xs'
+                ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-xs'
                 : 'text-text-muted hover:text-text-primary'
             }`}
           >
@@ -60,7 +60,7 @@ export function LandingInteractivePreview() {
             onClick={() => setActiveTab('materials')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'materials'
-                ? 'bg-teal-deep text-white shadow-xs'
+                ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-xs'
                 : 'text-text-muted hover:text-text-primary'
             }`}
           >
@@ -72,7 +72,7 @@ export function LandingInteractivePreview() {
             onClick={() => setActiveTab('tasks')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'tasks'
-                ? 'bg-teal-deep text-white shadow-xs'
+                ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-xs'
                 : 'text-text-muted hover:text-text-primary'
             }`}
           >
@@ -178,7 +178,7 @@ export function LandingInteractivePreview() {
                   </div>
                   <div>
                     <h5 className="font-bold text-xs text-text-primary">Modul Praktikum R Sesi 4</h5>
-                    <p className="text-[10px] text-text-muted">Analisis Regresi Terapan • 2.4 MB</p>
+                    <p className="text-[10px] text-text-muted">Analisis Regresi Terapan / 2.4 MB</p>
                   </div>
                 </div>
                 <span className="text-xs font-bold text-teal-deep hover:underline">Unduh</span>
@@ -191,7 +191,7 @@ export function LandingInteractivePreview() {
                   </div>
                   <div>
                     <h5 className="font-bold text-xs text-text-primary">Slide Kuliah Pengantar Peluang</h5>
-                    <p className="text-[10px] text-text-muted">Teori Peluang • 5.1 MB</p>
+                    <p className="text-[10px] text-text-muted">Teori Peluang / 5.1 MB</p>
                   </div>
                 </div>
                 <span className="text-xs font-bold text-teal-deep hover:underline">Unduh</span>
@@ -213,7 +213,7 @@ export function LandingInteractivePreview() {
             <div className="space-y-2">
               <div className="p-3 rounded-xl bg-surface border border-border flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-md bg-teal-deep text-white flex items-center justify-center">
+                  <div className="w-4 h-4 rounded-md bg-teal-deep text-white dark:text-[#0C1815] flex items-center justify-center">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                   </div>
                   <span className="line-through text-text-muted">Install RStudio versi terbaru di laptop</span>
@@ -223,7 +223,7 @@ export function LandingInteractivePreview() {
 
               <div className="p-3 rounded-xl bg-surface border border-border flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-md bg-teal-deep text-white flex items-center justify-center">
+                  <div className="w-4 h-4 rounded-md bg-teal-deep text-white dark:text-[#0C1815] flex items-center justify-center">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                   </div>
                   <span className="line-through text-text-muted">Unduh dataset praktikum dari Novarion Hub</span>

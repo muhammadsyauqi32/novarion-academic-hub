@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { requireAdmin } from '@/lib/auth/guards';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminMobileNav } from '@/components/AdminMobileNav';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import Link from 'next/link';
 import { Eye } from 'lucide-react';
 
@@ -25,7 +26,7 @@ export default async function AdminLayout({
   const admin = await requireAdmin();
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex min-h-screen bg-canvas text-text-primary">
       {/* Desktop Admin Sidebar (>= md) */}
       <div className="hidden md:block shrink-0">
         <div className="h-screen sticky top-0">
@@ -39,22 +40,23 @@ export default async function AdminLayout({
         <AdminMobileNav adminName={admin.fullName} />
 
         {/* Desktop Top Indicator Banner (>= md) */}
-        <header className="hidden md:flex h-14 bg-teal-deep text-white px-4 sm:px-6 items-center justify-between shadow-xs sticky top-0 z-30">
+        <header className="hidden md:flex h-14 bg-surface/90 backdrop-blur-md border-b border-border text-text-primary px-4 sm:px-6 items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-2 text-xs font-bold tracking-wide">
-            <span className="w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
-            <span>ADMIN WORKSPACE — PENGELOLA ANGKATAN</span>
+            <span className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
+            <span>ADMIN WORKSPACE · PENGELOLA ANGKATAN</span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs">
-            <span className="opacity-80">
-              Masuk sebagai: <strong className="text-white">{admin.fullName}</strong>
+          <div className="flex items-center gap-3 text-xs">
+            <span className="text-text-muted">
+              Masuk sebagai: <strong className="text-text-primary">{admin.fullName}</strong>
             </span>
+            <ThemeToggle />
             <Link
               href="/app"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-input bg-surface-soft hover:bg-surface-hover border border-border text-text-primary font-semibold transition-colors"
               title="Beralih ke mode tampilan mahasiswa"
             >
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="w-3.5 h-3.5 text-teal-deep" />
               <span>Mode Mahasiswa (Pratinjau)</span>
             </Link>
           </div>

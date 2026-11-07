@@ -77,14 +77,35 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+const themeInitScript = `
+(function() {
+  try {
+    var match = document.cookie.match(new RegExp('(^| )novarion_theme=([^;]+)'));
+    var cookieTheme = match ? match[2] : null;
+    var savedTheme = cookieTheme || localStorage.getItem('novarion_theme');
+    var isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} font-sans min-h-screen bg-canvas text-text-primary antialiased selection:bg-brand-mint-soft selection:text-text-primary`}>
+    <html lang="id" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} font-sans min-h-screen bg-canvas text-text-primary antialiased selection:bg-brand-mint-soft selection:text-brand-foreground`}>
         <Suspense fallback={null}>
           <TopProgressBar />
         </Suspense>
@@ -93,4 +114,3 @@ export default function RootLayout({
     </html>
   );
 }
-

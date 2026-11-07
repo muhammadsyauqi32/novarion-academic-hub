@@ -385,7 +385,7 @@ export function CmsClient({
           onClick={() => setActiveTab('hero')}
           className={`px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all whitespace-nowrap ${
             activeTab === 'hero'
-              ? 'bg-teal-deep text-white shadow-2xs'
+              ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
           }`}
         >
@@ -395,7 +395,7 @@ export function CmsClient({
           onClick={() => setActiveTab('news')}
           className={`px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all whitespace-nowrap ${
             activeTab === 'news'
-              ? 'bg-teal-deep text-white shadow-2xs'
+              ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
           }`}
         >
@@ -405,7 +405,7 @@ export function CmsClient({
           onClick={() => setActiveTab('gallery')}
           className={`px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all whitespace-nowrap ${
             activeTab === 'gallery'
-              ? 'bg-teal-deep text-white shadow-2xs'
+              ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
           }`}
         >
@@ -415,7 +415,7 @@ export function CmsClient({
           onClick={() => setActiveTab('achievements')}
           className={`px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all whitespace-nowrap ${
             activeTab === 'achievements'
-              ? 'bg-teal-deep text-white shadow-2xs'
+              ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
           }`}
         >
@@ -425,7 +425,7 @@ export function CmsClient({
           onClick={() => setActiveTab('media')}
           className={`px-4 py-2 rounded-lg text-xs font-heading font-bold transition-all whitespace-nowrap ${
             activeTab === 'media'
-              ? 'bg-teal-deep text-white shadow-2xs'
+              ? 'bg-teal-deep text-white dark:text-[#0C1815] shadow-2xs'
               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft/60'
           }`}
         >
@@ -1189,7 +1189,7 @@ export function CmsClient({
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 onChange={(e) => setMediaFile(e.target.files?.[0] || null)}
-                className="text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-teal-deep file:text-white hover:file:opacity-90 cursor-pointer"
+                className="text-xs text-text-muted file:mr-3 file:py-1.5 file:px-3.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-teal-deep file:text-white dark:file:text-[#0C1815] hover:file:opacity-90 cursor-pointer"
               />
               <Input
                 placeholder="Alt text / deskripsi foto"

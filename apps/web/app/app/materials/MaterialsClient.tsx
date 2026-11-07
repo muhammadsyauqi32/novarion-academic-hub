@@ -120,7 +120,7 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
             <option value="all">Semua Mata Kuliah ({initialMaterials.length})</option>
             {courseOptions.map((c) => (
               <option key={c.code} value={c.code}>
-                {c.code} — {c.name}
+                {c.code} · {c.name}
               </option>
             ))}
           </select>
@@ -219,7 +219,7 @@ export function MaterialsClient({ initialMaterials }: MaterialsClientProps) {
                         href={m.externalUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-teal-deep/10 text-teal-deep hover:bg-teal-deep hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-teal-deep/10 text-teal-deep hover:bg-teal-deep hover:text-white dark:hover:text-[#0C1815] transition-colors"
                       >
                         <span>Akses Berkas</span>
                         <ExternalLink className="w-3 h-3" />

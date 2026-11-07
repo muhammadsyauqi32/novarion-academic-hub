@@ -22,7 +22,7 @@ export default async function AccountPage() {
       <div className="rounded-card bg-surface border border-border p-6 sm:p-7 flex flex-col gap-6 shadow-xs">
         {/* Profile Header */}
         <div className="flex items-center gap-4 pb-5 border-b border-border">
-          <div className="w-14 h-14 rounded-xl bg-teal-deep text-white font-heading font-bold text-2xl flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-teal-deep text-white dark:text-[#0C1815] font-heading font-bold text-2xl flex items-center justify-center shrink-0">
             {user.fullName.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col min-w-0">

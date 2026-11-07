@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BrandLogo } from './BrandLogo';
+import { ThemeToggle } from './ThemeToggle';
 import { ADMIN_NAV_SECTIONS } from './AdminSidebar';
-import { Menu, X, Eye, LogOut, ShieldCheck } from 'lucide-react';
+import { Menu, X, Eye, LogOut } from 'lucide-react';
 
 interface AdminMobileNavProps {
   adminName: string;
@@ -46,8 +47,8 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 rounded-lg bg-surface-soft hover:bg-border/60 text-text-primary transition-colors"
-            aria-label={isOpen ? "Tutup Menu Admin" : "Buka Menu Admin"}
+            className="p-2 rounded-input bg-surface-soft hover:bg-border/60 text-text-primary transition-colors"
+            aria-label={isOpen ? 'Tutup Menu Admin' : 'Buka Menu Admin'}
             aria-expanded={isOpen}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -58,19 +59,22 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
           </div>
         </div>
 
-        <Link
-          href="/app"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-teal-deep/10 text-teal-deep text-xs font-semibold hover:bg-teal-deep/20 transition-colors"
-        >
-          <Eye className="w-3.5 h-3.5" />
-          <span>Mode Mhs</span>
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle />
+          <Link
+            href="/app"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-input bg-teal-deep/10 text-teal-deep text-xs font-semibold hover:bg-teal-deep/20 transition-colors"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Mode Mhs</span>
+          </Link>
+        </div>
       </div>
 
       {/* Drawer Overlay */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex"
+          className="md:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex"
           onClick={() => setIsOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -86,17 +90,17 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-soft transition-colors"
+                  className="p-1.5 rounded-input text-text-muted hover:text-text-primary hover:bg-surface-soft transition-colors"
                   aria-label="Tutup Menu"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <nav className="flex flex-col gap-4">
+              <nav className="flex flex-col gap-4" aria-label="Navigasi Admin Mobile">
                 {ADMIN_NAV_SECTIONS.map((sec) => (
                   <div key={sec.title} className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted/70 px-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted/80 px-2">
                       {sec.title}
                     </span>
                     {sec.items.map((item) => {
@@ -110,13 +114,13 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsOpen(false)}
-                          className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                          className={`flex items-center gap-2.5 px-2.5 py-2 rounded-input text-xs font-medium transition-all ${
                             isActive
-                              ? 'bg-teal-deep text-white font-semibold'
+                              ? 'bg-teal-deep text-white dark:text-[#0C1815] font-semibold'
                               : 'text-text-muted hover:text-text-primary hover:bg-surface-soft'
                           }`}
                         >
-                          <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-text-muted'}`} />
+                          <Icon className={`w-4 h-4 ${isActive ? 'text-current' : 'text-text-muted'}`} />
                           <span>{item.label}</span>
                         </Link>
                       );
@@ -130,13 +134,13 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
               <Link
                 href="/app"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-soft text-text-primary text-xs font-semibold border border-border"
+                className="flex items-center justify-between px-3 py-2 rounded-input bg-surface-soft text-text-primary text-xs font-semibold border border-border"
               >
                 <div className="flex items-center gap-2">
                   <Eye className="w-4 h-4 text-teal-deep" />
                   <span>Mode Mahasiswa</span>
                 </div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-800 font-bold">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-warning-surface text-warning-text border border-warning-border font-bold">
                   Pratinjau
                 </span>
               </Link>
@@ -144,7 +148,7 @@ export function AdminMobileNav({ adminName }: AdminMobileNavProps) {
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-danger-text bg-danger-surface border border-danger-border rounded-lg"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-danger-text bg-danger-surface border border-danger-border rounded-input"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Keluar Akun Admin</span>

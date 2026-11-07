@@ -233,7 +233,7 @@ export function PermissionsClient({ initialStudents, courses, classSections }: P
                           {student.fullName}
                         </span>
                         {student.role === 'admin' && (
-                          <span className="text-[10px] font-bold text-white bg-teal-deep px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold text-white dark:text-[#0C1815] bg-teal-deep px-1.5 py-0.5 rounded">
                             Super Admin
                           </span>
                         )}

@@ -25,7 +25,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={twMerge(
             clsx(
-              'w-full px-3.5 py-2 text-sm bg-surface border rounded-input text-text-primary placeholder:text-text-muted/60 transition-colors',
+              'w-full px-3.5 py-2 min-h-[44px] sm:min-h-[40px] text-base sm:text-sm bg-surface border rounded-input text-text-primary placeholder:text-text-muted/60 transition-colors',
               'focus:border-teal-deep focus:ring-1 focus:ring-teal-deep focus:outline-none',
               error ? 'border-danger-text focus:border-danger-text focus:ring-danger-text' : 'border-border',
               className

@@ -1,115 +1,153 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { COHORT_CONFIG } from '@/lib/config/cohort';
-import { Reveal } from './Reveal';
 
 export function AboutSection() {
-  const { philosophy, values } = COHORT_CONFIG;
+  const pillars = [
+    {
+      title: 'Belajar Bareng & Saling Bantu',
+      description:
+        'Kuliah statistika dan komputasi menuntut pemahaman logika matematika yang kuat. Dari latihan soal mingguan sampai persiapan ujian, kita saling berbagi catatan dan belajar bersama.',
+      practice: 'Contoh kegiatan: Responsi sebaya sebelum UTS/UAS dan bank soal latihan.',
+    },
+    {
+      title: 'Ketelitian Analisis',
+      description:
+        'Membiasakan diri mengolah data secara jujur, cermat menguji asumsi metode, dan tekun melatih kemampuan komputasi dengan bahasa pemrograman statistik.',
+      practice: 'Contoh kegiatan: Praktikum komputasi R dan Python serta bedah studi kasus nyata.',
+    },
+    {
+      title: 'Aktif & Bermanfaat',
+      description:
+        'Ilmu statistik yang dipelajari di kelas dipraktikkan langsung lewat kompetisi sains data, proyek analisis mini, dan kegiatan pengabdian mahasiswa.',
+      practice: 'Contoh kegiatan: Tim lomba data science, hackathon, dan proyek kebersamaan.',
+    },
+  ];
 
   return (
-    <section id="tentang" className="w-full bg-[#41C2A1] py-16 md:py-24 scroll-mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Horizontally Centered Section Header */}
-        <Reveal yOffset={16}>
-          <div className="text-center max-w-3xl mx-auto mb-14 flex flex-col items-center gap-3">
-            <h2 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-[#112A24] tracking-tight leading-tight">
-              Tentang Novarion
+    <section
+      id="tentang"
+      className="w-full bg-canvas py-16 md:py-24 scroll-mt-16 transition-colors duration-200 border-b border-border"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-12 md:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="lg:col-span-8 flex flex-col gap-4">
+            <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-text-primary tracking-tight leading-[1.08]">
+              Dua Makna di Balik Nama Novarion.
             </h2>
-            <p className="text-sm sm:text-base text-[#112A24]/90 max-w-xl mx-auto leading-relaxed font-sans font-medium">
-              {philosophy.summary}
+
+            <p className="text-base sm:text-lg text-text-muted leading-relaxed font-sans max-w-3xl">
+              Nama <strong className="text-text-primary font-semibold">Novarion</strong> menggabungkan dua kata: <strong className="text-teal-deep dark:text-brand-primary font-semibold">Nova</strong> dan <strong className="text-[#9E5507] dark:text-brand-orange font-semibold">Orion</strong>. Bagi mahasiswa Statistika dan Sains Data IPB Angkatan 62, nama ini merangkum cara kita belajar dan cara kita melangkah bersama selama masa perkuliahan.
             </p>
           </div>
-        </Reveal>
 
-        {/* Typographic Compositions (Nova & Orion) - Flat hierarchy, zero nested boxes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Nova Composition */}
-          <Reveal delayMs={100} yOffset={20}>
-            <div className="relative p-7 sm:p-10 rounded-xs bg-[#112A24] text-[#EAEAB7] overflow-hidden flex flex-col justify-between shadow-sm hover:-translate-y-1 transition-all duration-300 h-full">
-              <div className="font-mono text-7xl sm:text-9xl font-black text-[#41C2A1]/15 leading-none select-none pointer-events-none mb-4">
-                NOVA
+          <div className="lg:col-span-4">
+            <div className="rounded-card bg-surface border border-border p-5 sm:p-6 flex items-center gap-4">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-[#0A1311] border border-border shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="Lambang Resmi Novarion Angkatan 62 Statistika dan Sains Data IPB"
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
               </div>
-
-              <div className="flex flex-col gap-4 relative z-10">
-                <span className="text-xs font-mono font-bold text-[#41C2A1] tracking-wider uppercase">
-                  Energi & Daya Nalar
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-mono font-bold text-teal-deep dark:text-brand-primary uppercase tracking-wider">
+                  Lambang Angkatan
                 </span>
-
-                <div>
-                  <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#EAEAB7] tracking-tight mb-2">
-                    {philosophy.nova.term}: Kilau Inovasi
-                  </h3>
-                  <p className="text-sm text-[#EAEAB7]/90 leading-relaxed font-sans">
-                    {philosophy.nova.meaning}
-                  </p>
-                </div>
-
-                {/* Plain typographic footnote without nested box */}
-                <p className="text-xs text-[#C9FBD4] font-mono leading-relaxed pt-2">
-                  Simbol ledakan ide, kecerdasan komputasional, dan ketajaman berpikir analitis.
+                <h3 className="font-heading font-bold text-base text-text-primary tracking-tight">
+                  Novarion Statistika 62
+                </h3>
+                <p className="text-xs text-text-muted font-sans leading-relaxed">
+                  Semboyan: &ldquo;{COHORT_CONFIG.tagline}&rdquo;
                 </p>
               </div>
             </div>
-          </Reveal>
-
-          {/* Orion Composition */}
-          <Reveal delayMs={180} yOffset={20}>
-            <div className="relative p-7 sm:p-10 rounded-xs bg-[#EAEAB7] text-[#112A24] overflow-hidden flex flex-col justify-between shadow-sm hover:-translate-y-1 transition-all duration-300 h-full">
-              <div className="font-mono text-7xl sm:text-9xl font-black text-[#FFAE5D]/35 leading-none select-none pointer-events-none mb-4">
-                ORION
-              </div>
-
-              <div className="flex flex-col gap-4 relative z-10">
-                <span className="text-xs font-mono font-bold text-[#112A24] tracking-wider uppercase">
-                  Kompas & Kepemimpinan
-                </span>
-
-                <div>
-                  <h3 className="font-heading font-black text-2xl sm:text-3xl text-[#112A24] tracking-tight mb-2">
-                    {philosophy.orion.term}: Panduan Arah
-                  </h3>
-                  <p className="text-sm text-[#112A24]/90 leading-relaxed font-sans">
-                    {philosophy.orion.meaning}
-                  </p>
-                </div>
-
-                {/* Plain typographic footnote without nested box */}
-                <p className="text-xs text-[#112A24]/85 font-mono leading-relaxed pt-2">
-                  Kompas moral, etika pengolahan informasi, dan kepemimpinan visioner.
-                </p>
-              </div>
-            </div>
-          </Reveal>
+          </div>
         </div>
 
-        {/* Synthesis Quote */}
-        <Reveal delayMs={150} yOffset={16}>
-          <div className="py-6 px-4 mb-12 text-center">
-            <blockquote className="font-heading font-bold text-xl sm:text-3xl text-[#112A24] tracking-tight leading-relaxed max-w-3xl mx-auto">
-              &ldquo;{philosophy.synthesis}&rdquo;
-            </blockquote>
-          </div>
-        </Reveal>
+        <div className="border-t border-b border-border py-10 md:py-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 md:divide-x md:divide-border">
+          <div className="flex flex-col justify-between gap-6">
+            <div className="flex flex-col gap-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-teal-deep dark:text-brand-primary">
+                Unsur Pertama: Nova
+              </span>
+              <h3 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
+                Semangat Belajar dan Mengolah Data
+              </h3>
+              <p className="text-sm sm:text-base text-text-muted leading-relaxed font-sans">
+                Nova adalah bintang yang memancarkan kilau terang. Bagi kita di statistika, ini menggambarkan dorongan untuk tekun memahami angka, menelaah sebaran peluang, dan merumuskan kesimpulan yang jujur dari data mentah.
+              </p>
+            </div>
 
-        {/* Core Values (No decorative number boxes, clean flat card composition) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {values.map((v, i) => (
-            <Reveal key={i} delayMs={120 + i * 80} yOffset={16}>
-              <div className="p-7 rounded-xs bg-[#FAF9F5] shadow-xs hover:-translate-y-1 transition-all duration-300 flex flex-col gap-2.5 h-full">
-                {/* Plain text label without box */}
-                <span className="font-mono text-xs font-bold text-[#112A24]/60">
-                  Prinsip 0{i + 1}
-                </span>
-                <h4 className="font-heading font-black text-lg text-[#112A24] tracking-tight">
-                  {v.title}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#112A24]/85 leading-relaxed font-sans">
-                  {v.description}
+            <div className="pt-4 border-t border-border/70">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted block mb-1.5">
+                Fokus Belajar Sehari-hari
+              </span>
+              <p className="text-xs sm:text-sm font-sans font-medium text-text-primary leading-relaxed">
+                Pemrograman R &amp; Python, Teori Peluang, Metode Statistika, Aljabar Linear, dan Eksplorasi Visual Data
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between gap-6 md:pl-12">
+            <div className="flex flex-col gap-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#9E5507] dark:text-brand-orange">
+                Unsur Kedua: Orion
+              </span>
+              <h3 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
+                Rasi Pemandu dan Solidaritas Angkatan
+              </h3>
+              <p className="text-sm sm:text-base text-text-muted leading-relaxed font-sans">
+                Orion adalah rasi bintang penunjuk arah bagi para pengelana. Di tengah padatnya tugas mingguan, laporan praktikum, dan ujian di Dramaga, kita saling mengingatkan dan saling dukung agar tidak ada kawan yang tertinggal.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-border/70">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted block mb-1.5">
+                Budaya Belajar Bersama
+              </span>
+              <p className="text-xs sm:text-sm font-sans font-medium text-text-primary leading-relaxed">
+                Responsi Terbuka UTS dan UAS, Bank Modul Angkatan, Tutor Sebaya Praktikum, serta Diskusi Tugas Kelompok
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <h3 className="font-heading font-bold text-2xl sm:text-3xl text-text-primary tracking-tight">
+              Tiga Pegangan Kuliah dan Kegiatan Angkatan
+            </h3>
+            <span className="text-xs font-mono text-text-muted">
+              Statistika dan Sains Data, FMIPA IPB University
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x md:divide-border border-t border-border pt-8">
+            {pillars.map((pillar, idx) => (
+              <div
+                key={pillar.title}
+                className={`flex flex-col justify-between gap-4 ${idx > 0 ? 'md:pl-8' : ''}`}
+              >
+                <div className="flex flex-col gap-2.5">
+                  <h4 className="font-heading font-bold text-lg sm:text-xl text-text-primary tracking-tight">
+                    {pillar.title}
+                  </h4>
+                  <p className="text-sm text-text-muted leading-relaxed font-sans">
+                    {pillar.description}
+                  </p>
+                </div>
+
+                <p className="text-xs font-sans font-medium text-teal-deep dark:text-brand-primary pt-3 border-t border-border/70">
+                  {pillar.practice}
                 </p>
               </div>
-            </Reveal>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

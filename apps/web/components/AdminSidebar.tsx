@@ -109,11 +109,11 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                       onClick={onNavigate}
                       className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors relative ${
                         isActive
-                          ? 'bg-teal-deep text-white font-semibold shadow-xs'
+                          ? 'bg-teal-deep text-white dark:text-[#0C1815] font-semibold shadow-xs'
                           : 'text-text-muted hover:text-text-primary hover:bg-surface-soft font-medium'
                       }`}
                     >
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-text-muted'}`} />
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-current' : 'text-text-muted'}`} />
                       <span className="truncate">{item.label}</span>
                     </Link>
                   );
@@ -139,7 +139,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
               <Eye className="w-3.5 h-3.5 text-teal-deep group-hover:scale-105 transition-transform" />
               <span>Mode Mahasiswa</span>
             </div>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-800 font-bold">
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-warning-surface text-warning-text border border-warning-border font-bold">
               Pratinjau
             </span>
           </Link>

@@ -321,7 +321,7 @@ export default async function WhatsAppConsolidatedAdminPage({
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-teal-deep" />
                 <span className="font-heading font-bold text-xs text-text-primary">
-                  Antrean Pekerjaan Pengingat (Reminder Jobs) — Non-negotiable H-7, H-3, H-1, T-3h
+                  Antrean Pekerjaan Pengingat (Reminder Jobs) · Jadwal H-7, H-3, H-1, T-3h
                 </span>
               </div>
               <Badge variant="primary" size="sm">{allJobs.length} Jobs Terbaru</Badge>
