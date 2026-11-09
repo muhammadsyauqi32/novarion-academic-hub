@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   X,
   LogOut,
+  Link2,
 } from 'lucide-react';
 import { UserRole } from '@novarion/shared';
 import { ThemeToggle } from './ThemeToggle';
@@ -117,6 +118,14 @@ export function StudentBottomNav({ userRole }: StudentBottomNavProps) {
               >
                 <Send className="w-4 h-4 text-teal-deep shrink-0" />
                 <span className="truncate">Pengajuan Saya</span>
+              </Link>
+              <Link
+                href="/app/links"
+                onClick={() => setIsMoreOpen(false)}
+                className="flex items-center gap-2.5 p-3 min-h-[44px] rounded-card bg-surface-soft text-text-primary text-xs font-semibold hover:bg-surface-hover border border-border transition-colors"
+              >
+                <Link2 className="w-4 h-4 text-teal-deep shrink-0" />
+                <span className="truncate">Shortlink</span>
               </Link>
               <Link
                 href="/app/account"

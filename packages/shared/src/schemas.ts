@@ -121,3 +121,84 @@ export const agendaSubmissionSchema = z.object({
   class_section_id: z.string().uuid().optional().nullable(),
   study_group_id: z.string().uuid().optional().nullable(),
 });
+
+export const RESERVED_SLUGS = [
+  'api',
+  'app',
+  'admin',
+  'auth',
+  'login',
+  'dashboard',
+  'static',
+  'images',
+  '_next',
+  's',
+  'favicon.ico',
+  'robots.txt',
+  'sitemap.xml',
+  'kabar',
+  'galeri',
+  'prestasi',
+  'privacy',
+  'terms',
+  'help',
+  'account',
+  'settings',
+  'links',
+  'shortlinks',
+  'nova',
+] as const;
+
+export const shortLinkSlugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export const createShortLinkSchema = z.object({
+  originalUrl: z
+    .string()
+    .trim()
+    .min(1, 'URL tujuan wajib diisi')
+    .max(2048, 'URL terlalu panjang')
+    .refine((val) => {
+      try {
+        const parsed = new URL(val);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    }, 'Format URL tidak valid (harus diawali http:// atau https://)'),
+  slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(2, 'Slug minimal 2 karakter')
+    .max(64, 'Slug maksimal 64 karakter')
+    .regex(
+      shortLinkSlugRegex,
+      'Slug hanya boleh huruf kecil, angka, dan tanda hubung (-), tanpa tanda hubung di awal/akhir atau beruntun'
+    )
+    .refine((slug) => !RESERVED_SLUGS.includes(slug as any), {
+      message: 'Slug ini telah dicadangkan untuk sistem internal',
+    }),
+  title: z.string().trim().max(255, 'Judul maksimal 255 karakter').optional(),
+  description: z.string().trim().max(1000, 'Deskripsi maksimal 1000 karakter').optional(),
+});
+
+export const updateShortLinkSchema = z.object({
+  originalUrl: z
+    .string()
+    .trim()
+    .min(1, 'URL tujuan wajib diisi')
+    .max(2048, 'URL terlalu panjang')
+    .refine((val) => {
+      try {
+        const parsed = new URL(val);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    }, 'Format URL tidak valid (harus diawali http:// atau https://)')
+    .optional(),
+  title: z.string().trim().max(255, 'Judul maksimal 255 karakter').optional(),
+  description: z.string().trim().max(1000, 'Deskripsi maksimal 1000 karakter').optional(),
+  isActive: z.boolean().optional(),
+});
+

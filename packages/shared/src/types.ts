@@ -181,3 +181,17 @@ export interface AuthenticatedUser {
   isActive?: boolean;
   permissions?: AppPermission[];
 }
+
+export interface ShortLinkRecord {
+  id: string;
+  originalUrl: string;
+  slug: string;
+  title: string | null;
+  description: string | null;
+  clickCount: number;
+  userId: string | null;
+  isActive: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+

@@ -18,6 +18,7 @@ import {
   LogOut,
   ShieldCheck,
   Globe,
+  Link2,
 } from 'lucide-react';
 
 export interface AdminNavItem {
@@ -60,6 +61,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     title: 'Website',
     items: [
       { label: 'Kelola Website', href: '/admin/website', icon: Globe },
+      { label: 'Shortlink (nova.link)', href: '/admin/links', icon: Link2 },
     ],
   },
   {

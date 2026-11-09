@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   ArrowRight,
   LogOut,
+  Link2,
 } from 'lucide-react';
 import { UserRole } from '@novarion/shared';
 
@@ -43,6 +44,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Kalender', href: '/app/calendar', icon: Calendar },
       { label: 'Agenda', href: '/app/agendas', icon: ListTodo },
       { label: 'Tugas', href: '/app/tasks', icon: CheckSquare },
+      { label: 'Shortlink', href: '/app/links', icon: Link2 },
     ],
   },
   {

@@ -7,3 +7,4 @@ export * from './reminders';
 export * from './operational';
 export * from './permissions';
 export * from './cms';
+export * from './short-links';
