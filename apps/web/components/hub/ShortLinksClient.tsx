@@ -89,6 +89,10 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
     if (!activeOrigin) return 'novarion.web.id';
     try {
       const u = new URL(activeOrigin);
+      // Jika diakses dari hub, tampilkan domain publik utama agar link lebih ringkas
+      if (u.host.startsWith('hub.novarion.web.id')) {
+        return 'novarion.web.id';
+      }
       return u.host;
     } catch {
       return 'novarion.web.id';
@@ -96,10 +100,13 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
   }, [activeOrigin]);
 
   const getWorkingUrl = (slug: string) => {
-    if (activeOrigin) {
-      return `${activeOrigin}/s/${slug}`;
+    if (activeOrigin.includes('hub.novarion.web.id')) {
+      return `https://novarion.web.id/${slug}`;
     }
-    return `https://novarion.web.id/s/${slug}`;
+    if (activeOrigin) {
+      return `${activeOrigin}/${slug}`;
+    }
+    return `https://novarion.web.id/${slug}`;
   };
 
   const [isPending, startTransition] = useTransition();
@@ -383,7 +390,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
             Format Tautan Aktif
           </span>
           <span className="text-sm sm:text-base font-mono font-bold text-text-primary truncate">
-            {displayHost}/s/[slug]
+            {displayHost}/[slug]
           </span>
         </div>
       </div>
@@ -395,17 +402,17 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-semibold text-text-primary text-sm">
-            Format Tautan Siap Pakai &amp; Catatan Domain
+            Format Tautan Siap Pakai &amp; Opsi Domain Pendek
           </span>
           <p className="text-text-muted">
-            Tautan yang <strong>langsung aktif</strong> dan siap disebarkan ke mahasiswa/peserta adalah{' '}
+            Tautan yang <strong>langsung aktif</strong> dan siap disebarkan ke mahasiswa/peserta adalah format ringkas{' '}
             <code className="px-1.5 py-0.5 rounded bg-surface-soft border border-border font-mono text-teal-deep font-semibold">
-              {displayHost}/s/[slug]
+              {displayHost}/[slug]
             </code>
-            . Sistem otomatis mengalihkan pengunjung ke URL tujuan asli saat dibuka.
+            .
           </p>
           <p className="text-text-muted text-[11px]">
-            * <em>Catatan:</em> Domain global <code className="font-mono">nova.link</code> di internet dimiliki oleh pihak eksternal. Agar pengunjung dapat mengakses langsung lewat nama domain <code className="font-mono font-semibold">nova.link/[slug]</code> tanpa peringatan 404 dari web luar, domain tersebut harus didaftarkan dan diarahkan (DNS CNAME / A Record) ke server hosting Novarion.
+            * Ingin domain super pendek seperti <code className="font-mono">ipb.link</code>? Anda dapat mendaftarkan domain pendek murah (misal: <code className="font-mono font-semibold">nova.my.id</code> seharga ~Rp12rb/tahun atau <code className="font-mono font-semibold">s.novarion.web.id</code>) lalu mengarahkan DNS ke hosting Novarion. Sistem sudah 100% siap mengenali domain pendek tersebut secara otomatis.
           </p>
         </div>
       </div>
@@ -489,7 +496,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                               {link.title || 'Tanpa Judul'}
                             </span>
                             <div className="flex items-center gap-1.5 font-mono text-teal-deep font-semibold">
-                              <span>{displayHost}/s/{link.slug}</span>
+                              <span>{displayHost}/{link.slug}</span>
                               <button
                                 type="button"
                                 onClick={() => handleCopy(link.slug, 'working')}
@@ -503,7 +510,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                                 )}
                               </button>
                               <a
-                                href={`/s/${link.slug}`}
+                                href={`/${link.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Buka tautan (test redirect)"
@@ -595,7 +602,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                           {link.title || 'Tanpa Judul'}
                         </span>
                         <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-teal-deep">
-                          <span>{displayHost}/s/{link.slug}</span>
+                          <span>{displayHost}/{link.slug}</span>
                           <button
                             type="button"
                             onClick={() => handleCopy(link.slug, 'working')}
@@ -608,7 +615,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                             )}
                           </button>
                           <a
-                            href={`/s/${link.slug}`}
+                            href={`/${link.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1 rounded text-text-muted hover:text-teal-deep"
@@ -738,7 +745,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                 </label>
                 <div className="flex items-center rounded-input border border-border bg-surface focus-within:border-teal-deep overflow-hidden">
                   <span className="px-3 py-2 bg-surface-soft border-r border-border text-xs font-mono font-semibold text-text-muted select-none">
-                    {displayHost}/s/
+                    {displayHost}/
                   </span>
                   <input
                     type="text"

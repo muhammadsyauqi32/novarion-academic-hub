@@ -17,7 +17,12 @@ export async function middleware(request: NextRequest) {
   const sharedDomain = isProdNovarion ? '.novarion.web.id' : undefined;
 
   const pathname = request.nextUrl.pathname;
-  const isDedicatedShortDomain = hostname.includes('nova.link') || hostname.startsWith('link.') || hostname.startsWith('go.');
+  const isDedicatedShortDomain =
+    hostname.includes('nova.link') ||
+    hostname.startsWith('link.') ||
+    hostname.startsWith('go.') ||
+    hostname.startsWith('s.') ||
+    hostname.startsWith('nv.');
   const isHubSubdomain = !isDedicatedShortDomain && hostname.startsWith('hub.');
   const isMainDomain = !isHubSubdomain && !isDedicatedShortDomain && (hostname === 'novarion.web.id' || hostname === 'www.novarion.web.id');
 
@@ -139,6 +144,39 @@ export async function middleware(request: NextRequest) {
     if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/app') || url.pathname === '/login') {
       const hubUrl = new URL(url.pathname, `https://hub.novarion.web.id`);
       return createRedirectWithCookies(hubUrl);
+    }
+
+    // Direct root shortlinks di domain utama (contoh: novarion.web.id/makrab)
+    const isRootReserved =
+      url.pathname === '/' ||
+      url.pathname.startsWith('/api') ||
+      url.pathname.startsWith('/auth') ||
+      url.pathname.startsWith('/privacy') ||
+      url.pathname.startsWith('/s/') ||
+      url.pathname === '/robots.txt' ||
+      url.pathname === '/sitemap.xml';
+
+    if (!isRootReserved && /^\/[a-zA-Z0-9_-]+$/.test(url.pathname)) {
+      url.pathname = `/s${url.pathname}`;
+      return NextResponse.rewrite(url);
+    }
+  } else {
+    // Development / Localhost direct root shortlinks (contoh: localhost:3000/makrab)
+    const isRootReserved =
+      url.pathname === '/' ||
+      url.pathname.startsWith('/admin') ||
+      url.pathname.startsWith('/app') ||
+      url.pathname.startsWith('/login') ||
+      url.pathname.startsWith('/api') ||
+      url.pathname.startsWith('/auth') ||
+      url.pathname.startsWith('/privacy') ||
+      url.pathname.startsWith('/s/') ||
+      url.pathname === '/robots.txt' ||
+      url.pathname === '/sitemap.xml';
+
+    if (!isRootReserved && /^\/[a-zA-Z0-9_-]+$/.test(url.pathname)) {
+      url.pathname = `/s${url.pathname}`;
+      return NextResponse.rewrite(url);
     }
   }
 
