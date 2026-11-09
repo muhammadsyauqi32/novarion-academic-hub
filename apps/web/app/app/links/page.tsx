@@ -13,26 +13,30 @@ export default async function ShortLinksPage() {
   const user = await requireAuth();
   const db = getDb();
 
-  // Ambil daftar tautan milik pengguna saat ini (atau semua jika role admin)
-  const isSuperUser = user.role === 'admin';
-  const query = db.select().from(shortLinks);
+  let formattedLinks: any[] = [];
+  try {
+    const isSuperUser = user.role === 'admin';
+    const query = db.select().from(shortLinks);
 
-  const rows = isSuperUser
-    ? await query.orderBy(desc(shortLinks.createdAt)).limit(100)
-    : await query.where(eq(shortLinks.userId, user.id)).orderBy(desc(shortLinks.createdAt)).limit(100);
+    const rows = isSuperUser
+      ? await query.orderBy(desc(shortLinks.createdAt)).limit(100)
+      : await query.where(eq(shortLinks.userId, user.id)).orderBy(desc(shortLinks.createdAt)).limit(100);
 
-  const formattedLinks = rows.map((r) => ({
-    id: r.id,
-    originalUrl: r.originalUrl,
-    slug: r.slug,
-    title: r.title,
-    description: r.description,
-    clickCount: r.clickCount,
-    userId: r.userId,
-    isActive: r.isActive,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-  }));
+    formattedLinks = rows.map((r) => ({
+      id: r.id,
+      originalUrl: r.originalUrl,
+      slug: r.slug,
+      title: r.title,
+      description: r.description,
+      clickCount: r.clickCount,
+      userId: r.userId,
+      isActive: r.isActive,
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt.toISOString(),
+    }));
+  } catch (err) {
+    console.error('[ShortLinksPage] Gagal memuat daftar shortlink:', err);
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
