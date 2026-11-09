@@ -77,6 +77,31 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
     message?: string;
   }>({ status: 'idle' });
 
+  // Detect active host origin in browser (e.g., http://localhost:3000 or https://hub.novarion.web.id)
+  const [activeOrigin, setActiveOrigin] = useState('');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setActiveOrigin(window.location.origin);
+    }
+  }, []);
+
+  const displayHost = useMemo(() => {
+    if (!activeOrigin) return 'novarion.web.id';
+    try {
+      const u = new URL(activeOrigin);
+      return u.host;
+    } catch {
+      return 'novarion.web.id';
+    }
+  }, [activeOrigin]);
+
+  const getWorkingUrl = (slug: string) => {
+    if (activeOrigin) {
+      return `${activeOrigin}/s/${slug}`;
+    }
+    return `https://novarion.web.id/s/${slug}`;
+  };
+
   const [isPending, startTransition] = useTransition();
 
   // Debounced slug check
@@ -132,9 +157,9 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
     return () => clearTimeout(timer);
   }, [formSlug]);
 
-  // Copy to clipboard helper
-  const handleCopy = async (slug: string) => {
-    const fullUrl = `https://nova.link/${slug}`;
+  // Copy to clipboard helper (copies active working URL by default)
+  const handleCopy = async (slug: string, format: 'working' | 'nova' = 'working') => {
+    const fullUrl = format === 'working' ? getWorkingUrl(slug) : `https://nova.link/${slug}`;
     try {
       await navigator.clipboard.writeText(fullUrl);
       setCopiedSlug(slug);
@@ -142,7 +167,6 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
         setCopiedSlug(null);
       }, 2000);
     } catch {
-      // Fallback
       prompt('Salin tautan:', fullUrl);
     }
   };
@@ -356,11 +380,33 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
         </div>
         <div className="col-span-2 sm:col-span-1 bg-surface p-4 rounded-card border border-border flex flex-col gap-1">
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-text-muted">
-            Domain Standar
+            Format Tautan Aktif
           </span>
-          <span className="text-sm sm:text-base font-mono font-bold text-text-primary">
-            nova.link/[slug]
+          <span className="text-sm sm:text-base font-mono font-bold text-text-primary truncate">
+            {displayHost}/s/[slug]
           </span>
+        </div>
+      </div>
+
+      {/* Info Callout Banner */}
+      <div className="p-4 rounded-card bg-surface border border-border flex items-start gap-3 text-xs leading-relaxed">
+        <div className="w-8 h-8 rounded-input bg-brand-primary/20 text-teal-deep flex items-center justify-center shrink-0 mt-0.5">
+          <Globe className="w-4 h-4" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold text-text-primary text-sm">
+            Format Tautan Siap Pakai &amp; Catatan Domain
+          </span>
+          <p className="text-text-muted">
+            Tautan yang <strong>langsung aktif</strong> dan siap disebarkan ke mahasiswa/peserta adalah{' '}
+            <code className="px-1.5 py-0.5 rounded bg-surface-soft border border-border font-mono text-teal-deep font-semibold">
+              {displayHost}/s/[slug]
+            </code>
+            . Sistem otomatis mengalihkan pengunjung ke URL tujuan asli saat dibuka.
+          </p>
+          <p className="text-text-muted text-[11px]">
+            * <em>Catatan:</em> Domain global <code className="font-mono">nova.link</code> di internet dimiliki oleh pihak eksternal. Agar pengunjung dapat mengakses langsung lewat nama domain <code className="font-mono font-semibold">nova.link/[slug]</code> tanpa peringatan 404 dari web luar, domain tersebut harus didaftarkan dan diarahkan (DNS CNAME / A Record) ke server hosting Novarion.
+          </p>
         </div>
       </div>
 
@@ -443,11 +489,11 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                               {link.title || 'Tanpa Judul'}
                             </span>
                             <div className="flex items-center gap-1.5 font-mono text-teal-deep font-semibold">
-                              <span>nova.link/{link.slug}</span>
+                              <span>{displayHost}/s/{link.slug}</span>
                               <button
                                 type="button"
-                                onClick={() => handleCopy(link.slug)}
-                                title="Salin tautan"
+                                onClick={() => handleCopy(link.slug, 'working')}
+                                title="Salin tautan aktif"
                                 className="p-1 rounded text-text-muted hover:text-teal-deep hover:bg-teal-deep/10 transition-colors"
                               >
                                 {isCopied ? (
@@ -456,11 +502,23 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                                   <Copy className="w-3.5 h-3.5" />
                                 )}
                               </button>
+                              <a
+                                href={`/s/${link.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Buka tautan (test redirect)"
+                                className="p-1 rounded text-text-muted hover:text-teal-deep hover:bg-teal-deep/10 transition-colors"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
                               {isCopied && (
                                 <span className="text-[10px] text-success-text font-sans font-medium">
                                   Tersalin!
                                 </span>
                               )}
+                            </div>
+                            <div className="text-[10px] text-text-muted font-mono">
+                              Alias: nova.link/{link.slug}
                             </div>
                             {link.description && (
                               <p className="text-text-muted text-[11px] line-clamp-1 mt-0.5">
@@ -537,10 +595,10 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                           {link.title || 'Tanpa Judul'}
                         </span>
                         <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-teal-deep">
-                          <span>nova.link/{link.slug}</span>
+                          <span>{displayHost}/s/{link.slug}</span>
                           <button
                             type="button"
-                            onClick={() => handleCopy(link.slug)}
+                            onClick={() => handleCopy(link.slug, 'working')}
                             className="p-1 rounded text-text-muted hover:text-teal-deep"
                           >
                             {isCopied ? (
@@ -549,12 +607,24 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                               <Copy className="w-3.5 h-3.5" />
                             )}
                           </button>
+                          <a
+                            href={`/s/${link.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1 rounded text-text-muted hover:text-teal-deep"
+                            title="Buka tautan (test redirect)"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
                           {isCopied && (
                             <span className="text-[10px] text-success-text font-sans font-medium">
                               Tersalin!
                             </span>
                           )}
                         </div>
+                        <span className="text-[10px] text-text-muted font-mono">
+                          Alias: nova.link/{link.slug}
+                        </span>
                       </div>
 
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-soft font-mono text-xs font-semibold text-text-primary border border-border shrink-0">
@@ -668,7 +738,7 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                 </label>
                 <div className="flex items-center rounded-input border border-border bg-surface focus-within:border-teal-deep overflow-hidden">
                   <span className="px-3 py-2 bg-surface-soft border-r border-border text-xs font-mono font-semibold text-text-muted select-none">
-                    nova.link/
+                    {displayHost}/s/
                   </span>
                   <input
                     type="text"
@@ -681,6 +751,10 @@ export function ShortLinksClient({ initialLinks, userRole, currentUserId }: Shor
                     required
                     className="flex-1 px-3 py-2 text-xs sm:text-sm font-mono bg-transparent text-text-primary placeholder:text-text-muted/60 focus:outline-none"
                   />
+                </div>
+                <div className="flex flex-col gap-0.5 text-[11px] text-text-muted">
+                  <span>Tautan aktif: <strong className="font-mono text-teal-deep">{getWorkingUrl(formSlug || 'slug')}</strong></span>
+                  <span>Alias kustom: <span className="font-mono">nova.link/{formSlug || 'slug'}</span></span>
                 </div>
                 {slugStatus.status === 'invalid' && (
                   <span className="text-[11px] text-danger-text font-medium flex items-center gap-1">

@@ -17,9 +17,9 @@ export async function middleware(request: NextRequest) {
   const sharedDomain = isProdNovarion ? '.novarion.web.id' : undefined;
 
   const pathname = request.nextUrl.pathname;
-  const isNovaLinkDomain = hostname.includes('nova.link');
-  const isHubSubdomain = hostname.startsWith('hub.');
-  const isMainDomain = !isHubSubdomain && !isNovaLinkDomain && (hostname === 'novarion.web.id' || hostname === 'www.novarion.web.id');
+  const isDedicatedShortDomain = hostname.includes('nova.link') || hostname.startsWith('link.') || hostname.startsWith('go.');
+  const isHubSubdomain = !isDedicatedShortDomain && hostname.startsWith('hub.');
+  const isMainDomain = !isHubSubdomain && !isDedicatedShortDomain && (hostname === 'novarion.web.id' || hostname === 'www.novarion.web.id');
 
   const allCookies = request.cookies.getAll();
   const hasAuthCookie = allCookies.some((c) => c.name.startsWith('sb-') && c.name.includes('-auth-token'));
@@ -115,8 +115,8 @@ export async function middleware(request: NextRequest) {
   };
 
   // 2. Multi-Subdomain & Shortener Routing Logic
-  if (isNovaLinkDomain) {
-    // Pada domain URL shortener nova.link:
+  if (isDedicatedShortDomain) {
+    // Pada domain URL shortener nova.link atau subdomain shortlink (link.* / go.*):
     // Root '/' dialihkan ke website utama Novarion
     if (url.pathname === '/') {
       return NextResponse.redirect('https://novarion.web.id', 302);
